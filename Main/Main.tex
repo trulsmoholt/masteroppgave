@@ -1,0 +1,96 @@
+%Set up
+\documentclass[12pt,oneside]{book}
+
+%Subfiles
+\usepackage{subfiles}
+
+%Graphics
+\usepackage{graphicx}
+
+\usepackage{subcaption}
+\usepackage{overpic}
+\usepackage{pgfplots}
+\pgfplotsset{compat=newest}
+\usepackage{epstopdf}
+\usepackage{fancyhdr}
+ %Layout
+\usepackage{geometry}
+\geometry{a4paper, includehead, includefoot, bottom=3cm}
+\usepackage{float}
+\usepackage{watermark}
+
+%Bold
+\usepackage{bm}
+
+%Language
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+
+%Hyperrefs
+\usepackage{hyperref}
+
+%Mathematics
+\usepackage{amsmath}
+\numberwithin{equation}{chapter}
+
+\usepackage{amsfonts}
+\usepackage{amsthm}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{prop}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{example}{Example}
+\newtheorem{remark}{Remark}
+\newtheorem{definition}{Definition}
+\newtheorem{assumption}{Assumption}
+\newtheorem{notation}{Notation}
+%Appendix
+\usepackage{appendix}
+
+%Todonotes + colors
+\usepackage{todonotes}
+\usepackage{xcolor}
+
+
+
+\author{Truls Moholt}
+\title{\vspace{-3.0cm}Something about a comparison of FEM and FVM for Richards' equation}
+\date{Autumn 2018}
+
+%----------------------------------------------------------------------------------------------------------------------------------------
+
+\begin{document}
+\titlepage
+\begin{center}
+{\bf \LARGE Something about a comparison of FEM and FVM for Richards' equation}\\
+\vspace{10\in}
+\vspace{150\in}
+{\large Truls Moholt\\ \vspace{30\in}}
+%\maketitle
+
+\vspace*{\fill}
+\it{Master thesis in Applied and Computational Mathematics, \\Institute of Mathematics, \\University of Bergen, \\Autumn 2021}
+\end{center}
+\tableofcontents
+\newpage
+%\subfile{../Intro/intro}
+\subfile{../Flow in porous media/Flow in porous media}
+\subfile{../Finite element method/Finite element method}
+\subfile{../Finite volume method/Finite volume method}
+\subfile{../Time dependent equations/Time dependent equations}
+\subfile{../Richards equation/Richards' equation}
+\subfile{../numerical results/Numerical results}
+\subfile{../Equivalence between MPFA-L and FEM/Equivalence between MPFA-L and FEM}
+
+
+
+\bibliographystyle{unsrt}
+\bibliography{../References/sample}
+\addcontentsline{toc}{chapter}{References}
+
+
+
+
+\end{document}
