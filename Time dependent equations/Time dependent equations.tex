@@ -30,10 +30,10 @@
 		\end{aligned}
 	\end{equation}
 	
-	We expect low regularity in time, so there is not much gained by using a higher order discretization in time. The two choices we have left is the forward euler(explicit) and the backward euler(implicit). The obvious choice is backward euler, as it is stable for long timesteps. This can be understood intuitively by considering the parabolic nature of the equation, the signals spread trough the domain instantaneously. A careful analysis time discretization of parabolic equations is done in (\cite{Knabner}, chapter 7).  Here it is shown that explicit schemes only are stable for time-step proportional to the square of the space step, whereas fully implicit schemes are stable for all time-steps. \par  Let $\left \{ t_n \right \}_n$ be a sequence of $N+1$ evenly spaced numbers from $0$ to $T$ and let $\tau = \frac{T}{N}$ be the time-step Then we state the semi-discrete version of \eqref{eq:heat equation} by exchanging the time derivative by a difference quotient $(\partial_t u)^n = \frac{u^n-u^{n-1}}{\tau}$. Note that this difference quotient is implicit because $u^n$ is not explicitly given by terms of the previous time-step
+	We expect low regularity in time, so there is not much gained by using a higher order discretization in time. The two choices we have left is the forward euler(explicit) and the backward euler(implicit). The obvious choice is backward euler, as it is stable for long timesteps. This can be understood intuitively by considering the parabolic nature of the equation, the signals spread trough the domain instantaneously. A careful analysis time discretization of parabolic equations is done in (\cite{Knabner}, chapter 7).  Here it is shown that explicit schemes only are stable for time-step proportional to the square of the space step, whereas fully implicit schemes are stable for all time-steps. \par  Let $\left \{ t_n \right \}_n$ be a sequence of $N+1$ evenly spaced numbers from $0$ to $T$ and let $\Delta t = \frac{T}{N}$ be the time-step Then we state the semi-discrete version of \eqref{eq:heat equation} by exchanging the time derivative by a difference quotient $(\partial_t u)^n = \frac{u^n-u^{n-1}}{\Delta t}$. Note that this difference quotient is implicit because $u^n$ is not explicitly given by terms of the previous time-step
 	\begin{equation}\label{eq:semidiscrete heat}
 		\begin{aligned}[c]
-			u^n - \tau \nabla \cdot \pmb{K} \nabla u^n &= \tau F^n+u^{n-1}\\
+			u^n - \Delta t \nabla \cdot \pmb{K} \nabla u^n &= \Delta t F^n+u^{n-1}\\
 			u^n &= 0 \\
 			\pmb{K}\nabla u &= g_N\\
 			u^0 &= u_0
@@ -129,71 +129,7 @@
 		\end{equation}
 	\end{proof}
 	\section*{Equivalence between modified FEM and modified MPFA-L}	
-	In this section we introduce finite volume L-method and finite element method for the time discretized problem \eqref{eq:semidiscrete heat}. 
-	We saw in the section about the MPFA-L method that the interaction regions(L-triangles) may form a triangulation of our domain.
-	Modifications are made to both methods so that we can exploit this fact and obtain equivalence. This section is adapted from \todo[inline]{add citation}
-	\subsection{Modified MPFA-L method}
-	First of all we assume that we have a parallelogram grid.
-	\begin{figure}[H]\label{fig:paralellogram mesh}
-		\centering
-		\includegraphics[width=1\textwidth]{paralellogram_mesh.pdf}
-	\end{figure}
-
-	To obtain a finite volume discretization one could write the heat equation\eqref{eq:heat equation} in conservation form on each control volume
-	\begin{equation}
-		\partial_t\int_{\Omega_i}u \ dx -\int_{\partial \Omega_i} \pmb{K}\nabla u \cdot \hat{\pmb{n}}\ dx = \int_{\Omega_i} F \ dx
-	\end{equation}
-	And discretize the first term with backward Euler. Or one could make sure the semi-discrete heat equation \eqref{eq:semidiscrete heat} holds for each control volume and use the divergence theorem. Both ways, we end up with
-	\begin{equation}
-		\int_{\Omega_i} u^n \ dx - \int_{\partial \Omega_i} \pmb{K}\nabla u^n \cdot \hat{\pmb{n}}\ dx = \int_{\Omega_i} F^n \ dx + \int_{\Omega_i} u^{n-1} \ dx
-	\end{equation}
-	The MPFA-L method deals with the second term, approximating the constitutive law. The other three terms are common to all control volume methods solving \eqref{eq:semidiscrete heat} and we will not make modifications or discuss them further.
-	\par
-	We will need to modify the Neumann boundaries, this is to be expected as finite element methods have degrees of freedom on the boundaries as opposed to finite volume methods. We will also see how we could enforce Dirichlet boundary conditions in a way that is equivalent to the finite element method. On the \textbf{interior} control volumes we use the original MPFA-L method already covered.
-	\par
-	Consider the control volume $y_1 y_6 y_4 y_3$. 
-	\begin{figure}[H]
-		\centering
-		\includegraphics{modified_L_scheme.pdf}
-		\caption{Control volumes in solid lines and interaction regions in dashed lines at the boundary.}
-	\end{figure}
-	\begin{figure}[H]\label{fig:volumepartition}
-		\centering
-		\includegraphics{volumepartition.pdf}
-	\end{figure}
-	For the \textbf{Neumann} boundary conditions, we split the cell into two, $y_1 y_6 y_9 y_8$ as $\Omega_2$ and $y_8 y_9 y_4 y_3$ as  $\Omega_1$. For the fluxes on $\Omega_2$ we have six interaction triangles and a normal seven point stencil. For the $\Omega_1$ we compute the flux trough $\overline{y_3 y_8}$ using $\triangle x_1 x_3 x_2$, the flux trough $\overline{y_8 y_{10}}$ using $\triangle x_1 x_i x_3$, for $\overline{y_{10}y_9}$ and $\overline{y_9 y_4}$ the L triangle  $\triangle x_i x_4 x_3$ is used. Finally the Neumann boundary condition is used at the the edge $\overline{y_4 x_3}$ and $\overline{x_3 y_3}$. We are not able to eliminate the unknown value at $x_3$ and it remains a degree of freedom, which makes sense if we want equivalence with finite element method.
-	\par
-	In the case of \textbf{Dirichlet} boundary conditions, we compute the fluxes into $y_1 y_6 y_4 y_3$ using seven L-triangles. The flux over the edge $\overline{y_3 y_1}$ are computed as the sum of the flux over $\overline{y_3 y_8}$, $\overline{y_8 y_2}$ and $\overline{y_2 y_1}$ using the L-triangles $\triangle x_1 x_3 x_2$, $\triangle x_1 x_i x_3$ and $\triangle x_1 x_7 x_i$ respectively. Similarly for the edge $\overline{y_6 y_4}$. For $\overline{y_1 y_6}$ we only use the two big L-triangles at the bottom. 
-	\par 
-	The flux over $\overline{y_4 y_3}$, at the boundary, we compute by balancing it by the other fluxes into the small control volume $\Omega_1$. Let $	f_{\overline{y_i y_j}}:= \int_{\overline{y_i y_j}}  \pmb{K}\nabla u \cdot \pmb{\hat{n}}\ dx $
-	\begin{equation}\label{eq:K2}
-		f_{\overline{y_4 y_3}} = f_{\overline{y_3 y_8}} + f_{\overline{y_8 y_{10}}}+f_{\overline{y_{10}y_9}}+f_{\overline{y_9 y_4}}
-	\end{equation}
-	The fluxes on the right hand side of \eqref{eq:K2} are computed as for the Neumann case.
-	\subsection*{Modified finite element method}
-	In this section we introduce a finite element method for solving \eqref{eq:semidiscrete heat}. We start by observing that by theorem \todo{add theorem in L-method chapter} the L-triangles form a triangulation. For the nodes of this triangulation $\tau_h$ we need some careful notation:
-	\par 
-	Let $\mathcal{N}_h^*$ be a set of indexes corresponding to all interior nodes of $\tau_h$, which are also the cell centers of the control volume mesh. This index set contains two disjoint sets $\mathcal{N}_h^* = \mathcal{N}_h^b \bigcup \mathcal{N}_h^i$, where superscript $i$ denotes the cell centers of the interior cells $i$ and $b$ the boundary cells $e$, see fig \ref{fig:paralellogram mesh}. the boundary cell center nodes are further diveded into three disjoint sets for edge cells, short corner cells and long corner cells: $\mathcal{N}^b_h = \mathcal{N}_h^e \bigcap \mathcal{N}_h^{c_l} \bigcap \mathcal{N}_h^{c_s}$. The Dirichlet and Neumann boundary nodes are denoted by $\mathcal{N}_h^D$ and $\mathcal{N}_h^N$ respectively. As with the cell-center index sets, the Neuman boundary index set is further divided into disjoint sets $\mathcal{N}_h^{N,e}\bigcap \mathcal{N}_h^{N,s}\bigcap\mathcal{N}_h^{N,l}\bigcap \mathcal{N}_h^{N,C_s}\bigcap\mathcal{N}_h^{N,C_l}$, where superscript $e$ denotes nodes at the middle of boundary cells, $s$ and $l$ denotes the nodes at the middle of the long and short corner cells and $C_s$ and $C_l$ denotes the node at the short and longer corner. Such that if we let $\mathcal{N}_h$ denote all the nodes of $\tau_h$ we get $\mathcal{N}_h = \mathcal{N}_h^*\bigcup \mathcal{N}_h^D \bigcup \mathcal{N}_h^N$.
-	\par 
-	As before one denotes by $V_h$ the linear ansatz space, see definition \ref{def:linear ansatz}. Similarly $\phi_i$ is the standard nodal basis function, where $i \in \mathcal{N}_h \setminus \mathcal{N}_h^D$.
-	In addition to our global interpolation operator, definition \ref{def:global_interpolator}, we define:
-	\begin{definition}[Piecewise global interpolator]
-		Let $\hat{I}_h$ be an operator that maps from the test space to functions that are piecewise constant on each control volume.
-		\begin{equation*}
-			\hat{I}_h:C(\Omega)\rightarrow \left \{ v_h \in L^2(\Omega):v_h|_{\Omega_i} = K \right \}
-		\end{equation*}
-		And
-		\begin{equation*}
-			\hat{I}_h v = \sum_{i\in \mathcal{N}_h\setminus\mathcal{N}_h^d}v(x_i)\hat{I}_h\phi_i(x)
-		\end{equation*}
-		Where
-		\begin{equation}
-			\hat{I}_h\phi_i(x)=\left\{\begin{matrix}
-				1 & \text{if } x\in D_i\\ 
-				0 & \text{otherwise}
-			\end{matrix}\right.
-		\end{equation}
-	\end{definition}
+	
 	\section*{Linearization}
 	Now we have seen that the heat equation leads to a sequence of linear systems. In the same way, we expect that our non-linear Richards' equation \eqref{eq:richards} leads to a system of non-linear equations. We start by discussing this in a general setting
 	\begin{equation}\label{eq:non-linear-problem}
