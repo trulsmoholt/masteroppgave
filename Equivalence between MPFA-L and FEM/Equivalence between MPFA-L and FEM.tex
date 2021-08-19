@@ -4,7 +4,7 @@
 	\graphicspath{{../Equivalence between MPFA-L and FEM/figs/}}
 	In this chapter we show equivalence between a modified MPFA-L method and a modified finite element method for time dependent problems such as  \eqref{eq:semidiscrete heat}. 
 	We saw in the section about the MPFA-L method that the interaction regions(L-triangles) may form a triangulation of our domain.
-	Modifications are made to both methods so that we can exploit this fact and obtain equivalence. This section is adapted from \todo[inline]{add citation}
+	Modifications are made to both methods so that we can exploit this fact and obtain equivalence. This section is adapted from (Cao, Y., Helmig, R. and Wohlmuth, B.I. (2009),\cite{https://doi.org/10.1002/num.20525})
 	\section*{Modified MPFA-L method}
 	First of all we assume that we have a parallelogram grid.
 	\begin{figure}[H]\label{fig:paralellogram mesh}
@@ -12,11 +12,7 @@
 		\includegraphics[width=1\textwidth]{paralellogram_mesh.pdf}
 	\end{figure}
 	
-	To obtain a finite volume discretization one could write the heat equation\eqref{eq:heat equation} in conservation form on each control volume
-	\begin{equation}
-		\partial_t\int_{\Omega_i}u \ dx -\int_{\partial \Omega_i} \pmb{K}\nabla u \cdot \hat{\pmb{n}}\ dx = \int_{\Omega_i} F \ dx
-	\end{equation}
-	And discretize the first term with backward Euler. Or one could make sure the semi-discrete heat equation \eqref{eq:semidiscrete heat} holds for each control volume and use the divergence theorem. Both ways, we end up with
+	As we saw in the previous chapter, one gets with the finite volume method the following relation for all control volumes $\Omega_i$:
 	\begin{equation}
 		\int_{\Omega_i} u^n \ dx - \int_{\partial \Omega_i} \pmb{K}\nabla u^n \cdot \hat{\pmb{n}}\ dx = \int_{\Omega_i} F^n \ dx + \int_{\Omega_i} u^{n-1} \ dx
 	\end{equation}
@@ -45,7 +41,7 @@
 	\end{equation}
 	The fluxes on the right hand side of \eqref{eq:K2} are computed as for the Neumann case.
 	\section*{Modified finite element method}
-	In this section we introduce a finite element method for solving \eqref{eq:semidiscrete heat}. We start by observing that by theorem \todo{add theorem in L-method chapter} the L-triangles form a triangulation. The only modifications we need to make are to the linear form, we let the bi-linear form stay the same as before. We want to define an interpolation operator such that the dot products that make up the linear form become mass conservative in each control volume. We need some notation so that we can distinguish between nodes in the interior, at at cell centers along the boundary and at the boundary. In addition, corner cells introduce edge cases. 
+	In this section we introduce a finite element method for solving \eqref{eq:semidiscrete heat}. We start by observing that by theorem \ref{th:L_triangulation} the L-triangles form a triangulation. The only modifications we need to make are to the linear form, we let the bi-linear form stay the same as before. We want to define an interpolation operator such that the dot products that make up the linear form become mass conservative in each control volume. We need some notation so that we can distinguish between nodes in the interior, at at cell centers along the boundary and at the boundary. In addition, corner cells introduce edge cases. 
 	\par 
 	Let $\mathcal{N}_h^*$ be a set of indexes corresponding to all interior nodes of $\tau_h$, which are also the cell centers of the control volume mesh. This index set contains two disjoint sets $\mathcal{N}_h^* = \mathcal{N}_h^b \bigcup \mathcal{N}_h^i$, where superscript $i$ denotes the cell centers of the interior cells. The boundary nodes consists of the set $\mathcal{N}_h^N \bigcup \mathcal{N}_h^D$, where $N$ and $D$ represent neumann and dirichlet boundary nodes. The rest of the notation are explained in figure \ref{fig:meshWithNodes}
 	\begin{figure}[H]\label{fig:mesWithNodes}
@@ -56,10 +52,10 @@
 	\par 
 	As before one denotes by $V_h$ the linear ansatz space, see definition \ref{def:linear ansatz}. Similarly $\phi_i$ is the standard nodal basis function, where $i \in \mathcal{N}_h \setminus \mathcal{N}_h^D$.
 	In addition to our global interpolation operator, definition \ref{def:global_interpolator}, we define:
-	\begin{definition}[Piecewise global interpolator]
-		Let $\hat{I}_h$ be an operator that maps from the test space to functions that are piecewise constant on each control volume.
+	\begin{definition}[Piecewise global interpolator] \label{def:piecewise_interpolator}
+		Let $\hat{I}_h$ be an operator that maps from the test space to functions that are piecewise constant on interior control volumes.
 		\begin{equation*}
-			\hat{I}_h:C(\Omega)\rightarrow \left \{ v_h \in L^2(\Omega):v_h|_{\Omega_i} = K \right \}
+			\hat{I}_h:C(\Omega)\rightarrow \left \{ v_h \in L^2(\Omega) \right \}
 		\end{equation*}
 		And
 		\begin{equation*}
@@ -87,7 +83,7 @@
 			\left \langle \hat{I}_h u_h^n,\hat{I}_h v_h \right \rangle_0 + \tau  \left \langle \pmb{K} \nabla u_h^n,\nabla v_h \right \rangle_0 =&\tau \left \langle F^n,\hat{I}_h v_h \right \rangle_{0} + \left \langle \hat{I}_h u_h^{n-1},\hat{I}_h v_h\right \rangle_0 + \left \langle g,\hat{I}_h v_h \right \rangle_{0} 
 		\end{aligned}
 	\end{equation}
-	The key takeaway here is that the inner products become conservative in the control volumes.
+	The key takeaway here is that the inner products become conservative in the control volumes. This is often referred to as \emph{mass lumping}, see for \cite{baranger1996connection} for examples.  
 	\par
 		\begin{figure}[H]\label{fig:control volume}
 		\centering
@@ -105,7 +101,8 @@
 	\end{theorem}
 
 	\begin{proof}
-		\item Let $\Omega_i$ be an interior control volume and $\phi_i$ be the corresponding basis function evaluating to one at the centre of $\Omega_i$, ie. $i \in \mathcal{N}_h^i$. $T \in \tau_h \bigcap \text{supp}(\phi_i)$ is an element of the triangulation. $S=T\bigcap \Omega_i$ and $E \subset S\bigcap \partial \Omega_i$ are the half edges of $\Omega_i$. $e$ are the interior edges of $\tau_h$ inside the support of $\phi_i$, see fig \ref{fig:two triangles} and \ref{fig:control volume}. Since $u_h$ and $\phi$ is piecewise linear and $\pmb{\hat{K}}$ is constant on each triangle $T$ we have:
+		First we show the equivalence for the interior, so
+		let $\Omega_i$ be an interior control volume and $\phi_i$ be the corresponding basis function evaluating to one at the centre of $\Omega_i$, ie. $i \in \mathcal{N}_h^i$. $T \in \tau_h \bigcap \text{supp}(\phi_i)$ is an element of the triangulation. $S=T\bigcap \Omega_i$ and $E \subset S\bigcap \partial \Omega_i$ are the half edges of $\Omega_i$. $e$ are the interior edges of $\tau_h$ inside the support of $\phi_i$, see fig \ref{fig:two triangles} and \ref{fig:control volume}. $\pmb{n}_e$ is the unit outer normal on $e$ with fixed and arbitrary orientation, and $\pmb{n}_E$ is the unit outer normal on $E$. Since $u_h$ and $\phi$ is piecewise linear and $\pmb{\hat{K}}$ is constant on each triangle $T$ we have:
 		\begin{equation}\label{eq:big computation}
 			\begin{aligned}
 				\left \langle \pmb{K}\nabla u_h, \nabla \phi_i \right \rangle_0 &= \int_{\text{supp}(\phi_i)} (\nabla u_h)^T \pmb{K}\nabla \phi_i \ dx = \sum_{T\in \text{supp}(\phi_i)} \int_T (\nabla u_h)^T \pmb{K}\nabla \phi_i \ dx \\
@@ -119,32 +116,15 @@
 				&=- \sum_{E\in \partial \Omega_i} (\pmb{K}\nabla u_h)^T \pmb{n}_E |E| 
 			\end{aligned}
 		\end{equation}
+		Note that this last sum is a sum of integrals over the half edges of $\Omega_i$. We know from theorem \ref{lemma:L_potential} that the flux over each half edge in the L-method is given uniquely by the potential values of the three cell centers in the L-triangle.
 		Hence we have showed that the bi-linear form from the finite element method is equivalent to the flux integral in the finite volume L method. For the source terms and the mass matrix the equivalence is obvious:
 		\begin{equation}
 			\begin{aligned}
 				\left \langle \hat{I}_h  u_h,\hat{I}\phi_i \right \rangle_0 = \int_{\Omega}\hat{I}_h u_h \hat{I}_h \phi_i \ dx = u_h(x_i) \int_{\Omega_i} \ dx
 			\end{aligned}
 		\end{equation}
+		\todo[inline]{Prove equivalence for boundary cells and boundary nodes, possibly corner cells and nodes}
 	\end{proof}
-	
-	
-
-	
-		This chapter is adapted from (Cao Wolmuth \cite{https://doi.org/10.1002/num.20525},2009).
-		We prove the equivalence for the elliptic model problem \eqref{eq:elliptic model} on homogeneous media discretized by a parallelogram grid.
-	\begin{equation}\label{eq:elliptic model 2}
-		\begin{aligned}[c]
-			- \nabla \cdot \pmb{K} \nabla u(x) &= F(x) \\
-			u(x) &= 0 \\
-			\pmb{K}\nabla u(x) &= g_N
-		\end{aligned}
-		\ \ \
-		\begin{aligned}[c]
-			x &\in \Omega  \\
-			x &\in \Gamma_D \\
-			x &\in \Gamma_N
-		\end{aligned}
-	\end{equation}	
 
 	
 \end{document}

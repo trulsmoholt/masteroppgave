@@ -53,7 +53,7 @@
 	\begin{equation}
 		\begin{aligned}
 			\text{find }u^n&\in V \text{ such that }\\
-			\left \langle  u^n, v\right \rangle_0 + \tau \left \langle  \pmb{K} \nabla u^n, \nabla v \right \rangle_0 &=\tau \left \langle F^n,v\right \rangle_0 + \left \langle u^{n-1},v \right \rangle_0\\
+			\left \langle  u^n, v\right \rangle_0 + \Delta t \left \langle  \pmb{K} \nabla u^n, \nabla v \right \rangle_0 &=\Delta t \left \langle F^n,v\right \rangle_0 + \left \langle u^{n-1},v \right \rangle_0\\
 			\text{for all }v&\in V
 		\end{aligned}
 	\end{equation}
@@ -61,7 +61,7 @@
 	\begin{equation}\label{eq:heat fem disc}
 		\begin{aligned}
 			\text{find }(\pmb{u}^*)^n&\in \mathbb{R}^d \text{ such that }\\
-			\pmb{B}(\pmb{u}^*)^n+\tau\pmb{A}(\pmb{u}^*)^n &=\tau \pmb{F}^n +  \pmb{B}(\pmb{u}^*)^{n-1}
+			\pmb{B}(\pmb{u}^*)^n+\Delta t\pmb{A}(\pmb{u}^*)^n &=\Delta t \pmb{F}^n +  \pmb{B}(\pmb{u}^*)^{n-1}
 		\end{aligned}
 	\end{equation}
 	Where the \emph{stiffness matrix}, $\pmb{A}$, is as before. The matrix $\pmb{B}$ is often called the \emph{mass matrix} and is defined as $\pmb{B}_{i,j} = \int_{\Omega} \phi_i \phi_jdx$.
@@ -72,63 +72,15 @@
 	\end{equation}
 	And discretize the first term with backward Euler. Or one could make sure the semi-discrete heat equation \eqref{eq:heat equation} holds for each control volume and use the divergence theorem. Both ways, we end up with
 	\begin{equation}
-		\int_{\Omega_i} u^n \ dx - \int_{\partial \Omega_i} \pmb{K}\nabla u^n \cdot \hat{\pmb{n}}\ dx = \int_{\Omega_i} F^n \ dx + \int_{\Omega_i} u^{n-1} \ dx
+		\int_{\Omega_i} u^n \ dx - \Delta t\int_{\partial \Omega_i} \pmb{K}\nabla u^n \cdot \hat{\pmb{n}}\ dx = \Delta t \int_{\Omega_i} F^n \ dx + \int_{\Omega_i} u^{n-1} \ dx
 	\end{equation}
 	As in chapter 3 we end up with a system of equations, where superscript $V$ is just to distinct between FVM and FEM.
 	\begin{equation}\label{eq:heat fvm disc}
-		(\pmb{B}^V + \tau \pmb{A}^V)\pmb{u}^n = \tau\pmb{F}^n + \pmb{B}^V\pmb{u}^{n-1}
+		(\pmb{B}^V + \Delta t \pmb{A}^V)\pmb{u}^n = \Delta t \pmb{F}^n + \pmb{B}^V\pmb{u}^{n-1}
 	\end{equation}
 	The matrix $\pmb{A}^V$ is as in chapter 3 with $\pmb{A}^V_{i,j}= \tilde{f}_{i,j}$ is the flux between cell $i$ and $j$. The matrix $\pmb{B}^V$ is diagonal with the entry $i$ being the volumes of the volume of cell $i$.
 
-	If $\pmb{A}= \pmb{A}^V$, ie. that the discretization of the constitutive law is the same for both finite volume and finite element method. We can modify  the mass matrix and the load vector of the finite element method so that they become equivalent. To achieve this we define an interpolation operator as in (Cao and Wolmuth \cite{https://doi.org/10.1002/fld.1926},2009):
-	\begin{definition}[Piecewise global interpolator]
-		Let $\hat{I}_h$ be an operator that maps from the test space to functions that are piecewise continuous on each control volume.
-		\begin{equation*}
-			\hat{I}_h:C(\Omega)\rightarrow \left \{ v_h \in L^2(\Omega):v_h|_{\Omega_i} = K \right \}
-		\end{equation*}
-		And
-		\begin{equation*}
-			\hat{I}_h v = \sum_{i\in \mathcal{N}}v(x_i)\hat{I}_h\phi_i(x)
-		\end{equation*}
-		Where
-		\begin{equation}
-			\hat{I}_h\phi_i(x)=\left\{\begin{matrix}
-				1 & \text{if } x\in \Omega_i\\ 
-				0 & \text{otherwise}
-			\end{matrix}\right.
-		\end{equation}
-	\end{definition}
-	\begin{lemma}
-		Suppose the stiffness matrix $\pmb{A}$ arising from the finite element discretization \eqref{eq:heat fem disc} is equivalent to the corresponding matrix in the finite volume discretization \eqref{eq:heat fvm disc} for some finite volume method. Then the Galerkin discretization 
-		\begin{equation}\label{eq:lemma mass}
-			\begin{aligned}
-			\text{find }u_h^n &\in V_h\\
-			\left \langle \hat{I}_h u_h^n,\hat{I}_h v_h \right \rangle_0 +\tau \left \langle  \pmb{K} \nabla u^n_h, \nabla v_h \right \rangle_0 &= \tau \left \langle F^n,\hat{I}_h v_h \right \rangle_0 + \left \langle \hat{I}_h u_h^{n-1},\hat{I}_h v_h \right \rangle_0 \\
-			\forall v_h &\in V_h \\ 
-			\text{ where } V_h = &\left \{ u_h \in C(\overline{\Omega}) : u_{h|K} \in P_1(K) \ \forall K \in \tau_h, u|_{\partial \Omega} = 0  \right \}
-			\end{aligned}
-		\end{equation}
-		Is equivalent to the finite volume method \eqref{eq:heat fvm disc}
-	\end{lemma}
-	\begin{remark}
-		Note that the use of the $\hat{I}_h$ operator is the same as using the trapezoidal quadrature rule to compute the inner product $\left \langle \phi_i,\phi_j \right \rangle_0$ instead of evaluating it exactly.
-		This procedure is known as \textbf{mass lumping} and is shown in detail in (Baranger \cite{baranger1996connection},1995).
-	\end{remark}
-	\begin{proof}
-		Let $u_h = \sum_i u_i^* \phi_i$, and let the test functions in \eqref{eq:lemma mass} be the basis functions $\left \{ \phi_j \right \}_j$, then we have 
-		\begin{equation}
-		\sum_{i\in \mathcal{N}} (u^*)^n_i (\left \langle \hat{I}_h\phi_i,\hat{I}_h\phi_j\right \rangle_0 +\tau \left \langle  \pmb{K} \nabla \phi_i, \nabla \phi_j \right \rangle_0) = \tau \left \langle F^n,\hat{I}_h \phi_j \right \rangle_0 + \sum_{i\in \mathcal{N}} (u^*)^{n-1}_i \left \langle \hat{I}_h \phi_i,\hat{I}_h \phi_j \right \rangle_0
-		\end{equation}
-		Now we see by the definition of the piecewise interpolator that we get:
-		\begin{equation}
-			\left \langle \hat{I}_h\phi_i,\hat{I}_h\phi_j\right \rangle_0 = \int_{\text{supp}(\phi_i)\bigcap\text{supp}(\phi_j)} 1 \ dx = |\Omega_i|
-		\end{equation}
-		This means that the mass matrix is a diagonal matrix as in the finite volume method. Similarly we have 
-		\begin{equation}
-			\left \langle F^n,\hat{I}_h \phi_j \right \rangle_0 = \int_{\Omega_j}F^n \ dx
-		\end{equation}
-	\end{proof}
-	\section*{Equivalence between modified FEM and modified MPFA-L}	
+	If $\pmb{A}= \pmb{A}^V$, ie. that the discretization of the constitutive law is the same for both finite volume and finite element method. As we will see later, this is the challenging part.	
 	
 	\section*{Linearization}
 	Now we have seen that the heat equation leads to a sequence of linear systems. In the same way, we expect that our non-linear Richards' equation \eqref{eq:richards} leads to a system of non-linear equations. We start by discussing this in a general setting
@@ -229,38 +181,69 @@
 			t&=0
 		\end{aligned}
 	\end{equation}
-	Which is similar to Richards' equation \eqref{eq:richards}, only without the gravity. We proceed as before by backward euler in time and we then discretize the elliptic PDE with the Galerkin discretization with mass lumping \eqref{eq:lemma mass}. We then get:
-	\begin{equation}
+	Which is similar to Richards' equation \eqref{eq:richards}, only without the gravity. We proceed as before by backward euler in time and we then discretize the elliptic PDE with a modified finite element method with mass lumping explained in the next chapter, see definition \ref{def:piecewise_interpolator}. The reasons for using modified FEM is that it's equivalent with the MPFA-L method. Anyway we get:
+	\begin{equation}\label{eq:richards_timedisc}
 		\begin{aligned}
 			\text{find }u_h^n&\in V_h\\
-			\left \langle \hat{I}_h \theta(u_h^n),\hat{I}_h v_h \right \rangle_0 +\tau \left \langle \kappa(u_h^n) \nabla u^n_h, \nabla v_h \right \rangle_0 &= \tau \left \langle F^n,\hat{I}_h v_h \right \rangle_0 + \left \langle \hat{I}_h u_h^{n-1},\hat{I}_h v_h \right \rangle_0 \\
+			\left \langle \hat{I}_h \theta(u_h^n),\hat{I}_h v_h \right \rangle_0 +\Delta t \left \langle \kappa(u_h^n) \nabla u^n_h, \nabla v_h \right \rangle_0 &= \Delta t \left \langle F^n,\hat{I}_h v_h \right \rangle_0 + \left \langle \hat{I}_h u_h^{n-1},\hat{I}_h v_h \right \rangle_0 \\
 			\text{for all }v_h &\in V_h
 		\end{aligned}
 	\end{equation}
 	We can then linearize $\theta(u^n_h)$ with the L-method, such that we en up with: Given $u^{n-1}_h$ and $u^{j-1,n}_h$ find $u^{j,n}_h$ such that:
-	\begin{equation}
+	\begin{equation}\label{eq:L-scheme-FEM}
 		\begin{aligned}
-			\left \langle \hat{I}_h \theta(u^{n,j-1}_h),\hat{I}_h v_h \right \rangle_0 &+ L \left \langle \hat{I}_h u^{j,n}_h -  \hat{I}_h u^{j-1,n}_h,\hat{I}_h v_h \right \rangle_0 + \tau \left \langle \kappa(u_h^{j-1,n})\nabla u^{j,n}_h,\nabla v_h \right \rangle \\=\tau \left \langle F^n,\hat{I}_h v_h \right \rangle_0 &+ \left \langle \hat{I}_h u_h^{n-1},\hat{I}_h v_h \right \rangle_0 
+			\left \langle \hat{I}_h \theta(u^{n,j-1}_h),\hat{I}_h v_h \right \rangle_0 &+ L \left \langle \hat{I}_h u^{j,n}_h -  \hat{I}_h u^{j-1,n}_h,\hat{I}_h v_h \right \rangle_0 + \Delta t \left \langle \kappa(u_h^{j-1,n})\nabla u^{j,n}_h,\nabla v_h \right \rangle \\=\Delta t \left \langle F^n,\hat{I}_h v_h \right \rangle_0 &+ \left \langle \hat{I}_h u_h^{n-1},\hat{I}_h v_h \right \rangle_0 
 		\end{aligned}
 	\end{equation}
+	We can now analyse the convergence behaviour of the L-method for Richards' with this discretization as in (List, Radu, 2016,\cite{list2016study})
+	First we need assumptions on the parametrizations $\kappa $ and $\theta$:
+	\begin{itemize}
+		\item[\textbf{A 1}] The water content parametrization $\theta(\cdot)$ is monotonically increasing and Lipschitz continuos.
+		\item[\textbf{A 2}] The hydraulic conductivity parametrization $\kappa(\cdot)$ is Lipschitz continuous and uniformly bounded such that
+		$\exists \kappa_m \kappa_M$ such that $0\leq \kappa_m \leq \kappa(\theta) \leq \kappa_M < \infty \ \ \forall \theta \in \mathbb{R}$
+		\item[\textbf{A 3}] The timediscretized problem \eqref{eq:richards_timedisc} has a solution that is bounded in the $L^{\infty}(\Omega)$ norm. 
+	\end{itemize}
 	\begin{theorem}
-		Assume $\theta$ and $\kappa$ monotone ...
+		Assume \textbf{A 1 - 3} above and that the constant L is chosen such that ... Then the L-scheme \eqref{eq:L-scheme-FEM} converges linearly. 
 	\end{theorem}
-	\section*{Equivalence between MPFA-L method and modified finite element method}
-	In this section we prove the equivalence for the elliptic model problem \eqref{eq:elliptic model} on inhomogeneous media discretized by a parallelogram grid.
-	\begin{equation}\label{eq:elliptic model}
-		\begin{aligned}[c]
-			- \nabla \cdot \pmb{K} \nabla u(x) &= F(x) \\
-			u(x) &= 0 \\
-			\pmb{K}\nabla u(x) &= g_N
-		\end{aligned}
-		\ \ \
-		\begin{aligned}[c]
-			x &\in \Omega  \\
-			x &\in \Gamma_D \\
-			x &\in \Gamma_N
-		\end{aligned}
-	\end{equation}	
-	We 
+	\begin{proof}
+		Let as before $e^{n,j} = u^{n,j}-u^n$ be the iteration error.
+		We start by subtracting \eqref{eq:richards_timedisc} from \eqref{eq:L-scheme-FEM} and obtain:
+			\begin{equation}
+			\begin{aligned}
+				\left \langle \hat{I}_h \theta(u^{n,j-1}_h) - \hat{I}_h \theta(u^{n}_h),\hat{I}_h v_h \right \rangle_0 &+ L \left \langle \hat{I}_h e^{j,n}_h -  \hat{I}_h e^{j-1,n}_h,\hat{I}_h v_h \right \rangle_0 \\+ \Delta t \left \langle \kappa(u_h^{j-1,n})\nabla u^{j,n}_h-\kappa(u_h^{n})\nabla u^{n}_h,\nabla v_h \right \rangle_0 &=0 
+			\end{aligned}
+		\end{equation}
+		Now we test with $v_h=e^{j,n}$:
+		\begin{equation}
+			\begin{aligned}
+				\left \langle \hat{I}_h \theta(u^{n,j-1}_h) - \hat{I}_h \theta(u^{n}_h),\hat{I}_h e^{j,n} \right \rangle_0 &+ L \left \langle \hat{I}_h e^{j,n}_h -  \hat{I}_h e^{j-1,n}_h,\hat{I}_h e^{j,n} \right \rangle_0 \\+ \Delta t \left \langle \kappa(u_h^{j-1,n})\nabla u^{j,n}_h-\kappa(u_h^{n})\nabla u^{n}_h,\nabla e^{j,n} \right \rangle_0 &=0 
+			\end{aligned}
+		\end{equation}
+		We use the identity $\left \langle x-y,x\right \rangle = \frac{1}{2}\left \| x \right \|^2 + \frac{1}{2}\left \| x-y \right \|^2 - \frac{1}{2} \left \| y \right \|^2$ and some algebraic manipulation to obtain:
+		\begin{equation}
+			\begin{gathered}
+					\left \langle \hat{I}_h \theta(u^{n,j-1}_h) - \hat{I}_h \theta(u^{n}_h),\hat{I}_h e^{j-1,n} \right \rangle + 	\left \langle \hat{I}_h \theta(u^{n,j-1}_h) - \hat{I}_h \theta(u^{n}_h),\hat{I}_h e^{j,n} - \hat{I}_h e^{j-1,n}\right \rangle \\
+					+\frac{L}{2}\left \| \hat{I} e^{j,n}\right \|^2 + \frac{L}{2}\left \| \hat{I} e^{j,n}-\hat{I}e^{j-1,n} \right \|^2 -\frac{L}{2}\left \| \hat{I} e^{j-1,n}\right \|^2 \\
+					\Delta t \left \langle \kappa(u^{j-1,n}) \nabla e^{j,n}, \nabla e^{j,n} \right \rangle + \Delta t \left \langle (\kappa(u^{j-1,n})-\kappa(u^n))\nabla u^n,\nabla e^{n,j}\right \rangle = 0 
+			\end{gathered}
+		\end{equation}
+		Then we put some terms on the right hand side:
+		\begin{equation}
+			\begin{gathered}
+				\left \langle \hat{I}_h \theta(u^{n,j-1}_h) - \hat{I}_h \theta(u^{n}_h),\hat{I}_h e^{j-1,n} \right \rangle +\frac{L}{2}\left \| \hat{I} e^{j,n}\right \|^2 	 \\
+				 + \frac{L}{2}\left \| \hat{I} e^{j,n}-\hat{I}e^{j-1,n} \right \|^2 + 
+				\Delta t \left \langle \kappa(u^{j-1,n}) \nabla e^{j,n}, \nabla e^{j,n} \right \rangle  = \\ -\Delta t \left \langle (\kappa(u^{j-1,n})-\kappa(u^n))\nabla u^n,\nabla e^{n,j}\right \rangle \\ - \left \langle \hat{I}_h \theta(u^{n,j-1}_h) - \hat{I}_h \theta(u^{n}_h),\hat{I}_h e^{j,n} - \hat{I}_h e^{j-1,n}\right \rangle-\frac{L}{2}\left \| \hat{I} e^{j-1,n}\right \|^2
+			\end{gathered}
+		\end{equation}
+		Now we use the Cauchy Swarchz inequality, and the monotonicity $\textbf{A 1}$ on the first term. Similarly we use Cauchy Swarchz and $\textbf{A 2}$ on the first term on the right hand side. Finally we use Young's inequality on the second term on the right hand side.
+		\begin{equation}
+			\begin{gathered}
+				\frac{1}{L_{\theta}}\left \| \hat{I}_h (\theta(u^{n,j-1}-\theta(u^{n}))) \right \|^2 + \frac{L}{2}\left \| \hat{I} e^{j,n}\right \|^2 \\
+				+ \frac{L}{2}\left \| \hat{I} e^{j,n}-\hat{I}e^{j-1,n} \right \|^2 + \Delta t \kappa_m \left \| \nabla e^{n,j} \right \|^2 \\
+				\leq \frac{1}{2L} \left \| \hat{I}_h(\theta (u^{n,j-1})-\theta (u^n) ) \right \|^2  + \frac{L}{2} \left \|\hat{I}_h( e^{n,j} - e^{n,j-1}) \right \|^2
+			\end{gathered}
+		\end{equation} 
+	\end{proof}
 	
 \end{document}

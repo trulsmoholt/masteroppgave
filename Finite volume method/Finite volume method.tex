@@ -155,6 +155,12 @@ A cheap intuition behind \eqref{eq:L-criterion} is that if $|t_1^1|<|t_2^2|$, it
 	\caption{Examples of L-triangles(in red) in a domain with homogenous permability tensor.}
 	\label{fig:L-triangles}
 \end{figure}
+This observation can be stated as a theorem:
+\begin{theorem}[Cao, Y., Helmig, R. and Wohlmuth, B.I. (2009),\cite{https://doi.org/10.1002/num.20525}]
+	\label{th:L_triangulation}
+	For homogeneous media and uniform parallelogram grids, the MPFA L-method
+	has a seven-point cell stencil for the discretization of each interior cell, ie. the discretization of each cell is a seven point stencil including the center cell and the six closest potential cells, as shown in \ref{fig:paralellogram-L}.
+\end{theorem}
 As with the O-method, we end up with a system assembled from the fluxes over the half edges.
 \begin{equation}
 	\begin{aligned}
@@ -162,9 +168,11 @@ As with the O-method, we end up with a system assembled from the fluxes over the
 		\sum_{j=1}^4 (\sum_{k=1}^3 t^{k,1}_{i,j}u^k + \sum_{k=1}^3 t^{k,2}_{i,j}u^k)&= |\Omega_i|F(x_i)\\
 	\end{aligned}
 \end{equation}
-But the flux stencil across each edge is possibly smaller, often just four points as would be the case in figure \ref{fig:paralellogram-L}.
+But the flux stencil across each edge is possibly smaller, often just four points as would be the case in figure \ref{fig:paralellogram-L}. 
+\par 
+For homogenous media the L-method becomes easier to reason about. We finish this chapter with a useful theorem which we will use later:
 
-	\begin{lemma}[Cao, Y., Helmig, R. and Wohlmuth, B.I. (2009),\cite{https://doi.org/10.1002/fld.1926}]
+	\begin{lemma}[Cao, Y., Helmig, R. and Wohlmuth, B.I. (2009),\cite{https://doi.org/10.1002/fld.1926}] \label{lemma:L_potential}
 		Assume that the permability $\pmb{K}$ is homogenous on $\Omega$, then the flux trough each half edge $e$, computed by the L-method, can be written as
 		\begin{equation}
 			f_e = -\pmb{K} \nabla p \cdot \pmb{n}_e
