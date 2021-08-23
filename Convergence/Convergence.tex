@@ -1,0 +1,82 @@
+\documentclass[../Main/main.tex]{subfiles}
+
+\begin{document}
+	\graphicspath{{../Convergence/figs/}}
+	\chapter{Convergence}
+	In this chapter we will deduce convergence rate estimates for the modified finite element method from the previous chapter, \eqref{eq:modified_fem}. We will then apply the results to Richards' equation. To get started we state an extended version of Cea's lemma, where one can estimate approximation errors in the linear and bi-linear form:
+
+	\begin{lemma}[First Lemma of Strang, page 155 \cite{Knabner}]\label{lemma:strang}
+		Suppose there exists some $\alpha>0$ such that for all $h>0$ and $v\in V_h$
+		\begin{equation*}
+			\alpha \left \| v \right \|^2_1 \leq a_h(v,v) 
+		\end{equation*}
+		and let $a$ be continuous in $V\times V$. Then there exist some constant $C$ independent of $V_h$ such that
+		\begin{equation}\label{eq:strang_ineq}
+			\left \| u-u_h \right \|_1 \leq C\left \{ \inf_{v \in V_h}\left \{ \left \| u-v \right \|_1 + \sup_{w\in V_h}\frac{|a(v,w)-a_h(v,w)|}{\left \| w \right \|_1}+\sup_{w\in V_h}\frac{|l(w)-l_h(w)|}{\left \| w \right \|_1} \right \} \right \}
+		\end{equation}
+	\end{lemma}
+	From \eqref{eq:modified_fem} we see that our bi-linear form looks like
+	\begin{equation}
+		a_u(u,v) = \left \langle \hat{I}_h u, \hat{I}_h v \right \rangle_{0,\Omega} +  \left \langle \pmb{K} \nabla u, \nabla v \right \rangle_{0,\Omega} 
+	\end{equation}
+	And the linear form:
+	\begin{equation}
+		b_h(v)= \left \langle F,\hat{I}_h v \right \rangle_{0,\Omega} + \left \langle g,\hat{I}_{\Gamma_N} v \right \rangle_{0.\Gamma_N}
+	\end{equation}
+	To apply the first Lemma of Strang \ref{lemma:strang} we first show that $a_h$ is coercive:
+	\begin{equation}
+		\begin{aligned}
+			\left \| u \right \|_1^2 &= \left \| \partial_{x_1} u \right \|_0^2 + \left \| \partial_{x_2} u \right \|_0^2 + \left \| u \right \|_0^2 \\
+			&= \frac{\left \langle \nabla u,\nabla u \right \rangle}{\tau K} + \left \| u \right \|_0^2 \\
+			&\leq \frac{\left \langle \nabla u,\nabla u \right \rangle}{\tau K} + C_{\Omega} \left \langle \nabla u, \nabla u \right \rangle \\
+			&\leq (\frac{1}{\tau K} + C_{\Omega})(\left \langle \nabla u, \nabla u \right \rangle + \left \langle \hat{I}_h u, \hat{I}_h u \right \rangle)\\
+			&\leq \frac{1}{\alpha} a_h(u,u) 
+		\end{aligned}
+	\end{equation} 
+	Another important piece that must be in place for a convergence proof is the piecewise interpolation error:
+	\begin{lemma}\label{lemma:int_error}
+		For the previously defined piecewise global interpolator $\hat{I}_h$, definition \ref{def:piecewise_interpolator}, we have the estimate:
+		\begin{equation}
+			\left \| \hat{I}_h u - u \right \|_0 \leq c h \left \| u \right \|_0 \ \forall u \in H^1
+		\end{equation}
+	\end{lemma}
+	\begin{proof}
+		\todo[inline]{todo}
+		content...
+	\end{proof}
+
+	We are now ready to state the $H^1$ error estimate for the modified finite element method and thus the MPFA-L method:
+	\begin{theorem}
+		Let $u$ solve \eqref{eq:stationary_heat} and $u_h$ be the solution resulting from MPFA-L , then there exists a positive constant $C$ such that
+		\begin{equation}\
+			\left \|u_h - u \right \|_1 \leq c h (\left \| u \right \|_2 + \left \| F \right \|_0 + \left \| g \right \|_{\frac{1}{2},\Gamma_N})
+		\end{equation}
+	\end{theorem}
+	\begin{proof}
+		We start by controlling the second term on the right hand side in \eqref{eq:strang_ineq}, the truncation error in the bi-linear form:
+		\begin{equation}
+			\begin{gathered}
+				\sup_{w\in V_h} \frac{|a(v,w)-a_h(v,w)|}{\left \|w \right \|_1} \\
+				=\sup_{w\in V_h} \frac{|\left \langle v,w\right \rangle + \tau \left \langle \pmb{K} \nabla v,\nabla w \right \rangle - \left \langle \hat{I}_h v, \hat{I}_h w \right \rangle - \tau \left \langle \pmb{K} \nabla v, \nabla w \right \rangle|}{\left \| w \right \|_1} \\
+				=\sup_{w\in V_h} \frac{|\left \langle v,w\right \rangle - \left \langle \hat{I}_h v, w \right \rangle + \left \langle \hat{I}_h v, w \right \rangle - \left \langle \hat{I}_h v, \hat{I}_h w \right \rangle|}{\left \| w \right \|_1}\\
+				= \sup_{w\in V_h}\frac{|\left \langle \hat{I}_h v - v,w \right \rangle + \left \langle \hat{I}_h v, \hat{I}_h w - w \right \rangle |}{\left \| w \right \|_1} \\
+			\end{gathered}
+		\end{equation}
+		By Cauchy Swarchz inequality and lemma \ref{lemma:int_error} we get
+		\begin{equation}
+			\begin{gathered}
+				\leq \sup_{w\in V_h}\frac{ch\left \| v \right \|_0 \left \| w\right \|_0 + \left \|\hat{I}_h v\right \|_0 ch\left \|w\right \|_0}{\left \| w \right \|_1}\\
+				\leq \sup_{w\in V_h}\frac{ch\left \|w\right \|_0(\left \|v\right \|_0 + \left \|\hat{I}_h v\right \|_0)}{\left \| w \right \|_1} + \frac{ch |w|_1(\left \|v\right \|_0 + \left \|\hat{I}_h v\right \|_0) }{\left \| w \right \|_1}\\
+				=ch(\left \|v\right \|_0 + \left \|\hat{I}_h v\right \|_0)
+			\end{gathered}
+		\end{equation}
+		The third term, the linear form, can be controlled similarly:
+		\begin{equation}
+			\begin{gathered}
+				\sup_{w \in V_h} \frac{l(w)-l_h(w)}{\left \| w \right \|_1} = \sup_{w \in V_h} \frac{\left \langle F,w-\hat{I}_h w \right \rangle + \left \langle g,w-\hat{I}_{\Gamma_N} w \right \rangle_{\Gamma_N}}{\left \| w \right \|_1}\\
+				\sup_{w \in V_h} \frac{\left \|F\right \|_0 ch\left \|w\right \|_0 + \left \|g\right \|_{\frac{1}{2},\Gamma_N}\left \|\hat{I}_{\Gamma_N}w\right \|_{-\frac{1}{2},\Gamma_N}}{\left \| w \right \|_1}
+			\end{gathered}
+		\end{equation}
+		\todo[inline]{unsure about the argumentation in the Cao Wolmuth paper about neumann boundary}
+	\end{proof}
+\end{document}

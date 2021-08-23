@@ -62,7 +62,7 @@ Hence, the transmissibility is the harmonic mean of the local transmissibilities
 \end{itemize}
 But there is no such thing as a discretization that has everything, and TPFA has one big \textbf{disadvantage}
 \begin{itemize}
-	\item It is not convergent when the grid is not alligned with the principal directions of $\pmb{K}$, also called $\pmb{K}$-orthogonality. This is demonstrated in the next chapter, see \ref{fig:mesh_trapezoidal_potentia}
+	\item It is not convergent when the grid is not alligned with the principal directions of $\pmb{K}$, also called $\pmb{K}$-orthogonality.
 \end{itemize}
 \section*{O-method}
 \addcontentsline{toc}{section}{O-method}
@@ -179,4 +179,7 @@ For homogenous media the L-method becomes easier to reason about. We finish this
 		\end{equation}
 		Where $\pmb{n}_e$ is the scaled normal vector to the half edge $e$, having the same length as $e$. $p$ is a linear scalar field uniquely given by the potential values at the three cellcenters chosen by the L-method.
 	\end{lemma}
+\todo[inline]{explain how we compute transmissibility coefficients in detail for the L-method}
+\todo[inline]{compare O and L method and explain that L-method has better monotonicity properties}
+\todo[inline]{quickly mention standard ways of dealing with boundary conditions}
 \end{document}

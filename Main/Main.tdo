@@ -1,5 +1,10 @@
-\contentsline {todo}{explain some more}{31}{section*.28}%
-\contentsline {todo}{Prove equivalence for boundary cells and boundary nodes, possibly corner cells and nodes}{48}{section*.42}%
-\contentsline {todo}{show why?}{49}{section*.43}%
-\contentsline {todo}{explain and possibly prove convergence of L-scheme}{49}{section*.44}%
-\contentsline {todo}{Extend this definition with some figures and for the boundary}{50}{section*.46}%
+\contentsline {todo}{How does this definition of norm fit in? They use it in Cao Wolmuth}{13}{section*.11}%
+\contentsline {todo}{Write more about stability properties of FEM, so that one later can compare with stability properties of the FVM methods.}{25}{section*.22}%
+\contentsline {todo}{explain some more}{31}{section*.30}%
+\contentsline {todo}{explain how we compute transmissibility coefficients in detail for the L-method}{33}{section*.32}%
+\contentsline {todo}{compare O and L method and explain that L-method has better monotonicity properties}{33}{section*.33}%
+\contentsline {todo}{quickly mention standard ways of dealing with boundary conditions}{33}{section*.34}%
+\contentsline {todo}{should perhaps explain more here}{43}{section*.43}%
+\contentsline {todo}{Prove equivalence for boundary cells and boundary nodes, possibly corner cells and nodes}{49}{section*.48}%
+\contentsline {todo}{todo}{51}{section*.49}%
+\contentsline {todo}{unsure about the argumentation in the Cao Wolmuth paper about neumann boundary}{52}{section*.50}%

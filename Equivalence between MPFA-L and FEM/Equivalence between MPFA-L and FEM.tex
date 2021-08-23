@@ -2,7 +2,20 @@
 \begin{document}
 	\chapter{Equivalence between MPFA-L and FEM}
 	\graphicspath{{../Equivalence between MPFA-L and FEM/figs/}}
-	In this chapter we show equivalence between a modified MPFA-L method and a modified finite element method for time dependent problems such as  \eqref{eq:semidiscrete heat}. 
+	In this chapter we show equivalence between a modified MPFA-L method and a modified finite element method for time dependent problems such as  \eqref{eq:semidiscrete heat}. The challenge of discretizing time dependent, possibly linearized, problems boils down to solving the elliptic problem:
+	\begin{equation}\label{eq:stationary_heat}
+		\begin{aligned}[c]
+		u - \nabla \cdot \pmb{K} \nabla u &= F \\
+			u &= 0 \\
+			\pmb{K}\nabla u &= g_N
+		\end{aligned}
+		\ \ \
+		\begin{aligned}[c]
+			x &\in \Omega  \\
+			x &\in  \Gamma_D \\
+			x &\in \Gamma_N 
+		\end{aligned}
+	\end{equation}
 	We saw in the section about the MPFA-L method that the interaction regions(L-triangles) may form a triangulation of our domain.
 	Modifications are made to both methods so that we can exploit this fact and obtain equivalence. This section is adapted from (Cao, Y., Helmig, R. and Wohlmuth, B.I. (2009),\cite{https://doi.org/10.1002/num.20525})
 	\section*{Modified MPFA-L method}
@@ -11,12 +24,12 @@
 		\centering
 		\includegraphics[width=1\textwidth]{paralellogram_mesh.pdf}
 	\end{figure}
-	
+	With appropriate boundary conditions and source term.
 	As we saw in the previous chapter, one gets with the finite volume method the following relation for all control volumes $\Omega_i$:
 	\begin{equation}
-		\int_{\Omega_i} u^n \ dx - \int_{\partial \Omega_i} \pmb{K}\nabla u^n \cdot \hat{\pmb{n}}\ dx = \int_{\Omega_i} F^n \ dx + \int_{\Omega_i} u^{n-1} \ dx
+		\int_{\Omega_i} u \ dx - \int_{\partial \Omega_i} \pmb{K}\nabla u \cdot \hat{\pmb{n}}\ dx = \int_{\Omega_i} F \ dx
 	\end{equation}
-	The MPFA-L method deals with the second term, approximating the constitutive law. The other three terms are common to all control volume methods solving \eqref{eq:semidiscrete heat} and we will not make modifications or discuss them further.
+	The MPFA-L method deals with the second term, approximating the constitutive law. The other two terms are common to all control volume methods solving time dependent problems or \eqref{eq:stationary_heat} and we will not make modifications or discuss them further.
 	\par
 	We will need to modify the Neumann boundaries, this is to be expected as finite element methods have degrees of freedom on the boundaries as opposed to finite volume methods. We will also see how we could enforce Dirichlet boundary conditions in a way that is equivalent to the finite element method. On the \textbf{interior} control volumes we use the original MPFA-L method already covered.
 	\par
@@ -26,12 +39,14 @@
 		\includegraphics{modified_L_scheme.pdf}
 		\caption{Control volumes in solid lines and interaction regions in dashed lines at the boundary.}
 	\end{figure}
-	\begin{figure}[H]\label{fig:volumepartition}
+	\begin{figure}[H]
 		\centering
 		\includegraphics{volumepartition.pdf}
 		\caption{Control volume along top boundary.}
+		\label{fig:volumepartition}
 	\end{figure}
 	For the \textbf{Neumann} boundary conditions, we split the cell into two, $y_1 y_6 y_9 y_8$ as $\Omega_2$ and $y_8 y_9 y_4 y_3$ as  $\Omega_1$. For the fluxes on $\Omega_2$ we have six interaction triangles and a normal seven point stencil. For the $\Omega_1$ we compute the flux trough $\overline{y_3 y_8}$ using $\triangle x_1 x_3 x_2$, the flux trough $\overline{y_8 y_{10}}$ using $\triangle x_1 x_i x_3$, for $\overline{y_{10}y_9}$ and $\overline{y_9 y_4}$ the L triangle  $\triangle x_i x_4 x_3$ is used. Finally the Neumann boundary condition is used at the the edge $\overline{y_4 x_3}$ and $\overline{x_3 y_3}$. We are not able to eliminate the unknown value at $x_3$ and it remains a degree of freedom, which makes sense if we want equivalence with finite element method.
+	\todo[inline]{should perhaps explain more here}
 	\par
 	In the case of \textbf{Dirichlet} boundary conditions, we compute the fluxes into $y_1 y_6 y_4 y_3$ using seven L-triangles. The flux over the edge $\overline{y_3 y_1}$ are computed as the sum of the flux over $\overline{y_3 y_8}$, $\overline{y_8 y_2}$ and $\overline{y_2 y_1}$ using the L-triangles $\triangle x_1 x_3 x_2$, $\triangle x_1 x_i x_3$ and $\triangle x_1 x_7 x_i$ respectively. Similarly for the edge $\overline{y_6 y_4}$. For $\overline{y_1 y_6}$ we only use the two big L-triangles at the bottom. 
 	\par 
@@ -41,13 +56,15 @@
 	\end{equation}
 	The fluxes on the right hand side of \eqref{eq:K2} are computed as for the Neumann case.
 	\section*{Modified finite element method}
-	In this section we introduce a finite element method for solving \eqref{eq:semidiscrete heat}. We start by observing that by theorem \ref{th:L_triangulation} the L-triangles form a triangulation. The only modifications we need to make are to the linear form, we let the bi-linear form stay the same as before. We want to define an interpolation operator such that the dot products that make up the linear form become mass conservative in each control volume. We need some notation so that we can distinguish between nodes in the interior, at at cell centers along the boundary and at the boundary. In addition, corner cells introduce edge cases. 
+	In this section we introduce a finite element method for solving \eqref{eq:semidiscrete heat}. We start by observing that by theorem \ref{th:L_triangulation} the L-triangles form a triangulation $\left \{ \tau_h \right \}$. The only modifications we need to make are to the linear form, we let the bi-linear form stay the same as before. We want to define an interpolation operator such that the dot products that make up the linear form become mass conservative in each control volume. We need some notation so that we can distinguish between nodes in the interior, at at cell centers along the boundary and at the boundary. In addition, corner cells introduce edge cases. 
 	\par 
-	Let $\mathcal{N}_h^*$ be a set of indexes corresponding to all interior nodes of $\tau_h$, which are also the cell centers of the control volume mesh. This index set contains two disjoint sets $\mathcal{N}_h^* = \mathcal{N}_h^b \bigcup \mathcal{N}_h^i$, where superscript $i$ denotes the cell centers of the interior cells. The boundary nodes consists of the set $\mathcal{N}_h^N \bigcup \mathcal{N}_h^D$, where $N$ and $D$ represent neumann and dirichlet boundary nodes. The rest of the notation are explained in figure \ref{fig:meshWithNodes}
-	\begin{figure}[H]\label{fig:mesWithNodes}
+	Let $\mathcal{N}_h^*$ be a set of indexes corresponding to all interior nodes of $\left \{ \tau_h \right \}$, which are also the cell centers of the control volume mesh. This index set contains two disjoint sets $\mathcal{N}_h^* = \mathcal{N}_h^b \bigcup \mathcal{N}_h^i$, where superscript $i$ denotes the cell centers of the interior cells and $b$ the boundary cells. $\mathcal{N}^b_h$ are further subdivided as we see in figure \ref{fig:mesWithNodes}. The boundary nodes consists of the set $\mathcal{N}_h^N \bigcup \mathcal{N}_h^D$, where $N$ and $D$ represent neumann and dirichlet boundary nodes. The rest of the notation are explained in figure \ref{fig:mesWithNodes}
+	\begin{figure}[H]
 		\centering
 		\includegraphics{meshWithNodes.pdf}
-		\caption{A paralellogram mesh with finite element triangles in dotted lines and control volumes in solid lines.}
+
+		\caption{A paralellogram mesh with finite element triangles in dotted lines and control volumes in solid lines. In this case we have a pure Neumann problem.}
+		\label{fig:mesWithNodes}
 	\end{figure}
 	\par 
 	As before one denotes by $V_h$ the linear ansatz space, see definition \ref{def:linear ansatz}. Similarly $\phi_i$ is the standard nodal basis function, where $i \in \mathcal{N}_h \setminus \mathcal{N}_h^D$.
@@ -75,25 +92,27 @@
 			\item On the corners there are special definitions, see (Cao Wolmuth \cite{https://doi.org/10.1002/num.20525},2009)
 		\end{itemize} 
 	\end{definition}
-	
+	Let $\hat{I}_{\Gamma_N} = \hat{I}_{h}|_{\Gamma_N}$ be the trace of the interpolation operator on the neumann boundary.
 	The finite element method we end up with reads as follows:
 	\begin{equation} \label{eq:modified_fem}
 		\begin{aligned}
-			\text{find }u_h^n\in&V_h \text{ such that}\\
-			\left \langle \hat{I}_h u_h^n,\hat{I}_h v_h \right \rangle_0 + \tau  \left \langle \pmb{K} \nabla u_h^n,\nabla v_h \right \rangle_0 =&\tau \left \langle F^n,\hat{I}_h v_h \right \rangle_{0} + \left \langle \hat{I}_h u_h^{n-1},\hat{I}_h v_h\right \rangle_0 + \left \langle g,\hat{I}_h v_h \right \rangle_{0} 
+			\text{find }u_h\in&V_h \text{ such that}\\
+			\left \langle \hat{I}_h u_h,\hat{I}_h v_h \right \rangle_{0,\Omega} +   \left \langle \pmb{K} \nabla u_h,\nabla v_h \right \rangle_{0,\Omega} =& \left \langle F,\hat{I}_h v_h \right \rangle_{0,\Omega} + \left \langle g,\hat{I}_{\Gamma_N} v_h \right \rangle_{0,\Gamma_N} 
 		\end{aligned}
 	\end{equation}
 	The key takeaway here is that the inner products become conservative in the control volumes. This is often referred to as \emph{mass lumping}, see for \cite{baranger1996connection} for examples.  
 	\par
-		\begin{figure}[H]\label{fig:control volume}
+		\begin{figure}[H]
 		\centering
 		\includegraphics[width=1\textwidth]{Control volume.pdf}
 		\caption{The support of $\phi_4$}
+		\label{fig:control volume}
 	\end{figure}
-	\begin{figure}[H]\label{fig:two triangles}
+	\begin{figure}[H]
 		\centering
 		\includegraphics{two triangles.pdf}
 		\caption{Notation in the proof}
+		\label{fig:two triangles}
 	\end{figure}
 	Now we can state the equivalence theorem:
 	\begin{theorem}
@@ -122,6 +141,10 @@
 			\begin{aligned}
 				\left \langle \hat{I}_h  u_h,\hat{I}\phi_i \right \rangle_0 = \int_{\Omega}\hat{I}_h u_h \hat{I}_h \phi_i \ dx = u_h(x_i) \int_{\Omega_i} \ dx
 			\end{aligned}
+		\end{equation}
+		And 
+		\begin{equation}
+			\left \langle F,\hat{I}_h v_h \right \rangle = \int_{\Omega_i} F \ dx
 		\end{equation}
 		\todo[inline]{Prove equivalence for boundary cells and boundary nodes, possibly corner cells and nodes}
 	\end{proof}

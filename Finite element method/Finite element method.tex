@@ -115,7 +115,7 @@
 	\begin{theorem}[Trace theorem, (Evans \cite{evans10}, chapter 5)]
 		Assume $U$ is bounded and $\partial U$ is $C^1$. Then there exists a bounded, linear operator
 		\begin{equation*}
-			T: W^{1,p}(U) \rightarrow L^p(U)
+			T: W^{1,p}(U) \rightarrow L^p(\partial U)
 		\end{equation*}
 		Such that
 		\begin{enumerate}
@@ -130,8 +130,19 @@
 			u\in W^{1,p}_0 \Leftrightarrow  Tu=0 \textit{ on }\partial U
 		\end{equation}
 	\end{theorem}
-	Now we have the theory we need to study elliptic boundary value problems and their weak solutions.
 	
+	\begin{remark}
+		For $p=2$ we often denote the image of $T$ as:
+		\begin{equation}
+			 H^{\frac{1}{2}}(\Omega) = T(H^1(\Omega))
+		\end{equation}
+		And define the norm
+		\begin{equation}
+			\left \|f\right \|_{\frac{1}{2},\partial \Omega} = \inf_{w\in H^1(\Omega), \ Tw=f} \left \| w \right \|_1
+		\end{equation}
+	\end{remark}
+	\todo[inline]{How does this definition of norm fit in? They use it in Cao Wolmuth}
+	Now we have the theory we need to study elliptic boundary value problems and their weak solutions.
 	\section*{The variational problem}
 	\addcontentsline{toc}{section}{The variational problem}
 	We obtain the \textbf{variational formulation} by multiplying \eqref{eq:poisson} by a function $v$ in a suitable space $V$ called the \emph{test space}, integrating over $\Omega$ and using integration by parts/divergence theorem.
@@ -548,7 +559,7 @@
 	\begin{equation*}
 		\left \| u_h \right \|_{H_0^1} \leq \frac{1}{C_c}\left \| b \right \|_{H_0^{1'}}
 	\end{equation*}
-
+	\todo[inline]{Write more about stability properties of FEM, so that one later can compare with stability properties of the FVM methods.}
 	
 	
 

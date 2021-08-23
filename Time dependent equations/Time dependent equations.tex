@@ -2,7 +2,7 @@
 
 \begin{document}
 	\graphicspath{{../Time dependent equations/figs/}}
-	\chapter{Richards' 2}
+	\chapter{Time evolving equations}
 	In this chapter we discuss numerical solving algorithms for parabolic equations with non-linearities, such as Richards' equation \eqref{eq:richards}. 
 	\section*{Time discretization}
 	We start by considering the most famous parabolic equation, namely the heat equation:
@@ -30,10 +30,10 @@
 		\end{aligned}
 	\end{equation}
 	
-	We expect low regularity in time, so there is not much gained by using a higher order discretization in time. The two choices we have left is the forward euler(explicit) and the backward euler(implicit). The obvious choice is backward euler, as it is stable for long timesteps. This can be understood intuitively by considering the parabolic nature of the equation, the signals spread trough the domain instantaneously. A careful analysis time discretization of parabolic equations is done in (\cite{Knabner}, chapter 7).  Here it is shown that explicit schemes only are stable for time-step proportional to the square of the space step, whereas fully implicit schemes are stable for all time-steps. \par  Let $\left \{ t_n \right \}_n$ be a sequence of $N+1$ evenly spaced numbers from $0$ to $T$ and let $\Delta t = \frac{T}{N}$ be the time-step Then we state the semi-discrete version of \eqref{eq:heat equation} by exchanging the time derivative by a difference quotient $(\partial_t u)^n = \frac{u^n-u^{n-1}}{\Delta t}$. Note that this difference quotient is implicit because $u^n$ is not explicitly given by terms of the previous time-step
+	We expect low regularity in time, so there is not much gained by using a higher order discretization in time. The two choices we have left is the forward euler(explicit) and the backward euler(implicit). The obvious choice is backward euler, as it is stable for long timesteps. This can be understood intuitively by considering the parabolic nature of the equation, the signals spread trough the domain instantaneously. A careful analysis time discretization of parabolic equations is done in (\cite{Knabner}, chapter 7).  Here it is shown that explicit schemes only are stable for time-step proportional to the square of the space step, whereas fully implicit schemes are stable for all time-steps. \par  Let $\left \{ t_n \right \}_n$ be a sequence of $N+1$ evenly spaced numbers from $0$ to $T$ and let $\tau = \frac{T}{N}$ be the time-step. Then we state the semi-discrete version of \eqref{eq:heat equation} by exchanging the time derivative by a difference quotient $(\partial_t u)^n = \frac{u^n-u^{n-1}}{\tau}$. Note that this difference quotient is implicit because $u^n$ is not explicitly given by terms of the previous time-step
 	\begin{equation}\label{eq:semidiscrete heat}
 		\begin{aligned}[c]
-			u^n - \Delta t \nabla \cdot \pmb{K} \nabla u^n &= \Delta t F^n+u^{n-1}\\
+			u^n - \tau \nabla \cdot \pmb{K} \nabla u^n &= \tau F^n+u^{n-1}\\
 			u^n &= 0 \\
 			\pmb{K}\nabla u &= g_N\\
 			u^0 &= u_0
@@ -53,7 +53,7 @@
 	\begin{equation}
 		\begin{aligned}
 			\text{find }u^n&\in V \text{ such that }\\
-			\left \langle  u^n, v\right \rangle_0 + \Delta t \left \langle  \pmb{K} \nabla u^n, \nabla v \right \rangle_0 &=\Delta t \left \langle F^n,v\right \rangle_0 + \left \langle u^{n-1},v \right \rangle_0\\
+			\left \langle  u^n, v\right \rangle_0 + \tau \left \langle  \pmb{K} \nabla u^n, \nabla v \right \rangle_0 &=\tau \left \langle F^n,v\right \rangle_0 + \left \langle u^{n-1},v \right \rangle_0\\
 			\text{for all }v&\in V
 		\end{aligned}
 	\end{equation}
@@ -61,7 +61,7 @@
 	\begin{equation}\label{eq:heat fem disc}
 		\begin{aligned}
 			\text{find }(\pmb{u}^*)^n&\in \mathbb{R}^d \text{ such that }\\
-			\pmb{B}(\pmb{u}^*)^n+\Delta t\pmb{A}(\pmb{u}^*)^n &=\Delta t \pmb{F}^n +  \pmb{B}(\pmb{u}^*)^{n-1}
+			\pmb{B}(\pmb{u}^*)^n+\tau\pmb{A}(\pmb{u}^*)^n &=\tau \pmb{F}^n +  \pmb{B}(\pmb{u}^*)^{n-1}
 		\end{aligned}
 	\end{equation}
 	Where the \emph{stiffness matrix}, $\pmb{A}$, is as before. The matrix $\pmb{B}$ is often called the \emph{mass matrix} and is defined as $\pmb{B}_{i,j} = \int_{\Omega} \phi_i \phi_jdx$.
@@ -72,13 +72,13 @@
 	\end{equation}
 	And discretize the first term with backward Euler. Or one could make sure the semi-discrete heat equation \eqref{eq:heat equation} holds for each control volume and use the divergence theorem. Both ways, we end up with
 	\begin{equation}
-		\int_{\Omega_i} u^n \ dx - \Delta t\int_{\partial \Omega_i} \pmb{K}\nabla u^n \cdot \hat{\pmb{n}}\ dx = \Delta t \int_{\Omega_i} F^n \ dx + \int_{\Omega_i} u^{n-1} \ dx
+		\int_{\Omega_i} u^n \ dx - \tau\int_{\partial \Omega_i} \pmb{K}\nabla u^n \cdot \hat{\pmb{n}}\ dx = \tau \int_{\Omega_i} F^n \ dx + \int_{\Omega_i} u^{n-1} \ dx
 	\end{equation}
 	As in chapter 3 we end up with a system of equations, where superscript $V$ is just to distinct between FVM and FEM.
 	\begin{equation}\label{eq:heat fvm disc}
-		(\pmb{B}^V + \Delta t \pmb{A}^V)\pmb{u}^n = \Delta t \pmb{F}^n + \pmb{B}^V\pmb{u}^{n-1}
+		(\pmb{B}^V + \tau \pmb{A}^V)\pmb{u}^n = \tau \pmb{F}^n + \pmb{B}^V\pmb{u}^{n-1}
 	\end{equation}
-	The matrix $\pmb{A}^V$ is as in chapter 3 with $\pmb{A}^V_{i,j}= \tilde{f}_{i,j}$ is the flux between cell $i$ and $j$. The matrix $\pmb{B}^V$ is diagonal with the entry $i$ being the volumes of the volume of cell $i$.
+	The matrix $\pmb{A}^V$ is as in chapter 3, with the fluxes trough the edges of cell $i$ described by the $j$th row of $\pmb{A}^V$. The matrix $\pmb{B}^V$ is diagonal with the entry $i$ being the volumes of the volume of cell $i$.
 
 	If $\pmb{A}= \pmb{A}^V$, ie. that the discretization of the constitutive law is the same for both finite volume and finite element method. As we will see later, this is the challenging part.	
 	
@@ -185,68 +185,76 @@
 	\begin{equation}\label{eq:richards_timedisc}
 		\begin{aligned}
 			\text{find }u_h^n&\in V_h\\
-			\left \langle \hat{I}_h \theta(u_h^n),\hat{I}_h v_h \right \rangle_0 +\Delta t \left \langle \kappa \nabla u^n_h, \nabla v_h \right \rangle_0 &= \Delta t \left \langle F^n,\hat{I}_h v_h \right \rangle_0 + \left \langle \hat{I}_h u_h^{n-1},\hat{I}_h v_h \right \rangle_0 \\
+			\left \langle \hat{I}_h \theta(u_h^n),\hat{I}_h v_h \right \rangle_0 +\tau \left \langle \kappa \nabla u^n_h, \nabla v_h \right \rangle_0 &= \tau \left \langle F^n,\hat{I}_h v_h \right \rangle_0 + \left \langle \hat{I}_h u_h^{n-1},\hat{I}_h v_h \right \rangle_0 \\
 			\text{for all }v_h &\in V_h
 		\end{aligned}
 	\end{equation}
-	We can then linearize $\theta(u^n_h)$ with the L-method, such that we en up with: Given $u^{n-1}_h$ and $u^{j-1,n}_h$ find $u^{j,n}_h$ such that:
+	We can then linearize $\theta(u^n_h)$ with the L-method, such that we en up with: Given $u^{n-1}_h$ and $u^{n,j-1}_h$ find $u^{n,j}_h$ such that:
 	\begin{equation}\label{eq:L-scheme-FEM}
 		\begin{aligned}
-			\left \langle \hat{I}_h \theta(u^{n,j-1}_h),\hat{I}_h v_h \right \rangle_0 &+ L \left \langle \hat{I}_h u^{j,n}_h -  \hat{I}_h u^{j-1,n}_h,\hat{I}_h v_h \right \rangle_0 + \Delta t \left \langle \kappa \nabla u^{j,n}_h,\nabla v_h \right \rangle \\=\Delta t \left \langle F^n,\hat{I}_h v_h \right \rangle_0 &+ \left \langle \hat{I}_h u_h^{n-1},\hat{I}_h v_h \right \rangle_0 
+			\left \langle \hat{I}_h \theta(u^{n,j-1}_h),\hat{I}_h v_h \right \rangle_0 &+ L \left \langle \hat{I}_h u^{n,j}_h -  \hat{I}_h u^{n,j-1}_h,\hat{I}_h v_h \right \rangle_0 + \tau \left \langle \kappa \nabla u^{n,j}_h,\nabla v_h \right \rangle \\=\tau \left \langle F^n,\hat{I}_h v_h \right \rangle_0 &+ \left \langle \hat{I}_h u_h^{n-1},\hat{I}_h v_h \right \rangle_0 
 		\end{aligned}
 	\end{equation}
-	We can now analyse the convergence behaviour of the L-method for Richards' with this discretization as in (List, Radu, 2016,\cite{list2016study})
+	We can now analyse the convergence behaviour of the L-method for Richards' with this discretization as in (List, Radu, 2016,\cite{list2016study}).
 	First we need assumptions on the parametrizations $\kappa $ and $\theta$:
 	\begin{itemize}
 		\item[\textbf{A 1}] The water content parametrization $\theta(\cdot)$ is monotonically increasing with $sup|\theta'| = L_{\theta}$ and Lipschitz continuos.
 		\item[\textbf{A 2}] The permeability $\kappa$ is positive. 
 	\end{itemize}
 	\begin{theorem}
-		Assume \textbf{A 1 - 3} above and that the constant L is chosen such that ... Then the L-scheme \eqref{eq:L-scheme-FEM} converges linearly. 
+		Assume \textbf{A 1} and \textbf{A 2} above and that the constant L is chosen such that $L \geq L_{\theta}$. Then the L-scheme \eqref{eq:L-scheme-FEM} converges linearly. 
 	\end{theorem}
 	\begin{proof}
 		Let as before $e^{n,j} = u^{n,j}-u^n$ be the iteration error.
 		We start by subtracting \eqref{eq:richards_timedisc} from \eqref{eq:L-scheme-FEM} and obtain:
 			\begin{equation}
 			\begin{aligned}
-				\left \langle \hat{I}_h \theta(u^{n,j-1}_h) - \hat{I}_h \theta(u^{n}_h),\hat{I}_h v_h \right \rangle_0 &+ L \left \langle \hat{I}_h e^{j,n}_h -  \hat{I}_h e^{j-1,n}_h,\hat{I}_h v_h \right \rangle_0 \\+ \Delta t \left \langle \kappa (\nabla u^{j,n}_h-\nabla u^{n}_h),\nabla v_h \right \rangle_0 &=0 
+				\left \langle \hat{I}_h \theta(u^{n,j-1}_h) - \hat{I}_h \theta(u^{n}_h),\hat{I}_h v_h \right \rangle_0 &+ L \left \langle \hat{I}_h e^{n,j}_h -  \hat{I}_h e^{n,j-1}_h,\hat{I}_h v_h \right \rangle_0 \\+ \tau \left \langle \kappa (\nabla u^{n,j}_h-\nabla u^{n}_h),\nabla v_h \right \rangle_0 &=0 
 			\end{aligned}
 		\end{equation}
-		Now we test with $v_h=e^{j,n}$:
+		Now we test with $v_h=e^{n,j}$:
 		\begin{equation}
 			\begin{aligned}
-				\left \langle \hat{I}_h \theta(u^{n,j-1}_h) - \hat{I}_h \theta(u^{n}_h),\hat{I}_h e^{j,n} \right \rangle_0 &+ L \left \langle \hat{I}_h e^{j,n}_h -  \hat{I}_h e^{j-1,n}_h,\hat{I}_h e^{j,n} \right \rangle_0 \\+ \Delta t \left \langle \kappa\nabla e^{j,n},\nabla e^{j,n} \right \rangle_0 &=0 
+				\left \langle \hat{I}_h \theta(u^{n,j-1}_h) - \hat{I}_h \theta(u^{n}_h),\hat{I}_h e^{n,j} \right \rangle_0 &+ L \left \langle \hat{I}_h e^{n,j}_h -  \hat{I}_h e^{n,j-1}_h,\hat{I}_h e^{n,j} \right \rangle_0 \\+ \tau \left \langle \kappa\nabla e^{n,j},\nabla e^{n,j} \right \rangle_0 &=0 
 			\end{aligned}
 		\end{equation}
 		We use the identity $\left \langle x-y,x\right \rangle = \frac{1}{2}\left \| x \right \|^2 + \frac{1}{2}\left \| x-y \right \|^2 - \frac{1}{2} \left \| y \right \|^2$ and some algebraic manipulation to obtain:
 		\begin{equation}
 			\begin{gathered}
-					\left \langle \hat{I}_h \theta(u^{n,j-1}_h) - \hat{I}_h \theta(u^{n}_h),\hat{I}_h e^{j-1,n} \right \rangle + 	\left \langle \hat{I}_h \theta(u^{n,j-1}_h) - \hat{I}_h \theta(u^{n}_h),\hat{I}_h e^{j,n} - \hat{I}_h e^{j-1,n}\right \rangle \\
-					+\frac{L}{2}\left \| \hat{I} e^{j,n}\right \|^2 + \frac{L}{2}\left \| \hat{I} e^{j,n}-\hat{I}e^{j-1,n} \right \|^2 -\frac{L}{2}\left \| \hat{I} e^{j-1,n}\right \|^2 \\
-				+ \Delta t \left \langle \kappa \nabla e^{j,n},\nabla e^{j,n} \right \rangle_0 =0 
+					\left \langle \hat{I}_h \theta(u^{n,j-1}_h) - \hat{I}_h \theta(u^{n}_h),\hat{I}_h e^{n,j-1} \right \rangle + 	\left \langle \hat{I}_h \theta(u^{n,j-1}_h) - \hat{I}_h \theta(u^{n}_h),\hat{I}_h e^{n,j} - \hat{I}_h e^{n,j-1}\right \rangle \\
+					+\frac{L}{2}\left \| \hat{I} e^{n,j}\right \|^2 + \frac{L}{2}\left \| \hat{I} e^{n,j}-\hat{I}e^{n,j-1} \right \|^2 -\frac{L}{2}\left \| \hat{I} e^{n,j-1}\right \|^2 \\
+				+ \tau \left \langle \kappa \nabla e^{n,j},\nabla e^{n,j} \right \rangle_0 =0 
 			\end{gathered}
 		\end{equation}
 		Then we put some terms on the right hand side:
 		\begin{equation}
 			\begin{gathered}
-				\left \langle \hat{I}_h \theta(u^{n,j-1}_h) - \hat{I}_h \theta(u^{n}_h),\hat{I}_h e^{j-1,n} \right \rangle +\frac{L}{2}\left \| \hat{I} e^{j,n}\right \|^2 	 \\
-				 + \frac{L}{2}\left \| \hat{I} e^{j,n}-\hat{I}e^{j-1,n} \right \|^2 + 
-				\Delta t \left \langle \kappa\nabla e^{j,n},\nabla e^{j,n} \right \rangle_0  = \\ - \left \langle \hat{I}_h \theta(u^{n,j-1}_h) - \hat{I}_h \theta(u^{n}_h),\hat{I}_h e^{j,n} - \hat{I}_h e^{j-1,n}\right \rangle+\frac{L}{2}\left \| \hat{I} e^{j-1,n}\right \|^2
+				\left \langle \hat{I}_h \theta(u^{n,j-1}_h) - \hat{I}_h \theta(u^{n}_h),\hat{I}_h e^{n,j-1} \right \rangle +\frac{L}{2}\left \| \hat{I} e^{n,j}\right \|^2 	 \\
+				 + \frac{L}{2}\left \| \hat{I} e^{n,j}-\hat{I}e^{n,j-1} \right \|^2 + 
+				\tau \left \langle \kappa\nabla e^{n,j},\nabla e^{n,j} \right \rangle_0  = \\ - \left \langle \hat{I}_h \theta(u^{n,j-1}_h) - \hat{I}_h \theta(u^{n}_h),\hat{I}_h e^{n,j} - \hat{I}_h e^{n,j-1}\right \rangle+\frac{L}{2}\left \| \hat{I} e^{n,j-1}\right \|^2
 			\end{gathered}
 		\end{equation}
-		Now we use the Cauchy Swarchz inequality, and the monotonicity $\textbf{A 1}$ on the first term. Similarly we use Cauchy Swarchz and $\textbf{A 2}$ on the first term on the right hand side. Finally we use Young's inequality on the second term on the right hand side.
+		Now we use the Cauchy Swarchz inequality, and the monotonicity $\textbf{A 1}$ on the first term. Similarly we use Cauchy Swarchz and $\textbf{A 2}$ on the second term. Finally we use Young's inequality on the first term on the right hand side.
 		\begin{equation}
 			\begin{gathered}
-				\frac{1}{L_{\theta}}\left \| \hat{I}_h (\theta(u^{n,j-1}-\theta(u^{n}))) \right \|^2 + \frac{L}{2}\left \| \hat{I} e^{j,n}\right \|^2 \\
-				+ \frac{L}{2}\left \| \hat{I} e^{j,n}-\hat{I}e^{j-1,n} \right \|^2 + \Delta t \kappa_m \left \| \nabla e^{n,j} \right \|^2 \\
-				\leq \frac{1}{2L} \left \| \hat{I}_h(\theta (u^{n,j-1})-\theta (u^n) ) \right \|^2  + \frac{L}{2} \left \|\hat{I}_h( e^{n,j} - e^{n,j-1}) \right \|^2
+				\frac{1}{L_{\theta}}\left \| \hat{I}_h (\theta(u^{n,j-1}-\theta(u^{n}))) \right \|^2 + \frac{L}{2}\left \| \hat{I} e^{n,j}\right \|^2 \\
+				+ \frac{L}{2}\left \| \hat{I} e^{n,j}-\hat{I}e^{n,j-1} \right \|^2 + \tau \kappa_m \left \| \nabla e^{n,j} \right \|^2 \\
+				\leq \frac{1}{2L} \left \| \hat{I}_h(\theta (u^{n,j-1})-\theta (u^n) ) \right \|^2  + \frac{L}{2} \left \|\hat{I}_h( e^{n,j} - e^{n,j-1}) \right \|^2+\frac{L}{2}\left \| \hat{I} e^{n,j-1}\right \|^2
 			\end{gathered}
 		\end{equation} 
 		Next we can use Poincare inequality:
-		\begin{equation}
+		\begin{equation}\label{eq:L-proof}
 			\begin{gathered}
-				\frac{L}{2}\left \| \hat{I}_h e^{n,j}\right\|^2 + \frac{\Delta t \kappa_m}{C_{\Omega}} \left \|e^{n,j} \right \|^2 \leq (\frac{1}{2L} - \frac{1}{L_{\theta}}) \left \| \hat{I}_h(\theta (u^{n,j-1}-\theta (u^n))) \right \|^2 +\frac{L}{2}\left \| \hat{I} e^{j-1,n}\right \|^2
+				\frac{L}{2}\left \| \hat{I}_h e^{n,j}\right\|^2 + \frac{\tau \kappa_m}{C_{\Omega}} \left \|e^{n,j} \right \|^2 \leq (\frac{1}{2L} - \frac{1}{L_{\theta}}) \left \| \hat{I}_h(\theta (u^{n,j-1}-\theta (u^n))) \right \|^2 +\frac{L}{2}\left \| \hat{I} e^{n,j-1}\right \|^2
 			\end{gathered}
+		\end{equation}
+		Since $L_{\theta} \leq L$ we can remove the first term on the right side from the inequality. We can also use the lemma \ref{lemma:int_error} about the interpolation error:
+		\begin{equation}
+			\left \| \hat{I}_h e^{n,j} \right \|^2 = \left \| \hat{I}_h e^{n,j} - e^{n,j} + e^{n,j} \right \|^2 \leq (ch\left \| e^{n,j}\right \| + \left \| e^{n,j} \right \|)^2=(1+ch)^2\left \| e^{n,j} \right \|^2
+		\end{equation}
+		Now \eqref{eq:L-proof} becomes:
+		\begin{equation}
+			(\frac{L}{2}+\frac{\tau \kappa_m }{C_{\Omega}(1 + ch)^2})\left \| \hat{I}_h e^{n,j} \right \|^2 \leq \frac{L}{2} \left \| \hat{I}_h e^{n,j-1}\right \|^2
 		\end{equation}
 	\end{proof}
 	
