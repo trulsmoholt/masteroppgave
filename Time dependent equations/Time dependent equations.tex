@@ -9,7 +9,7 @@
 	
 	\begin{equation}\label{eq:heat equation}
 		\begin{aligned}[c]
-			\partial_t u - \nabla \cdot \pmb{K} \nabla u &= F \\
+			\partial_t u - \nabla \cdot \pmb{K} \nabla u &= q \\
 			u &= 0 \\
 			\pmb{K}\nabla u &= g_N\\
 			u &= u_0
@@ -33,7 +33,7 @@
 	We expect low regularity in time, so there is not much gained by using a higher order discretization in time. The two choices we have left is the forward euler(explicit) and the backward euler(implicit). The obvious choice is backward euler, as it is stable for long timesteps. This can be understood intuitively by considering the parabolic nature of the equation, the signals spread trough the domain instantaneously. A careful analysis time discretization of parabolic equations is done in (\cite{Knabner}, chapter 7).  Here it is shown that explicit schemes only are stable for time-step proportional to the square of the space step, whereas fully implicit schemes are stable for all time-steps. \par  Let $\left \{ t_n \right \}_n$ be a sequence of $N+1$ evenly spaced numbers from $0$ to $T$ and let $\tau = \frac{T}{N}$ be the time-step. Then we state the semi-discrete version of \eqref{eq:heat equation} by exchanging the time derivative by a difference quotient $(\partial_t u)^n = \frac{u^n-u^{n-1}}{\tau}$. Note that this difference quotient is implicit because $u^n$ is not explicitly given by terms of the previous time-step
 	\begin{equation}\label{eq:semidiscrete heat}
 		\begin{aligned}[c]
-			u^n - \tau \nabla \cdot \pmb{K} \nabla u^n &= \tau F^n+u^{n-1}\\
+			u^n - \tau \nabla \cdot \pmb{K} \nabla u^n &= \tau q^n+u^{n-1}\\
 			u^n &= 0 \\
 			\pmb{K}\nabla u &= g_N\\
 			u^0 &= u_0
@@ -53,7 +53,7 @@
 	\begin{equation}
 		\begin{aligned}
 			\text{find }u^n&\in V \text{ such that }\\
-			\left \langle  u^n, v\right \rangle_0 + \tau \left \langle  \pmb{K} \nabla u^n, \nabla v \right \rangle_0 &=\tau \left \langle F^n,v\right \rangle_0 + \left \langle u^{n-1},v \right \rangle_0\\
+			\left \langle  u^n, v\right \rangle_0 + \tau \left \langle  \pmb{K} \nabla u^n, \nabla v \right \rangle_0 &=\tau \left \langle q^n,v\right \rangle_0 + \left \langle u^{n-1},v \right \rangle_0\\
 			\text{for all }v&\in V
 		\end{aligned}
 	\end{equation}
@@ -61,22 +61,22 @@
 	\begin{equation}\label{eq:heat fem disc}
 		\begin{aligned}
 			\text{find }(\pmb{u}^*)^n&\in \mathbb{R}^d \text{ such that }\\
-			\pmb{B}(\pmb{u}^*)^n+\tau\pmb{A}(\pmb{u}^*)^n &=\tau \pmb{F}^n +  \pmb{B}(\pmb{u}^*)^{n-1}
+			\pmb{B}(\pmb{u}^*)^n+\tau\pmb{A}(\pmb{u}^*)^n &=\tau \pmb{q}^n +  \pmb{B}(\pmb{u}^*)^{n-1}
 		\end{aligned}
 	\end{equation}
 	Where the \emph{stiffness matrix}, $\pmb{A}$, is as before. The matrix $\pmb{B}$ is often called the \emph{mass matrix} and is defined as $\pmb{B}_{i,j} = \int_{\Omega} \phi_i \phi_jdx$.
 	\subsection*{Finite volume approach}
 	As before we divide our domain $\Omega$ into control volumes $\left \{ \Omega_i \right \}_i$. One could write the heat equation\eqref{eq:heat equation} in conservation form on each control volume
-	\begin{equation}
-		\partial_t\int_{\Omega_i}u \ dx -\int_{\partial \Omega_i} \pmb{K}\nabla u \cdot \hat{\pmb{n}}\ dx = \int_{\Omega_i} F \ dx
+	\begin{equation}\label{eq:semidiscrete FVM}
+		\partial_t\int_{\Omega_i}u \ dx -\int_{\partial \Omega_i} \pmb{K}\nabla u \cdot \hat{\pmb{n}}\ dx = \int_{\Omega_i} q \ dx
 	\end{equation}
 	And discretize the first term with backward Euler. Or one could make sure the semi-discrete heat equation \eqref{eq:heat equation} holds for each control volume and use the divergence theorem. Both ways, we end up with
 	\begin{equation}
-		\int_{\Omega_i} u^n \ dx - \tau\int_{\partial \Omega_i} \pmb{K}\nabla u^n \cdot \hat{\pmb{n}}\ dx = \tau \int_{\Omega_i} F^n \ dx + \int_{\Omega_i} u^{n-1} \ dx
+		\int_{\Omega_i} u^n \ dx - \tau\int_{\partial \Omega_i} \pmb{K}\nabla u^n \cdot \hat{\pmb{n}}\ dx = \tau \int_{\Omega_i} q^n \ dx + \int_{\Omega_i} u^{n-1} \ dx
 	\end{equation}
 	As in chapter 3 we end up with a system of equations, where superscript $V$ is just to distinct between FVM and FEM.
 	\begin{equation}\label{eq:heat fvm disc}
-		(\pmb{B}^V + \tau \pmb{A}^V)\pmb{u}^n = \tau \pmb{F}^n + \pmb{B}^V\pmb{u}^{n-1}
+		(\pmb{B}^V + \tau \pmb{A}^V)\pmb{u}^n = \tau \pmb{q}^n + \pmb{B}^V\pmb{u}^{n-1}
 	\end{equation}
 	The matrix $\pmb{A}^V$ is as in chapter 3, with the fluxes trough the edges of cell $i$ described by the $j$th row of $\pmb{A}^V$. The matrix $\pmb{B}^V$ is diagonal with the entry $i$ being the volumes of the volume of cell $i$.
 
@@ -134,7 +134,7 @@
 	\end{equation}
 	And then update the current iterate with $\pmb{x}_j = \pmb{x}_{j-1} + \pmb{\delta}_{j}$. One often end end up with a situation where the matrix $D\pmb{f}(\pmb{x}_{j-1})$ needs to be computed and assembled for every iteration. This may be computationally expensive. So Newtons method may be slow despite it's quadratic convergence, if it even converges.\par 
 	A simpler approach is to swap the Jacobian with a diagonal matrix $L\pmb{I}$ such that 
-	\begin{equation}
+	\begin{equation}\label{eq:L-scheme}
 		L\pmb{\delta}_j = - \pmb{f}(\pmb{x}_{j-1})
 	\end{equation}
 	This is called the \emph{L-scheme}, and will be method we will use for linearization in this thesis. In one dimension it is easy to prove convergence:
@@ -158,13 +158,12 @@
 	\end{proof}
 	To see how this could be applied to parabolic PDE's we consider the equation:
 	
-	
-	
-	
-	We will first consider the equation
+	\section*{Richards' equation}
+	\addcontentsline{toc}{section}{Richards' equation}
+	We will first consider the non-linear, parabolic equation:
 	\begin{equation}\label{eq:richards simple}
 		\begin{aligned}[c]
-			\partial_t \theta(u) - \nabla \cdot \kappa \nabla u &= F \\
+			\partial_t \theta(u) - \nabla \cdot \kappa \nabla u &= q \\
 			u &= g \\
 			u &= u_0
 		\end{aligned}
@@ -178,24 +177,58 @@
 		\begin{aligned}
 			t&\in (0,T] \\
 			t&\in (0,T] \\
-			t&=0
+			t&=0.
 		\end{aligned}
 	\end{equation}
-	Which is similar to Richards' equation \eqref{eq:richards}, only without the gravity and non-linear permeability. We proceed as before by backward euler in time and we then discretize the elliptic PDE with a modified finite element method with mass lumping explained in the next chapter, see definition \ref{def:piecewise_interpolator}. The reasons for using modified FEM is that it's equivalent with the MPFA-L method. Anyway we get:
-	\begin{equation}\label{eq:richards_timedisc}
+	Which is similar to Richards' equation \eqref{eq:richards}, only without the gravity and non-linear permeability. We start by discretizing \eqref{eq:richards simple} with the MPFA-L method, we divide our domain into $d$ quadrilaterals. Writing \eqref{eq:semidiscrete FVM} in vector form we find $\tilde{u}_h \in \mathbb{R}^d$ such that:
+	\begin{equation}
+		\partial_t\pmb{B}^{V} \theta(\tilde{u}_h) + \pmb{A}^V \tilde{u}_h = \pmb{q}^V. 
+	\end{equation}
+	We can then discretize in time using backward euler. Given $ \tilde{u}_h^{n-1},\pmb{q}^n \in \mathbb{R}^d$ we should then find $ \tilde{u}_h^n \in \mathbb{R}^d$ such that: 
+	\begin{equation} \label{eq:non-linear richards FVM}
+		\pmb{B}^V  \theta(\tilde{u}_h)^n + \tau \pmb{A}^V \tilde{u}_h^n = \tau \pmb{q}^{Vn} + \pmb{B}^V  \theta(\tilde{u}_h)^{n-1}.
+	\end{equation}
+	Now we need to linearize \eqref{eq:non-linear richards FVM} with the L-scheme. We see from \eqref{eq:L-scheme} that the applying this linearization leads to the equation:
+	\begin{equation}\label{eq:linearized richards fvm}
+		L\pmb{B}^V(\tilde{u}^{n,j}_h-\tilde{u}^{n,j-1}_h) + \tau \pmb{A} \tilde{u}_h^{n,j} = -\pmb{B}^V \theta (\tilde{u}_h^{n,j-1})  + \tau \pmb{q}^{Vn} +  \pmb{B}^V \theta (\tilde{u}_h^{n-1})
+	\end{equation}
+	The above equation can be solved for $\tilde{u}_h^{n,j}$, and is in principal the same as solving \eqref{eq:stationary_heat} which we have proved equivalence with the modified finite element method for.
+	Now let us see how it would look if we discretized \eqref{eq:richards simple} with the modified finite element method. Let $u_h, v_h\in V_h$, where $V_h$ is defined as piecewise linear functions as in definition \ref{def:linear ansatz}. Then our semidisrectization would be to find $u_h \in V_h$ such that
+	\begin{equation}
+		\left \langle \partial_t\hat{I}_h \theta(u_h^n),\hat{I}_h v_h \right \rangle_0 + \left \langle \kappa \nabla u^n_h, \nabla v_h \right \rangle_0 = \left \langle q,v_h \right \rangle_0 \ \ \forall v_h \in V_h.
+	\end{equation}
+	Next we would discretize in time, our discretization now reads; given $u_h^{n-1} \in V_h$ find $u_h \in V_h$
+	\begin{equation}
+		\left \langle \hat{I}_h \theta(u_h^n),\hat{I}_h v_h \right \rangle_0 +\tau \left \langle \kappa \nabla u^n_h, \nabla v_h \right \rangle_0 = \tau \left \langle q^n,\hat{I}_h v_h \right \rangle_0 + \left \langle \hat{I}_h u_h^{n-1},\hat{I}_h v_h \right \rangle_0
+	\end{equation}
+	for all $v_h \in V_h$. Finally we also linearize this with the L-scheme. Following the same procedure as for \eqref{eq:linearized richards fvm} we get; given  $u_h^{n-1},u_h^{n,j-1} \in V_h$ find $u_h^{n,j} \in V_h$ such that
+	\begin{equation}\label{eq:linearized richards fem}
 		\begin{aligned}
-			\text{find }u_h^n&\in V_h\\
-			\left \langle \hat{I}_h \theta(u_h^n),\hat{I}_h v_h \right \rangle_0 +\tau \left \langle \kappa \nabla u^n_h, \nabla v_h \right \rangle_0 &= \tau \left \langle F^n,\hat{I}_h v_h \right \rangle_0 + \left \langle \hat{I}_h u_h^{n-1},\hat{I}_h v_h \right \rangle_0 \\
-			\text{for all }v_h &\in V_h
+			&L \left \langle \hat{I}_h u^{n,j}_h -  \hat{I}_h u^{n,j-1}_h,\hat{I}_h v_h \right \rangle_0 + \tau \left \langle \kappa \nabla u^{n,j}_h,\nabla v_h \right \rangle \\&=\tau \left \langle q^n,\hat{I}_h v_h \right \rangle_0 + \left \langle \hat{I}_h u_h^{n-1},\hat{I}_h v_h \right \rangle_0 -\left \langle \hat{I}_h \theta(u^{n,j-1}_h),\hat{I}_h v_h \right \rangle_0
 		\end{aligned}
 	\end{equation}
-	We can then linearize $\theta(u^n_h)$ with the L-method, such that we en up with: Given $u^{n-1}_h$ and $u^{n,j-1}_h$ find $u^{n,j}_h$ such that:
-	\begin{equation}\label{eq:L-scheme-FEM}
-		\begin{aligned}
-			\left \langle \hat{I}_h \theta(u^{n,j-1}_h),\hat{I}_h v_h \right \rangle_0 &+ L \left \langle \hat{I}_h u^{n,j}_h -  \hat{I}_h u^{n,j-1}_h,\hat{I}_h v_h \right \rangle_0 + \tau \left \langle \kappa \nabla u^{n,j}_h,\nabla v_h \right \rangle \\=\tau \left \langle F^n,\hat{I}_h v_h \right \rangle_0 &+ \left \langle \hat{I}_h u_h^{n-1},\hat{I}_h v_h \right \rangle_0 
-		\end{aligned}
+	for all $v_h \in V_h$. Since the mass matrix is diagonal with our modified finite element method, we can express \eqref{eq:linearized richards fem} as a matrix-vector equation similar to the MPFA-L method \eqref{eq:linearized richards fvm}. Let $\hat{u}_h^{n,j} \in \mathbb{R}^d$ be the coefficients that together with the basis functions make up $u_h^{n,j} \in V_h$. Then our \eqref{eq:richards simple} discretized with modified finite elements in space, backward euler in time and L-scheme linearization reads; given $\hat{u}_h^{n,j-1},\hat{u}_h^{n-1} \in \mathbb{R}^d$ find  $\hat{u}_h^{n,j} \in \mathbb{R}^d$ such that 
+	\begin{equation}\label{eq:linearized richards fem system}
+		L\pmb{B}(\hat{u}^{n,j}_h-\hat{u}^{n,j-1}_h) + \tau \pmb{A} \hat{u}_h^{n,j} = -\pmb{B} \theta (\hat{u}_h^{n,j-1})  + \tau \pmb{q}^n +  \pmb{B} \theta (\hat{u}_h^{n-1}).
 	\end{equation}
-	We can now analyse the convergence behaviour of the L-method for Richards' with this discretization as in (List, Radu, 2016,\cite{list2016study}).
+	We can now state an important result for obtaining a convergence estimate for Richards' equation.
+	\begin{lemma}
+		The system \eqref{eq:linearized richards fvm} obtain from MPFA-L method for discretizing the simplified Richards' equation \eqref{eq:richards simple}, is equivalent to the one obtained with the modified finite element method \eqref{eq:linearized richards fem system}. Moreover we have the equalities: 
+		\begin{equation}
+			\pmb{A}^V = \pmb{A}, \ \ \ \pmb{B}^V = \pmb{B}, \ \ \ \pmb{q}^V = \pmb{q}, \ \ \ \hat{u}_h = \tilde{u}_h
+		\end{equation}
+		\begin{proof}
+			\todo[inline]{todo}
+			follows from equivalence chapter.
+		\end{proof}
+	\end{lemma}
+	How this fit in with the convergence proof for Richards' equation with MPFA can be seen in the figure below.
+	\begin{figure}[H]
+		\centering
+		\includegraphics[width=0.8\textwidth]{homogenous_sumary.pdf}
+	\end{figure}
+	
+	We still need to prove that \eqref{eq:linearized richards fem} converges to a fixed point as $j\rightarrow \infty$. This is done (List, Radu, 2016,\cite{list2016study}) for the normal finite element method, but we do the proof here for our modified finite element method. 
 	First we need assumptions on the parametrizations $\kappa $ and $\theta$:
 	\begin{itemize}
 		\item[\textbf{A 1}] The water content parametrization $\theta(\cdot)$ is monotonically increasing with $sup|\theta'| = L_{\theta}$ and Lipschitz continuos.
