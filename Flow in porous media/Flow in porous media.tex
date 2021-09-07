@@ -15,25 +15,34 @@ In this section we start by introducing the physics of single-phase flow in poro
 \section*{The REV}\label{REV}
 \addcontentsline{toc}{section}{The REV}
 A porous medium consists of a solid matrix and some void in between the matrix, filled with fluid of one or more phases. In porous media research one has come to the realization that the solid matrix is too complex to model, instead one takes averages of variables over a reasonable length scale, ie. the REV or the \emph{representative elementary volume}.
-An important characterization of a porous medium is the \emph{porosity} $\phi$ is defined as $\phi = \frac{\textit{volume of voids in REV}}{\textit{volume of REV}}$. Another measure is the \emph{saturation} $S_{\alpha}$ of phase $\alpha$,  $S_{\alpha} \equiv \frac{\textit{volume of }\alpha \textit{ in REV}}{\textit{volume of voids in REV}}$. In single phase flow, the saturation is irrelevant as the saturation is always one. Also note that the content of the phase $\alpha$ in the REV, $\theta_{\alpha}$, is given by $\theta_{\alpha} = S_{\alpha} \phi$.
+An important characterization of a porous medium is the \emph{porosity} $\phi$ is defined as 
+\begin{equation}
+	\phi := \frac{\textit{volume of voids in REV}}{\textit{volume of REV}}.
+\end{equation}
+
+Another measure is the \emph{saturation} $S_{\alpha}$ of phase $\alpha$,  this is defined 
+\begin{equation}
+	S_{\alpha} \equiv \frac{\textit{volume of }\alpha \textit{ in REV}}{\textit{volume of voids in REV}}.
+\end{equation}
+In single phase flow, the saturation is irrelevant as the saturation is always one. Also note that the content of the phase $\alpha$ in the REV, $\theta_{\alpha}$, is given by $\theta_{\alpha} = S_{\alpha} \phi$.
 
 \section*{Darcy's law}
 \addcontentsline{toc}{section}{Darcy's law}
-In 1856 Henri Darcy performed a famous experiment where he studied the flow of water trough sand. To understand his experiment we must first define some variables for measuring water content. First note that the pressure at height $z$ above datum developed by a water column of height $h$ above datum is given by
+In 1856 Henri Darcy performed a famous experiment where he studied the flow of water through sand. To understand his experiment we must first define some variables for measuring water content. First note that the pressure at height $z$ above datum developed by a water column of height $h$ above datum is given by
 \begin{equation*}
-p_{abs}(z) = p_{atm} + \rho g(h-z)
+p_{abs}(z) = p_{atm} + \rho g(h-z).
 \end{equation*}
-If we define the \emph{gauge pressure} $p$ by $p \equiv p_{abs}-p_{atm}$ we get an expression for $p$:
+If we define the \emph{gauge pressure} $p$ by $p := p_{abs}-p_{atm}$ we get an expression for $p$:
 \begin{equation*}
-p = \rho g(h-z)
+p = \rho g(h-z).
 \end{equation*}
-This can be rearranged to give an expression for the \emph{hydraulic head} $h$:
+This can be rearranged to give an expression for the \emph{hydraulic head}:
 \begin{equation}\label{eq:hydraulic}
-h = \frac{p}{\rho g} + z
+h = \frac{p}{\rho g} + z.
 \end{equation}
 A \emph{manometer} is a tube put into the reservoir with one end in open atmosphere, the water level in this tube is then $h$. The volumetric flow of water is denoted by $\textbf{q}_d$. Darcy's experiment is shown in figure \ref{fig:darcy}, where water is poured trough a cylinder filled with sand. The cylinder has length $L$ and has cross sectional area $A$. His observations are given by the equation called Darcy's law
 \begin{equation}
-q_d = \kappa \frac{A(h_2-h_1)}{L}
+q_d = \kappa \frac{A(h_2-h_1)}{L}.
 \end{equation}
 Where $\kappa$ is a coefficient of proportionality.
 \begin{figure}[h]
@@ -45,16 +54,16 @@ Where $\kappa$ is a coefficient of proportionality.
 \\
 Let $q$ denote the volumetric flow-rate per area
 \begin{equation*}
-q \equiv \frac{q_d}{A} = \kappa \frac{h_2-h_1}{L}
+q := \frac{q_d}{A} = \kappa \frac{h_2-h_1}{L}
 \end{equation*}
 This is now the \emph{flux} of hydraulic potential. We can now state the differential version of Darcy's law, taking the limit as $L\rightarrow 0$ we get 
 \begin{equation}\label{eq:darcy}
-\pmb{q} = \pmb{\kappa} \nabla h
+\pmb{q} = \pmb{\kappa} \nabla h.
 \end{equation}
 We call $\pmb{\kappa}$ the \emph{hydraulic conductivity} and note that it is in general a rank two tensor, a matrix. The \emph{hydraulic conductivity} also has the property that it is symmetric positive definite. 
-With further experiments similar to the one described one can understand what makes up $\pmb{\kappa}$, and it turns out that it is  a function of viscosity $\mu$, density $\rho$, gravity $g$ and \emph{permeability} $\pmb{k}$.
+With further experiments similar to the one described one can understand what makes up $\pmb{\kappa}$, and it turns out that it is  a function of viscosity $\mu$, density $\rho$, gravity $g$ and \emph{permeability} $\pmb{k}$,
 \begin{equation} \label{eq:conductivity}
-\pmb{\kappa} = \frac{\pmb{k} \rho g}{\mu}
+\pmb{\kappa} = \frac{\pmb{k} \rho g}{\mu}.
 \end{equation}
 The \emph{permability}, which is a property of the soil in the reservoir, is also a second rank tensor which is symmetric positive definite and is in general a function of space. \\
 If we define the \emph{pressure head} $\psi$ as $\psi \equiv \frac{p}{\rho g}$ we can combine \eqref{eq:hydraulic}, \eqref{eq:darcy} and \eqref{eq:conductivity} to get another variant of Darcy's law which will be usefull later
@@ -62,16 +71,16 @@ If we define the \emph{pressure head} $\psi$ as $\psi \equiv \frac{p}{\rho g}$ w
 \pmb{q} = \frac{\pmb{k}\rho g}{\mu}\nabla(\psi + z)
 \end{equation}
 
-\section*{Governing equations}
+\section*{Mass conservation}
 \addcontentsline{toc}{section}{Governing equations}
 Darcy's law is not enough if we want to determine the pressure or flow in a reservoir, but we can use the principle of \emph{mass conservation} to add one more equation. 
 The idea is that for every enclosed region in the reservoir, the change of mass inside the region is balanced by the mass flux into the region and the production of mass inside the region.
 \\
 We end up with the mass balance equation
 \begin{equation*}
-\int_{\Omega}\frac{\partial (\rho \phi) }{\partial t} dV= -\int_{\partial\Omega}\pmb{n}\cdot\rho\pmb{q} \ dS+\int_{\Omega} f dV
+\int_{\omega}\frac{\partial (\rho \phi) }{\partial t} dV= -\int_{\partial\omega}\pmb{n}\cdot\rho\pmb{q} \ dS+\int_{\omega} f dV \ \ \forall \omega \subseteq \Omega \ \ \textit{with }\omega \textit{ being a volume.}
 \end{equation*}
-Where $\pmb{n}$ is an outward pointing normal vector to $\Omega$ and $f$ is a source or a sink. We can use the divergence theorem on the surface integral to get
+Where $\pmb{n}$ is an outward pointing normal vector to $\Omega$ and $f$ is a source and/or a sink. We can use the divergence theorem on the surface integral to get
 \begin{equation*}
 \int_{\Omega}\frac{\partial (\rho \phi) }{\partial t} + \nabla \cdot(\rho \pmb{q}) -fdV= 0
 \end{equation*}
@@ -81,52 +90,57 @@ Since this is true for all enclosed regions $\Omega$, it also holds for the expr
 \end{equation*}
 This, together with Darcy's law\eqref{eq:darcy} and appropriate boundary and initial conditions closes the system
 \begin{equation}\label{eq:singlephase}
-\left\{\begin{matrix}
-\pmb{q} =\pmb{\kappa} \nabla h \\ 
-\frac{\partial (\rho \phi) }{\partial t} + \nabla \cdot(\rho \pmb{q}) =f& \\ 
- h = g(\pmb{x})&\pmb{x} \in \partial \Omega \\
- h = f(\pmb{x})& \pmb{x} \in \Omega \ \ t=0
-\end{matrix}\right.
+\left \{ \begin{aligned}
+	\pmb{q} &=\pmb{\kappa} \nabla h, & \pmb{x} &\in \Omega,  &t &>0 \\
+	\frac{\partial (\rho \phi) }{\partial t} + \nabla \cdot(\rho \pmb{q}) &=f(\pmb{x},t), & \pmb{x} &\in \Omega, & t &>0 \\
+	h(\pmb{x}) &= g(\pmb{x},t), &\pmb{x} &\in \partial \Omega,&t &>0 \\
+	h(\pmb{x}) &= f(\pmb{x}), & 	\pmb{x} &\in \Omega,  &	t &=0 
+\end{aligned}\right. 
 \end{equation}
-Now we have a model for single phase flow. As it is stated now it is a linear parabolic equation, but for incompressible fluid and matrix it becomes an elliptic equation. One often writes the density as a function of pressure, it then becomes non-linear. See chapter two of \cite{Nordbotten} for a more detailed discussion of \eqref{eq:singlephase} and modelling options,
+Now we have a model for single phase flow. As it is stated now it is a linear parabolic equation, but for incompressible fluid and matrix it becomes an elliptic equation. One often writes the density as a function of pressure, it then becomes non-linear. See chapter two of \cite{Nordbotten} for a more detailed discussion of \eqref{eq:singlephase} and modelling options.
 
-\section*{Twophase flow and Richards' equation}
+\section*{Two-phase flow and Richards' equation}
 \addcontentsline{toc}{section}{Twophase flow and Richards' equation}
 We restrict our discussion to two phases for simplicity, but the theory can be extended to more phases. In two phase systems one has a \emph{wetting phase} and a \emph{non-wetting phase}. Denoted by the subscripts $w$ and $n$ respectively. \\
-When we introduce more phases we continue with the equations we already introduced, we write down Darcy's law \eqref{eq:darcyv2} with a modification.
+When we introduce more phases we continue with the equations we already introduced, ie. we assume that Darcy's law  \eqref{eq:darcyv2} hold for both phases.
 \begin{equation}\label{eq:darcytwo}
-	\pmb{q}_{\alpha} = \frac{\pmb{k}_{r,\alpha}\pmb{k}\rho g}{\mu}\nabla(\psi_{\alpha} + z)
+	\pmb{q}_{\alpha} = \frac{\pmb{k}_{r,\alpha}\pmb{k}\rho g}{\mu}\nabla(\psi_{\alpha} + z).
 \end{equation}
-The scaling in front of the permeability $\pmb{k}_{r,\alpha}$ is known as \emph{relative permeability} and it has to be deduced from experimental observation. \\ We can also write down a mass balance equation for each phase:
+The coefficient $\pmb{k}_{r,\alpha}$ is known as \emph{relative permeability} and it has to be deduced from experimental observation. \\ We can also write down a mass balance equation for each phase:
 \begin{equation}\label{eq:massbalancetwo}
-	\frac{\partial (S_{\alpha}\rho_{\alpha} \phi) }{\partial t} + \nabla \cdot (\rho \pmb{q}_{\alpha}) = f_{\alpha}
+	\frac{\partial (S_{\alpha}\rho_{\alpha} \phi) }{\partial t} + \nabla \cdot (\rho \pmb{q}_{\alpha}) = f_{\alpha}.
 \end{equation}
-Here we assume there is no mass transfer between the phases.
+Here we assume that there is no mass transfer between the phases.
 If we combine equations \eqref{eq:darcytwo} and \eqref{eq:massbalancetwo}, they give us $2$ equations, but we have four unknowns $\psi_w$, $\psi_n$, $S_w$ and $S_n$. We therefore introduce a simple algebraic relation
 \begin{equation*}
 	S_w + S_n = 1
 \end{equation*}
-and a not so simple relation
+and a physical relation
 \begin{equation}\label{eq:capillary pressure}
 	p_n-p_w = p_c
 \end{equation}
-Where $p_c$ is \emph{capillary pressure} and is also determined experimentally.
+where $p_c$ is called \emph{capillary pressure}. As with the relative permeability, $p_c$ also need to be determined experimentally.
 With initial and boundary conditions we again have a closed system.\\
-A common simplification is to assume that the capillary pressure and the relative permeability are functions of the saturation, and that the relative permeability is isotropic(a scalar). \\
-Another simplification that is used especially in groundwater hydrology is that the non-wetting phase always have $p_n = p_{atm}$. For this assumption to hold it is important that the air always has some path to the surface. Now equation \eqref{eq:capillary pressure} simplifies to
+A common simplification is to assume that the capillary pressure and the relative permeability are functions of the saturation, and that the relative permeability is isotropic (a scalar). \\
+Another simplification that is used, especially in groundwater hydrology, is that the non-wetting phase always have $p_n = p_{atm}=0$. For this assumption to hold it is important that the air always has some path to the surface. Now, equation \eqref{eq:capillary pressure} simplifies to
+\begin{equation}\label{eq:groundwater capillary pressure}
+	-p_w = -\psi_w\rho g = p_c(S_w).
+\end{equation}
+Experiments show that the capillary pressure is a monotone decreasing function of saturation, therefore we can invert it. Equation \eqref{eq:capillary pressure} now becomes:
+\begin{equation}
+	P_c^{-1}(\psi_w\rho g) = S_w.
+\end{equation}
+
+Finally, we can multiply the above equation by the porosity to get an expression for the \emph{water content} $\theta_w$:
 \begin{equation*}
-	-p_w(S_w) = p_c(S_w)
-\end{equation*}
-Note that we can divide by $\rho g$ to get an expression for $\psi$. Also experiments show that the capillary pressure is a monotone decreasing function of saturation, we can therefore invert it. Finally, we can multiply by the porosity to get an expression for the \emph{water content} $\theta_w$
-\begin{equation*}
-	\theta_w = \theta_w(\psi_w)
+	\theta_w = \theta_w(\psi_w) = \phi P_c^{-1}(\psi_w\rho g).
 \end{equation*}  
 Combining this with the two-phase Darcy law \eqref{eq:darcytwo} and mass balance \eqref{eq:massbalancetwo} we get \textbf{Richards' equation}
 \begin{equation}\label{eq:richards}
 	\frac{\partial \theta(\psi)}{\partial t} - \nabla \cdot (\pmb{\kappa} (\theta (\psi))(\nabla \psi + e_z)) = F
 \end{equation}
-Where $\theta = \theta_w$. Note that density is completely eliminated because water is assumed to have constant density. The hydraulic conductivity in \eqref{eq:darcytwo} is simply written $\frac{\pmb{k}_{r,\alpha}\pmb{k}\rho g}{\mu} = \pmb{\kappa}(\theta)$. \\
-Richards' equation contains two non-linearities in $\theta$ and $\pmb{\kappa}$, this makes the analysis and numerical simulation more interesting and challenging as we will see. They may also cause the equation to degenerate, ie. the parabolic equation may "collapse" into an elliptic PDE(see figure \ref{fig:richards} ) or even an ODE.
+where $\theta = \theta_w$. Note that density is completely eliminated because water is assumed to have constant density. The hydraulic conductivity is parametrized as a function of water content through experiments and can be written  $\frac{\pmb{k}_{r,\alpha}\pmb{k}\rho g}{\mu} = \pmb{\kappa}(\theta)$. \\
+Richards' equation contains two non-linearities in $\theta$ and $\pmb{\kappa}$, this makes the analysis and numerical simulation more interesting and challenging as we will see. They may also cause the equation to degenerate, ie the parabolic equation may "collapse" into an elliptic PDE (see figure \ref{fig:richards} ) or even an ODE.
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=0.9\textwidth]{Richards.png}

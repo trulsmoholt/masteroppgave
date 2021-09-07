@@ -190,7 +190,7 @@
 	\end{equation}
 	Now we need to linearize \eqref{eq:non-linear richards FVM} with the L-scheme. We see from \eqref{eq:L-scheme} that the applying this linearization leads to the equation:
 	\begin{equation}\label{eq:linearized richards fvm}
-		L\pmb{B}^V(\tilde{u}^{n,j}_h-\tilde{u}^{n,j-1}_h) + \tau \pmb{A} \tilde{u}_h^{n,j} = -\pmb{B}^V \theta (\tilde{u}_h^{n,j-1})  + \tau \pmb{q}^{Vn} +  \pmb{B}^V \theta (\tilde{u}_h^{n-1})
+		L\pmb{B}^V(\tilde{u}^{n,j}_h-\tilde{u}^{n,j-1}_h) + \tau \pmb{A} \tilde{u}_h^{n,j} = -\pmb{B}^V \theta (\tilde{u}_h^{n,j-1})  + \tau \pmb{q}^{Vn} +  \pmb{B}^V \theta (\tilde{u}_h^{n-1}).
 	\end{equation}
 	The above equation can be solved for $\tilde{u}_h^{n,j}$, and is in principal the same as solving \eqref{eq:stationary_heat} which we have proved equivalence with the modified finite element method for.
 	Now let us see how it would look if we discretized \eqref{eq:richards simple} with the modified finite element method. Let $u_h, v_h\in V_h$, where $V_h$ is defined as piecewise linear functions as in definition \ref{def:linear ansatz}. Then our semidisrectization would be to find $u_h \in V_h$ such that
