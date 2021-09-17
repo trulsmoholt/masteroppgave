@@ -1,11 +1,10 @@
-\contentsline {todo}{How does this definition of norm fit in? They use it in Cao Wolmuth}{13}{section*.10}%
 \contentsline {todo}{Write more about stability properties of FEM, so that one later can compare with stability properties of the FVM methods.}{25}{section*.21}%
-\contentsline {todo}{explain some more}{32}{section*.29}%
-\contentsline {todo}{explain how we compute transmissibility coefficients in detail for the L-method}{34}{section*.31}%
-\contentsline {todo}{compare O and L method and explain that L-method has better monotonicity properties}{34}{section*.32}%
-\contentsline {todo}{quickly mention standard ways of dealing with boundary conditions}{34}{section*.33}%
-\contentsline {todo}{should perhaps explain more here}{37}{section*.38}%
-\contentsline {todo}{Prove equivalence for boundary cells and boundary nodes, possibly corner cells and nodes}{43}{section*.43}%
-\contentsline {todo}{todo}{49}{section*.49}%
-\contentsline {todo}{todo}{54}{section*.51}%
-\contentsline {todo}{unsure about the argumentation in the Cao Wolmuth paper about neumann boundary}{55}{section*.52}%
+\contentsline {todo}{reference a figure showing the failed convergence of TPFA}{28}{section*.25}%
+\contentsline {todo}{explain how we compute transmissibility coefficients in detail for the L-method}{36}{section*.35}%
+\contentsline {todo}{compare O and L method and explain that L-method has better monotonicity properties}{36}{section*.36}%
+\contentsline {todo}{quickly mention standard ways of dealing with boundary conditions}{36}{section*.37}%
+\contentsline {todo}{should perhaps explain more here}{39}{section*.43}%
+\contentsline {todo}{Prove equivalence for boundary cells and boundary nodes, possibly corner cells and nodes}{45}{section*.48}%
+\contentsline {todo}{todo}{51}{section*.54}%
+\contentsline {todo}{todo}{56}{section*.56}%
+\contentsline {todo}{unsure about the argumentation in the Cao Wolmuth paper about neumann boundary}{57}{section*.57}%
