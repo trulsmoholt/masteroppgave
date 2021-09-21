@@ -38,6 +38,7 @@
 		\centering
 		\includegraphics{modified_L_scheme.pdf}
 		\caption{Control volumes in solid lines and interaction regions in dashed lines at the boundary.}
+		\label{fig:volemes along boundary}
 	\end{figure}
 	\begin{figure}[H]
 		\centering
@@ -45,15 +46,16 @@
 		\caption{Control volume along top boundary.}
 		\label{fig:volumepartition}
 	\end{figure}
-	For the \textbf{Neumann} boundary conditions, we split the cell into two, $y_1 y_6 y_9 y_8$ as $\Omega_2$ and $y_8 y_9 y_4 y_3$ as  $\Omega_1$. For the fluxes on $\Omega_2$ we have six interaction triangles and a normal seven point stencil. For the $\Omega_1$ we compute the flux trough $\overline{y_3 y_8}$ using $\triangle x_1 x_3 x_2$, the flux trough $\overline{y_8 y_{10}}$ using $\triangle x_1 x_i x_3$, for $\overline{y_{10}y_9}$ and $\overline{y_9 y_4}$ the L triangle  $\triangle x_i x_4 x_3$ is used. Finally the Neumann boundary condition is used at the the edge $\overline{y_4 x_3}$ and $\overline{x_3 y_3}$. We are not able to eliminate the unknown value at $x_3$ and it remains a degree of freedom, which makes sense if we want equivalence with finite element method.
+	For the \textbf{Neumann} boundary conditions, we split the cell into two, $y_1 y_6 y_9 y_8$ as $\Omega_2$ and $y_8 y_9 y_4 y_3$ as  $\Omega_1$, see figure \ref{fig:volumepartition} or \ref{fig:volemes along boundary}. For the fluxes on $\Omega_2$ we have six interaction triangles and a normal seven point stencil. For the $\Omega_1$ we compute the flux trough $\overline{y_3 y_8}$ using $\triangle x_1 x_3 x_2$, the flux trough $\overline{y_8 y_{10}}$ using $\triangle x_1 x_i x_3$, for $\overline{y_{10}y_9}$ and $\overline{y_9 y_4}$ the L triangle  $\triangle x_i x_4 x_3$ is used. Finally the Neumann boundary condition is used at the the edge $\overline{y_4 x_3}$ and $\overline{x_3 y_3}$. We are not able to eliminate the unknown value at $x_3$ and it remains a degree of freedom, which makes sense if we want equivalence with finite element method.
 	\todo[inline]{should perhaps explain more here}
 	\par
-	In the case of \textbf{Dirichlet} boundary conditions, we compute the fluxes into $y_1 y_6 y_4 y_3$ using seven L-triangles. The flux over the edge $\overline{y_3 y_1}$ are computed as the sum of the flux over $\overline{y_3 y_8}$, $\overline{y_8 y_2}$ and $\overline{y_2 y_1}$ using the L-triangles $\triangle x_1 x_3 x_2$, $\triangle x_1 x_i x_3$ and $\triangle x_1 x_7 x_i$ respectively. Similarly for the edge $\overline{y_6 y_4}$. For $\overline{y_1 y_6}$ we only use the two big L-triangles at the bottom. 
+	In the case of \textbf{Dirichlet} boundary conditions, we compute the fluxes into $y_1 y_6 y_4 y_3$ using seven L-triangles, as can be seen in figure \ref{fig:volemes along boundary}. The flux over the edge $\overline{y_3 y_1}$ are computed as the sum of the flux over $\overline{y_3 y_8}$, $\overline{y_8 y_2}$ and $\overline{y_2 y_1}$ using the L-triangles $\triangle x_1 x_3 x_2$, $\triangle x_1 x_i x_3$ and $\triangle x_1 x_7 x_i$ respectively. Similarly for the edge $\overline{y_6 y_4}$. For $\overline{y_1 y_6}$ we only use the two big L-triangles at the bottom. 
 	\par 
-	The flux over $\overline{y_4 y_3}$, at the boundary, we compute by balancing it by the other fluxes into the small control volume $\Omega_1$. Let $	f_{\overline{y_i y_j}}:= \int_{\overline{y_i y_j}}  \pmb{K}\nabla u \cdot \pmb{\hat{n}}\ dx $
+	The flux over $\overline{y_4 y_3}$, at the boundary, we compute by balancing it by the other fluxes into the small control volume $\Omega_1$. Let $	q_{\overline{y_i y_j}}:= \int_{\overline{y_i y_j}}  -\pmb{K}\nabla u \cdot \pmb{\hat{n}}\ dx $, then we get
 	\begin{equation}\label{eq:K2}
-		f_{\overline{y_4 y_3}} = f_{\overline{y_3 y_8}} + f_{\overline{y_8 y_{10}}}+f_{\overline{y_{10}y_9}}+f_{\overline{y_9 y_4}}
+		q_{\overline{y_4 y_3}} = q_{\overline{y_3 y_8}} + q_{\overline{y_8 y_{10}}}+q_{\overline{y_{10}y_9}}+q_{\overline{y_9 y_4}}.
 	\end{equation}
+	
 	The fluxes on the right hand side of \eqref{eq:K2} are computed as for the Neumann case.
 	\section*{Modified finite element method}
 	In this section we introduce a finite element method for solving \eqref{eq:semidiscrete heat}. We start by observing that by theorem \ref{th:L_triangulation} the L-triangles form a triangulation $\left \{ \tau_h \right \}$. The only modifications we need to make are to the linear form, we let the bi-linear form stay the same as before. We want to define an interpolation operator such that the dot products that make up the linear form become mass conservative in each control volume. We need some notation so that we can distinguish between nodes in the interior, at at cell centers along the boundary and at the boundary. In addition, corner cells introduce edge cases. 

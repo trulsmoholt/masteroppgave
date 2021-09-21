@@ -10,7 +10,7 @@
 	We will concentrate on solving the Poisson equation, let $\Omega \subset \mathbb{R}^n$ be some open, bounded domain. Find $u$ such that:
 	\begin{equation} \label{eq:poisson}
 		\begin{split}
-			-\nabla \cdot \bm{K} \nabla u(x) &= F(x) \ \  x\in \Omega \\ 
+			-\nabla \cdot \bm{K} \nabla u(x) &= f(x) \ \  x\in \Omega \\ 
 			u(x) &= 0 \ \ x\in \partial \Omega.
 		\end{split}
 	\end{equation}
@@ -145,11 +145,11 @@
 	\addcontentsline{toc}{subsection}{The variational problem}
 	We obtain the \textbf{variational formulation} by multiplying \eqref{eq:poisson} by a function $v$ in a suitable space $V$ called the \emph{test space}, integrating over $\Omega$ and using integration by parts/divergence theorem.
 	\begin{equation*}
-		-\int_{\Omega}v\nabla \cdot\bm{K}\nabla u \ dx = -\int_{\partial \Omega}v \bm{K}\nabla u \cdot \bm{n} \ dx + \int_{\Omega}(\nabla v)^{T}\bm{K} \nabla u \ dx = \int_{\Omega}v F \ dx
+		-\int_{\Omega}v\nabla \cdot\bm{K}\nabla u \ dx = -\int_{\partial \Omega}v \bm{K}\nabla u \cdot \bm{n} \ dx + \int_{\Omega}(\nabla v)^{T}\bm{K} \nabla u \ dx = \int_{\Omega}vf\ dx
 	\end{equation*}
 	If we choose $v$ such that $v=0$ on $\partial \Omega$ the integral over the boundary vanishes. So the new formulation now reads: find $u$ such that 
 	\begin{equation}\label{eq:variational poisson}
-			 \int_{\Omega}(\nabla v)^T \bm{K} \nabla u \ dx = \int_{\Omega}v F \ dx \ \ \  \forall v \in V.
+			 \int_{\Omega}(\nabla v)^T \bm{K} \nabla u \ dx = \int_{\Omega}vf\ dx \ \ \  \forall v \in V.
 	\end{equation}
 	A good choice of the test space $V$ is $V=H_0^1(\Omega)$. We also choose this as the solution space.
 	We see that if $u$ is a solution to \eqref{eq:poisson}, it also solves \eqref{eq:variational poisson}. But a solution to \eqref{eq:variational poisson} does not necessarily solve \eqref{eq:poisson}, that is why it is also called the \emph{weak formulation}.\\
@@ -167,7 +167,7 @@
 	Let $\partial \Omega = \Gamma_D\bigcup \Gamma_N$ with $\Gamma_D \bigcap \Gamma_N = \emptyset$, then \eqref{eq:poisson} with more complicated boundary conditions can be written:
 	\begin{equation}\label{eq:inhomogenous poisson}
 		\begin{aligned}[c]
-			 - \nabla \cdot \bm{K} \nabla \hat{u}(x) &= F(x) \\
+			 - \nabla \cdot \bm{K} \nabla \hat{u}(x) &= f(x) \\
 			\hat{u}(x) &= g_D \\
 			\bm{K}\nabla \hat{u}(x) &= g_N
 		\end{aligned}
@@ -184,11 +184,11 @@
 	\end{equation*}
 	Next, assume there exists an element $w$ of $ H^1(\Omega)$ that are mapped by the trace operator such that Dirichlet boundary conditions are met: $T(w)=g_D$. Let $\hat{u} = u+w$, now we can use integration by parts to as before:
 	\begin{equation}
-		a(u+w,v) = \int_{\Omega}(\nabla u+\nabla w)^{T}\bm{K} \nabla v \ dx = \int_{\Omega}Fv \ dx -\int_{\partial\Omega}\bm{K}\nabla (u+w)\cdot \bm{n}v \ dx .
+		a(u+w,v) = \int_{\Omega}(\nabla u+\nabla w)^{T}\bm{K} \nabla v \ dx = \int_{\Omega}fv \ dx -\int_{\partial\Omega}\bm{K}\nabla (u+w)\cdot \bm{n}v \ dx .
 	\end{equation}
 	Using the linearity of $a(\cdot,\cdot)$ and inserting boundary conditions we get:
 	\begin{equation}\label{eq:inhomogenous poisson weak}
-		a(u,v) = b(v)= \int_{\Omega} Fv \ dx - \int_{\Omega}(\nabla w)^T\bm{K} \nabla v \ dx - \int_{\Gamma_N} g_N v \ dx.
+		a(u,v) = b(v)= \int_{\Omega} fv \ dx - \int_{\Omega}(\nabla w)^T\bm{K} \nabla v \ dx - \int_{\Gamma_N} g_N v \ dx.
 	\end{equation}
 	Hence both Dirichlet and Neumann boundary conditions are incorporated into the right hand side. For homogeneous Dirichlet boundary conditions, the second term on the right hand side of \eqref{eq:inhomogenous poisson weak} vanishes. 
 	
@@ -375,13 +375,13 @@
 		\caption{A hat function .}
 		\label{fig:hat1}
 	\end{figure}
-	Now, we demonstrate how the method works in practice. We seek a solution $u_h \in V_h$. Write this in terms of the basis functions: $u_h = \sum_{i=1}^n u_i^* \phi_i$. Now, \eqref{eq:galerkin} can be written as an equation with a solution vector with real coefficients: Find $\bm{u}^*$ in $\mathbb{R}^n$ such that
+	Now, we demonstrate how the method works in practice. We seek a solution $u_h \in V_h$. Write this in terms of the basis functions: $u_h = \sum_{i=1}^n \hat{u}_i \phi_i$. Now, \eqref{eq:galerkin} can be written as an equation with a solution vector with real coefficients: Find $\hat{\bm{u}}_h$ in $\mathbb{R}^n$ such that
 	\begin{equation}\label{eq:fem system}
 		\begin{gathered}
-			\sum_{i=1}^n u_i^*  a(\phi_i,\phi_j) = b(\phi_j).
+			\sum_{i=1}^n \hat{u}_i  a(\phi_i,\phi_j) = b(\phi_j).
 		\end{gathered}
 	\end{equation}
-	So we get a system of linear equations $A\bm{u}^* = \bm{b}$, where we have one equation for each interior node. If we solve \eqref{eq:variational poisson}, our variational problem, and also matrix, will be symmetric. The matrix is then often called a \emph{stiffness matrix}. These names originated from mechanics and structural analysis, where the solution represents displacement and the force function represents load. The stiffness matrix is also sparse, which is a very important property when designing algorithms to solve it.\par
+	So we get a system of linear equations $\bm{A}\hat{\bm{u}}_h = \bm{b}$, where we have one equation for each interior node. If we solve \eqref{eq:variational poisson}, our variational problem, and also matrix, will be symmetric. The matrix is then often called a \emph{stiffness matrix}. These names originated from mechanics and structural analysis, where the solution represents displacement and the force function represents load. The stiffness matrix is also sparse, which is a very important property when designing algorithms to solve it.\par
 	With the setup described in this subsection, the degrees of freedom are the same as the dimension of $V_h$. If we in definition \ref{def:linear ansatz} instead had chosen a space of quadratic polynomials on each element, we hade gained three degrees of freedom on each element. In this thesis we focus on linear finite elements because we do not gain anything from increasing regularity, as the solutions are not expected to be very regular. 
 	\subsection*{Implementation}
 	\addcontentsline{toc}{subsection}{Implementation}
@@ -543,29 +543,33 @@
 
 		Finite volume methods are designed such that the conservation law we solve hold everywhere in the domain. Consider our elliptic model problem \eqref{eq:poisson}, first we divide our domain $\Omega$ into convex quadrilaterals(control volumes, cells), $\left \{ \Omega_i \right \}_i$. Then we integrate our equation over $\Omega_i$ and use the divergence theorem:
 	\begin{equation}\label{eq:fvm1}
-		\int_{\Omega_i} -\nabla \cdot \bm{K} \nabla u dx = -\int_{\partial \Omega_i} \bm{K}\nabla u \cdot \bm{\hat{n}} ds = \int_{\Omega_i} F dx
+		\int_{\Omega_i} -\nabla \cdot \bm{K} \nabla u dx = -\int_{\partial \Omega_i} \bm{K}\nabla u \cdot \bm{\hat{n}} ds = \int_{\Omega_i}fdx
 	\end{equation}
 	The above equation equates the fluxes trough the boundary of a control volume, with the source or sinks inside the control volume. The finite volume methods are discrete versions of this. The main idea is to approximate the normal flux trough edge $j$ of $\Omega_i$
 	\begin{equation}
-		f_{i,j} =-\int_{\partial \Omega_{i,j}} \bm{K}\nabla u \cdot \bm{\hat{n}} ds
+		q_{i,j} =-\int_{\partial \Omega_{i,j}} \bm{K}\nabla u \cdot \bm{\hat{n}} ds
 	\end{equation}
 	
 	by a linear combination of $u_i$ at neighbouring cell centers,
 	\begin{equation}
-		\tilde{f}_{i,j} = \sum_{k}t_{j}^k u_k.
+		\tilde{q}_{i,j} = \sum_{k}t_{j}^k u^k.
 	\end{equation}
 	Where the \emph{transmissibility } $t_{j,k}$ has the property $\sum_k t_{j}^k = 0$. 
-	We also approximate the integral on the right side by evaluating $F$ at the cell center and multiply by the area of $\Omega_i$. We then end up with a system of equations
+	We also approximate the integral on the right side by evaluating $f$ at the cell center and multiply by the area of $\Omega_i$. We then end up with a system of equations
 	\begin{equation}\label{eq:fvm system}
-		\sum_{j=1}^4 \tilde{f}_{i,j} = |\Omega_i|F(x_i).
+		\sum_{j=1}^4 \tilde{q}_{i,j} = |\Omega_i|f(x_i).
 	\end{equation}
-	The system of equations \eqref{eq:fvm system} ensures local mass conservation. We will discuss different ways of constructing the transmissibility coefficients, as they result in very different discretizations.
+	The system of equations \eqref{eq:fvm system} ensures local mass conservation. It can also be written in matrix form as:
+	\begin{equation}
+		\bm{A}^V\tilde{\bm{u}}_h = \bm{f}.
+	\end{equation}
+	 We will discuss different ways of constructing the transmissibility coefficients, as they result in very different discretizations.
 	\par
 	The motivation for using finite volume methods for problems in porous media, for example Richards' equation, is that the flux appears explicitly in our discretization. If one, for example, wants to simulate the spread of some contaminant by groundwater flow, one can easily obtain a local mass conservative flux field using the finite volume method. This flux field can then be coupled with the desired transport equation.
 	\par 
 	When it comes to boundary conditions, this is usually straightforward for Neumann boundaries. Especially no-flow boundary conditions, where one just creates a strip of cells outside the boundary with zero permeability. One then just use the same algorithm everywhere. Dirichlet boundary conditions often requires more special care. If one however knows the solution somewhere outside the domain, one could make a strip of cells outside the boundary where the potential values are known, this is known as ghost Dirichlet boundary conditions. We will focus on discretizing the interior of the domain in the following sub sections.
 	\subsection*{Two point flux approximation}
-	\addcontentsline{toc}{subsection}{Two point flux approximation}The simplest way of constructing $t_{j,k}$ is also the most popular in the industry. As the name suggests, we only use the function value at two points, $x_{j,0}$ and $x_{j,1}$, to compute the numerical flux $\tilde{f}_j$.
+	\addcontentsline{toc}{subsection}{Two point flux approximation}The simplest way of constructing $t_{j,k}$ is also the most popular in the industry. As the name suggests, we only use the function value at two points, $x_{j,0}$ and $x_{j,1}$, to compute the numerical flux $\tilde{q}_j$.
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=0.5\textwidth]{two point.pdf}
@@ -575,28 +579,28 @@
 	Let $\bm{v}_1$ be the vector from cell center $x_0$ to the midpoint of the edge between the cells, $\overline{x}$. Then we approximate the flux out of cell $x_0$ into cell $x_1$ by:
 	
 	\begin{equation}\label{eq:f_0}
-		f_0=-\int_{\partial \Omega} \hat{\bm{n}_0}^T \bm{K}_0  \frac{\bm{v}_0}{\left \| \bm{v}_0 \right \|} (u(\overline{x})-u(x_0))ds
+		\tilde{q}_0=-\int_{\partial \Omega} \hat{\bm{n}_0}^T \bm{K}_0  \frac{\bm{v}_0}{\left \| \bm{v}_0 \right \|} (u(\overline{x})-u(x_0))ds
 	\end{equation}
 	
 	or as
 	
 	\begin{equation}\label{eq:f_1}
-		f_1 = -\int_{\partial \Omega} \hat{\bm{n_1}}^T \bm{K}_1  \frac{\bm{v}_1}{\left \| \bm{v}_1 \right \|} (u(x_1)-u(\overline{x}))ds
+		\tilde{q}_1 = -\int_{\partial \Omega} \hat{\bm{n_1}}^T \bm{K}_1  \frac{\bm{v}_1}{\left \| \bm{v}_1 \right \|} (u(x_1)-u(\overline{x}))ds
 	\end{equation}	
 	
 	where $\hat{\bm{n}_i}$ is the normal vector pointing out of edge cell $i$.
 	Because we require flux continuity we have that 
 	\begin{equation}
-		f_0 = f_1 = t^0 u(x_0) + t^1 u(x_1)
+		\tilde{q}_0 = \tilde{q}_1 = t^0 u(x_0) + t^1 u(x_1)
 	\end{equation}
 	where, as before, $t^0 + t^1 = 0 \Rightarrow t^0 = -t^1$. We now have three equations and three unknowns, $u(\overline{x})$, $t^0$ and $t^1$. To simplify, we introduce the quantity $T_i := \int_{\partial \Omega} \hat{\bm{n}_i}^T \bm{K}_i  \frac{\bm{v}_i}{\left \| \bm{v}_i \right \|} $ to represent the cell transmissivity. So first we solve for $u(\overline{x})$:
 	\begin{equation}
 		T_0(u(\overline{x})-u(x_0)) = T_1(u(x_1)-u(\overline{x})) \Rightarrow u(\overline{x}) = \frac{T_0 u(x_0) + T_1 u(x_1)}{T_0 + T_1}.
 	\end{equation}
-	Next we insert this into the expression for $f_0$:
+	Next we insert this into the expression for $\tilde{q}_0$:
 	\begin{equation}
 		\begin{aligned}
-			f_0 =& -T_0(u(\overline{x})-u(x_0)) \\
+			\tilde{q}_0 =& -T_0(u(\overline{x})-u(x_0)) \\
 			=& -T_0(\frac{T_0 u(x_0) + T_1 u(x_1)}{T_0 + T_1} - u(x_0))\\
 			=& -T_0(\frac{T_0 u(x_0) + T_1 u(x_1) - u(x_0)T_0 - u(x_0)T_1}{T_0 + T_1}) \\
 			=& -T_0(\frac{ T_1 u(x_1)  - u(x_0)T_1}{T_0 + T_1})\\
@@ -606,9 +610,9 @@
 	Now, we have solved the equations for the transmissivity coefficients:
 	\begin{equation}\label{eq:harmonic mean}
 		\begin{aligned}
-			f_0 &= t^0 u(x_0) + t^1 u(x_1) \\
+			\tilde{q}_0 &= t^0 u(x_0) + t^1 u(x_1) \\
 			\frac{u(x_0)-u(x_1)}{\frac{1}{T_1} + \frac{1}{T_0}} &= t^0 u(x_0) + t^1 u(x_1) \\
-			\Rightarrow t^0 &= \frac{1}{\frac{1}{T_1} + \frac{1}{T_0}}
+			\Rightarrow t^0 &= \frac{1}{\frac{1}{T_1} + \frac{1}{T_0}}.
 		\end{aligned}
 	\end{equation} 
 	Hence, the transmissibility is the \emph{harmonic mean} of the local transmissivities. One way of looking at this discretization, is that we assume the potential to be a linear function of one variable in the $v_i$ direction between the cell center and the edge in figure \ref{fig:tpfa control volume}. So for each edge, we have two linear functions on each side, which gives us four degrees of freedom. Two of them are used to respect the cell center potential values, the other two are used on pressure and flux continuity across the edge. With these assumptions, expressions \eqref{eq:f_0} and \eqref{eq:f_1} are exact. And we only have to solve for the transmissibility coefficients.\par
@@ -640,7 +644,7 @@
 	\end{figure}
 	In each interaction region there are four half edges. Our goal is to obtain an expression 
 	\begin{equation*}
-		f_j = \int_{E_j}\hat{\bm{n}_j}^T \bm{K} \nabla u \  ds = \sum_{k=1}^4 t^{k}_j u^k \ \ j,k \in \left \{ 1,2,3,4 \right \}
+		\tilde{q}_j  = \sum_{k=1}^4 t^{k}_j u^k  \approx \int_{E_j}\hat{\bm{n}}_j^T \bm{K} \nabla u \  ds \ \ j,k \in \left \{ 1,2,3,4 \right \}
 	\end{equation*}
 	for the flux through each half edge $E_j$, where subscript $j$ denotes the half edges of the interaction region and superscript $k$ denotes cell center potential values.
 	\par
@@ -649,17 +653,17 @@
 	By these assumptions on flux and potential continuity, the linear potential in each sub cell is well defined given values at the cell center. We can now use this to compute the four by four matrix, $\bm{T}=\left \{ t^{j,k} \right \}$,  of transmissibility coefficients  for each of the four half edges, see \cite{Aavatsmark2002} for the details. It involves inverting a four by four matrix with coefficients depending on the mesh and permeability. Finally we assemble the system of equations \eqref{eq:fvm system} with the transmissibility coefficients. Note that we write the flux over the $j$th edge of cell $i$, $\tilde{f}_{i,j}$ as the flux over the two half edges:
 	\begin{equation*}
 		\begin{aligned}
-			\sum_{j=1}^4 (\tilde{f}_{i,j}^1 + \tilde{f}_{i,j}^2) &= |\Omega_i|F(x_i) \\
-			\sum_{j=1}^4 (\sum_{k=1}^4 t^{k,1}_{i,j}u^k + \sum_{k=1}^4 t^{k,2}_{i,j}u^k)&= |\Omega_i|F(x_i).\\
+			\sum_{j=1}^4 (\tilde{q}_{i,j}^1 + \tilde{q}_{i,j}^2) &= |\Omega_i|f(x_i) \\
+			\sum_{j=1}^4 (\sum_{k=1}^4 t^{k,1}_{i,j}u^k + \sum_{k=1}^4 t^{k,2}_{i,j}u^k)&= |\Omega_i|f(x_i).\\
 		\end{aligned}
 	\end{equation*}
 	Next, we see that the interaction regions of the two half edges sharing same edge overlaps, so we get a six point flux stencil:
 	\begin{equation*}
-		\sum_{j=1}^4 \sum_{k=1}^6 \overline{t}^{k}_{i,j}u^k = |\Omega_i|F(x_i).
+		\sum_{j=1}^4 \sum_{k=1}^6 \overline{t}^{k}_{i,j}u^k = |\Omega_i|f(x_i).
 	\end{equation*}
 	We can simplify this further and see that we get a nine point stencil:
 	\begin{equation*}
-		\sum_{k=1}^9 \hat{t}^{k}_{i,j}u^k = |\Omega_i|F(x_i).
+		\sum_{k=1}^9 \hat{t}^{k}_{i,j}u^k = |\Omega_i|f(x_i).
 	\end{equation*}
 	The O-method is consistent for non K-orthogonal grids, and reduces to two point flux approximation when the grid is K-orthogonal.
 	\par
@@ -705,8 +709,8 @@
 		As with the O-method, we end up with a system assembled from the fluxes over the half edges:
 	\begin{equation}
 		\begin{aligned}
-			\sum_{j=1}^4 (\tilde{f}_{i,j}^1 + \tilde{f}_{i,j}^2) &= |\Omega_i|F(x_i) \\
-			\sum_{j=1}^4 (\sum_{k=1}^3 t^{k,1}_{i,j}u^k + \sum_{k=1}^3 t^{k,2}_{i,j}u^k)&= |\Omega_i|F(x_i).\\
+			\sum_{j=1}^4 (\tilde{q}_{i,j}^1 + \tilde{q}_{i,j}^2) &= |\Omega_i|f(x_i) \\
+			\sum_{j=1}^4 (\sum_{k=1}^3 t^{k,1}_{i,j}u^k + \sum_{k=1}^3 t^{k,2}_{i,j}u^k)&= |\Omega_i|f(x_i).\\
 		\end{aligned}
 	\end{equation}
 	But the flux stencil across each edge is possibly smaller, often just four points.
@@ -755,18 +759,18 @@
 	\begin{lemma}[Cao, Y., Helmig, R. and Wohlmuth, B.I. (2009),\cite{https://doi.org/10.1002/fld.1926}] \label{lemma:L_potential}
 		Assume that the permeability $\bm{K}$ is homogenous on $\Omega$, then the flux trough each half edge $e$, computed by the L-method, can be written as
 		\begin{equation}
-			f_e = -\bm{K} \nabla p_h \cdot \bm{n}_e
+			\tilde{q}_e = -\bm{K} \nabla u \cdot \bm{n}_e
 		\end{equation}
-		Where $\bm{n}_e$ is the scaled normal vector to the half edge $e$, having the same length as $e$. $p_h$ is a linear scalar field uniquely given by the potential values at the three cellcenters chosen by the L-method.
+		Where $\bm{n}_e$ is the scaled normal vector to the half edge $e$, having the same length as $e$. $u$ is a linear scalar field uniquely given by the potential values at the three cellcenters chosen by the L-method.
 		\begin{figure}[H]
 			\centering
 			\includegraphics{Right choice linear potential.pdf}
 			\caption{Simplified L-triangle, the original L-triangle i shown in figure \ref{fig:three sin x}. The vector $\nu_1$ is perpendicular to the edge between $x_1$ and $x_2$, with the same length as the edge it is perpendicular to. Same for $\nu_2$.}
 			\label{fig:L-triangle-potential}
 		\end{figure}
-		Moreover, the gradient $\nabla p_h$, is given by:
+		Moreover, the gradient $\nabla u$, is given by:
 		\begin{equation}\label{eq:L-potential}
-			\nabla p_h = -\frac{1}{2F}[(p_1 - p_2)\nu_1 + (p_3 - p_2)\nu_2 ].
+			\nabla u = -\frac{1}{2F}[(u_1 - u_2)\nu_2 + (u_3 - u_2)\nu_1 ].
 		\end{equation}
 		Where $F$ is the the area of the simplified L-triangle with corners $x_1$, $x_2$ and $x_4$, see figure  \ref{fig:L-triangle-potential}. An expression like \eqref{eq:L-potential} can be obtained for the other choice of L-triangle as well.
 	\end{lemma}
@@ -777,15 +781,15 @@
 		\label{fig:original right choice}
 	\end{figure}
 	\begin{proof}
-		It is enough to check that the jump $[\nabla p]$ is zero on $e_1$ and $e_2$ on the original L-triangle in figure \ref{fig:original right choice}. Let $\bm{t}_{e_1}$ and $\bm{n}_{e_1} $be the tangent and normal vector to $e_1$. Since we require potential continuity on each half edge, we get:
+		It is enough to check that the jump $[\nabla u]$ is zero on $e_1$ and $e_2$ on the original L-triangle in figure \ref{fig:original right choice}. Let $\bm{t}_{e_1}$ and $\bm{n}_{e_1} $be the tangent and normal vector to $e_1$. Since we require potential continuity on each half edge, we get:
 		\begin{equation}
-			[\nabla p \cdot \bm{t}_{e_1}]=0.
+			[\nabla u \cdot \bm{t}_{e_1}]=0.
 		\end{equation}
 		Using the fact that $\bm{K}$ is symmetric and homogenous, we obtain:
 		\begin{equation}
-			[\bm{K} \nabla p \cdot \bm{n}_{e_1}]=[\nabla p \cdot \bm{K}^T \bm{n}_{e_1}]=[\nabla p \cdot \bm{K}\bm{n}_{e_1}]=0.
+			[\bm{K} \nabla u \cdot \bm{n}_{e_1}]=[\nabla u \cdot \bm{K}^T \bm{n}_{e_1}]=[\nabla u \cdot \bm{K}\bm{n}_{e_1}]=0.
 		\end{equation}
-		Where we used flux continuity across each half edge in the last equality. Since $\bm{K}$ is positive definite, we have that $\bm{K}\bm{n}_{e_1}$ and $\bm{t}_{e_1}$ are independent, thus $[\nabla p]=0$ on $e_1$. Same arguments holds for $e_2$. Hence $\nabla p$ is constant on the original L-triangle and the desired result follows.
+		Where we used flux continuity across each half edge in the last equality. Since $\bm{K}$ is positive definite, we have that $\bm{K}\bm{n}_{e_1}$ and $\bm{t}_{e_1}$ are independent, thus $[\nabla u]=0$ on $e_1$. Same arguments holds for $e_2$. Hence $\nabla u$ is constant on the original L-triangle and the desired result follows.
 	\end{proof}
 	\begin{remark}
 		The above lemma suggests that we can obtain the transmissibility coefficients without solving a system of equations for each half edge. This simplifies implementation, but it's only possible for homogenous media.
@@ -796,7 +800,79 @@
 	\par 
 	To conclude; the L-method is the most sophisticated method. It has the best monotonicity properties, it is consistent for non K orthogonal grids, but it requires more work for assembling the matrix. It is also more complicated to implement, especially for more dimensions.
 	\section*{Time Discretization}	\addcontentsline{toc}{section}{Time Discretization}
+		We start by considering the most famous parabolic equation, namely the heat equation. Let $u = u(x,t)$, given appropriate boundary and initial conditions, find $u$ such that:
 	
+	\begin{equation}\label{eq:heat equation}
+		\begin{aligned}[c]
+			\partial_t u - \nabla \cdot \pmb{K} \nabla u &= f \\
+			u &= 0 \\
+			\pmb{K}\nabla u &= g_N\\
+			u &= u_0
+		\end{aligned}
+		\ \ \
+		\begin{aligned}[c]
+			x &\in \Omega  \\
+			x &\in \partial \Gamma_D \\
+			x &\in \partial \Gamma_N \\
+			x &\in \Omega  
+		\end{aligned}
+		\ \ \
+		\begin{aligned}
+			t&\in (0,T] \\
+			t&\in (0,T] \\
+			t&\in (0,T] \\
+			t&=0
+		\end{aligned}
+	\end{equation}
+	The well-posedness of \eqref{eq:heat equation} is discussed in chapter seven of \cite{evans10}, it requires a more detailed discussion of Sobolev spaces and Bochner spaces, ie. spaces containing functions from the real numbers to some Sobolev space.\par
+	We expect low regularity in time, so there is not much gained by using a higher order discretization in time. The two choices we have left is the forward euler(explicit) and the backward euler(implicit). The obvious choice is backward euler, as it is stable for long timesteps. This can be understood intuitively by considering the parabolic nature of the equation, the signals spread trough the domain instantaneously. A careful analysis of time discretizations of parabolic equations is done in (\cite{Knabner}, chapter 7).  Here it is shown that explicit schemes only are stable for time-step proportional to the square of the space step, whereas fully implicit schemes are stable for all time-steps. \par  Let $\left \{ t_n \right \}_n$ be a sequence of $N+1$ evenly spaced numbers from $0$ to $T$ and let $\tau = \frac{T}{N}$ be the time-step. Then we state the semi-discrete version of \eqref{eq:heat equation} by exchanging the time derivative by a difference quotient $(\partial_t u)^n = \frac{u^n-u^{n-1}}{\tau}$. Note that this difference quotient is implicit because $u^n$ is not explicitly given by terms of the previous time-step. We end up with: Given $u^{n-1}$ and $f^n$, find $u^n$ such that
+	\begin{equation}\label{eq:semidiscrete heat}
+		\begin{aligned}[c]
+			u^n - \tau \nabla \cdot \pmb{K} \nabla u^n &= \tau f^n+u^{n-1}\\
+			u^n &= 0 \\
+			\pmb{K}\nabla u &= g_N\\
+			u^0 &= u_0
+		\end{aligned}
+		\ \ \
+		\begin{aligned}[c]
+			x &\in \Omega  \\
+			x &\in \partial \Gamma_D \\
+			x &\in \partial \Gamma_N \\
+			x &\in \Omega .
+		\end{aligned}
+	\end{equation}
+	Now we have an elliptic problem \eqref{eq:semidiscrete heat} for each time-step. This has almost the same structure as the elliptic model problem \eqref{eq:poisson} we solved in the previous chapters, the difference being that we have a $u^n$ term.
+	\subsection*{Finite element approach}
+	We are now ready to fit this problem into our finite element framework from chapter 2.
+	The variational formulation of \eqref{eq:semidiscrete heat} is achieved as before by multiplying by test functions in $H^1_0(\Omega)$: Given $u^{n-1}$ in $V$, $f^n$ in the dual of $V$, find $u^n$ in $V$ such that
+	\begin{equation}
+			\left \langle  u^n, v\right \rangle_0 + \tau \left \langle  \pmb{K} \nabla u^n, \nabla v \right \rangle_0 =\tau \left \langle f^n,v\right \rangle_0 + \left \langle u^{n-1},v \right \rangle_0
+	\end{equation}
+	for all $v$ in $V$.
+	If we swap $V$ with  a finite dimensional subspace $V_h$, and write $u_h^n = \sum_{i = 1}^d \hat{u}_i^n \phi_i $, as in the Galerkin FEM section, we end up with the system.
+	\begin{equation}\label{eq:heat fem disc}
+		\begin{aligned}
+			\text{find }\hat{\bm{u}}^n&\in \mathbb{R}^d \text{ such that }\\
+			\pmb{B}\hat{\bm{u}}^n+\tau\pmb{A}\hat{\bm{u}}^n &=\tau \pmb{f}^n +  \pmb{B}\hat{\bm{u}}^{n-1}
+		\end{aligned}
+	\end{equation}
+	Where the \emph{stiffness matrix}, $\pmb{A}$, is as before. The matrix $\pmb{B}$ is often called the \emph{mass matrix} and is defined as $\pmb{B}_{i,j} = \int_{\Omega} \phi_i \phi_jdx$.
+	\subsection*{Finite volume approach}
+	As before we divide our domain $\Omega$ into control volumes $\left \{ \Omega_i \right \}_i$. One could write the heat equation\eqref{eq:heat equation} in conservation form on each control volume
+	\begin{equation}\label{eq:semidiscrete FVM}
+		\partial_t\int_{\Omega_i}u \ dx -\int_{\partial \Omega_i} \pmb{K}\nabla u \cdot \hat{\pmb{n}}\ dx = \int_{\Omega_i} f \ dx,
+	\end{equation}
+	and discretize the first term with backward Euler. Or one could make sure the semi-discrete heat equation \eqref{eq:heat equation} holds for each control volume and use the divergence theorem. Both ways, we end up with
+	\begin{equation}
+		\int_{\Omega_i} u^n \ dx - \tau\int_{\partial \Omega_i} \pmb{K}\nabla u^n \cdot \hat{\pmb{n}}\ dx = \tau \int_{\Omega_i} f^n \ dx + \int_{\Omega_i} u^{n-1} \ dx.
+	\end{equation}
+	As in the previous section we end up with a system of equations, where superscript $V$ is just to distinct between FVM and FEM.
+	\begin{equation}\label{eq:heat fvm disc}
+		(\pmb{B}^V + \tau \pmb{A}^V)\pmb{u}^n = \tau \pmb{f}^n + \pmb{B}^V\pmb{u}^{n-1}
+	\end{equation}
+	The matrix $\pmb{A}^V$ is as in chapter 3, with the fluxes trough the edges of cell $i$ described by the $j$th row of $\pmb{A}^V$. The matrix $\pmb{B}^V$ is diagonal with the entry $i$ being the volumes of the volume of cell $i$.
+	
+	If $\pmb{A}= \pmb{A}^V$, ie. that the discretization of the constitutive law is the same for both finite volume and finite element method. As we will see later, this is the challenging part.	
 	
 
 \end{document}
