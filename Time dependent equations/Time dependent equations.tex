@@ -2,87 +2,8 @@
 
 \begin{document}
 	\graphicspath{{../Time dependent equations/figs/}}
-	\chapter{Time evolving equations}
-	In this chapter we discuss numerical solving algorithms for parabolic equations with non-linearities, such as Richards' equation \eqref{eq:richards}. 
-
-	
-	\section*{Linearization}
-	Now we have seen that the heat equation leads to a sequence of linear systems. In the same way, we expect that our non-linear Richards' equation \eqref{eq:richards} leads to a system of non-linear equations. We start by discussing this in a general setting
-	\begin{equation}\label{eq:non-linear-problem}
-		\text{find }x\in U \text{ such that }\pmb{f}(\pmb{x})=\pmb{0} \\ \text{ where } f:U\subset\mathbb{R}^n\rightarrow\mathbb{R}^n
-	\end{equation}
-	The solution in \eqref{eq:non-linear-problem} is called a \emph{root}, it is almost always found using an iterative method.\par 
-	A common iterative scheme to solve \eqref{eq:non-linear-problem} is the \emph{Newton method}, let $D\pmb{f}(\pmb{x}_{j-1})^{-1}:\mathbb{R}^n\rightarrow\mathbb{R}^n$ be the Jacobian of $\pmb{f}(\pmb{x}_{j-1})$.
-	\begin{equation}
-		\pmb{x}_j = \pmb{x}_{j-1} -D\pmb{f}(\pmb{x}_{j-1})^{-1}\pmb{f}(\pmb{x}_{j-1})
-	\end{equation}
-	In one dimension a convergence proof i easily obtained by techniques from calculus, the following theorem is found in  slightly more detail in (Cheney\cite{Cheney}, chapter 3):
-	\begin{theorem}
-		Let $f''<2$ with $f(\overline{x})=0$ and $f'(x)> \delta \ \forall x \in B_{\epsilon}(\overline{x})$, then the Newton method is locally quadratic convergent:  For $x_0\in B_{\epsilon}(\overline{x})$ we have
-		\begin{equation}
-			| x_{j+1}-\overline{x}| \leq \frac{1}{\delta}|x_j - \overline{x}|^2< |x_j-\overline{x}|
-		\end{equation}
-	\end{theorem}
-	\begin{proof}
-		Define $e_n=x_n-\overline{x}$. Then we have by Taylor expansion
-		\begin{equation}\label{eq:newton_taylor}
-			0 = f(\overline{x})=f(x_j-e_j) = f(x_j)-f'(x_j)e_j + \frac{f''(\psi)e_j^2}{2}
-		\end{equation}
-		For some $\psi$ between $x_j$ and $\overline{x}$. Further we get by definition of the newton method
-		\begin{equation}
-			\begin{aligned}
-				e_{j+1} = x_{j+1}-\overline{x} &= x_n-\frac{f(x_j)}{f'(x_j)}-\overline{x}\\
-				&=e_j - \frac{f(x_j)}{f'(x_j)}\\ &= \frac{e_j f'(x_j)-f(x_j)}{f'(x_j)}
-			\end{aligned}
-		\end{equation}
-		By the Taylor expansion around $x_j$, \eqref{eq:newton_taylor}, we get
-		\begin{equation}
-			e_{j+1} = \frac{e_j^2f''(\psi)}{2f'(x_j)}
-		\end{equation}
-	The assumptions on $f'$ and  $f''$ combined with $|e_0|<\delta$ give us the estimate
-		\begin{equation}
-			| e_{1} | \leq \frac{2}{2\delta}|e_0|^2<|e_0|
-		\end{equation}
-	By the same reasoning we get convergence
-	\begin{equation}
-		|e_{j+1}|<|e_j|
-	\end{equation}
-	And the quadratic convergence
-	\begin{equation}
-		| e_{j+1} | \leq \frac{1}{\delta}|e_j|^2
-	\end{equation}
-	\end{proof}
-	For a similar result in more dimensions see (Knabner \cite{Knabner}, chapter 8). One apparent drawback of this method is that it's only locally convergent, ie. one needs to start the iteration in a neighbourhood of the root where the Jacobian is well defined. In practice one often solves the system
-	\begin{equation}
-		D\pmb{f}(\pmb{x}_{j-1})\pmb{\delta}_{j} = -\pmb{f}(\pmb{x}_{j-1})
-	\end{equation}
-	And then update the current iterate with $\pmb{x}_j = \pmb{x}_{j-1} + \pmb{\delta}_{j}$. One often end end up with a situation where the matrix $D\pmb{f}(\pmb{x}_{j-1})$ needs to be computed and assembled for every iteration. This may be computationally expensive. So Newtons method may be slow despite it's quadratic convergence, if it even converges.\par 
-	A simpler approach is to swap the Jacobian with a diagonal matrix $L\pmb{I}$ such that 
-	\begin{equation}\label{eq:L-scheme}
-		L\pmb{\delta}_j = - \pmb{f}(\pmb{x}_{j-1})
-	\end{equation}
-	This is called the \emph{L-scheme}, and will be method we will use for linearization in this thesis. In one dimension it is easy to prove convergence:
-
-	\begin{theorem}
-		Let $f\in C(\mathbb{R})$ and $L>\sup_{x\in\mathbb{R}}f'(x)$, then the L-scheme converges linearly for all $x_0\in \mathbb{R}$.
-	\end{theorem}
-	\begin{proof}
-		Define $e_j = e_j-\overline{x}$, then we get
-		\begin{equation}
-			e_{j+1} = x_j-\frac{f(x_j)}{L}-\overline{x}=e_j-\frac{f(x_j)}{L}
-		\end{equation}
-		We use the same trick as before with the Taylor expansion around the root.
-		\begin{equation}
-			0 = f(\overline{x}) = f(x_j-e_j) = f(e_j)-f'(\psi)e_j\Rightarrow e_j = \frac{f(x_j)}{f'(\psi)}
-		\end{equation}
-		Using this and the assumption on $L$ we get the estimate
-		\begin{equation}
-			|e_{j+1}|=|e_j(1-\frac{f'(\psi)f(x_j)}{f(x_j)L})|\leq|e_j||1-\frac{f'(\psi)}{L}|<|e_j|
-		\end{equation}
-	\end{proof}
-	To see how this could be applied to parabolic PDE's we consider the equation:
-	
-	\section*{Richards' equation}
+	\chapter{Convergence of Richards' equation}
+	\section*{Constant permeability}
 	\addcontentsline{toc}{section}{Richards' equation}
 	We will first consider the non-linear, parabolic equation:
 	\begin{equation}\label{eq:richards simple}

@@ -5,7 +5,7 @@
 	In this chapter we show equivalence between a modified MPFA-L method and a modified finite element method for time dependent problems such as  \eqref{eq:semidiscrete heat}. The challenge of discretizing time dependent, possibly linearized, problems boils down to solving the elliptic problem:
 	\begin{equation}\label{eq:stationary_heat}
 		\begin{aligned}[c]
-		u - \nabla \cdot \pmb{K} \nabla u &= F \\
+		u - \nabla \cdot \pmb{K} \nabla u &= f \\
 			u &= 0 \\
 			\pmb{K}\nabla u &= g_N
 		\end{aligned}
@@ -27,7 +27,7 @@
 	With appropriate boundary conditions and source term.
 	As we saw in the previous chapter, one gets with the finite volume method the following relation for all control volumes $\Omega_i$:
 	\begin{equation}
-		\int_{\Omega_i} u \ dx - \int_{\partial \Omega_i} \pmb{K}\nabla u \cdot \hat{\pmb{n}}\ dx = \int_{\Omega_i} F \ dx
+		\int_{\Omega_i} u \ dx - \int_{\partial \Omega_i} \pmb{K}\nabla u \cdot \hat{\pmb{n}}\ dx = \int_{\Omega_i} f \ dx
 	\end{equation}
 	The MPFA-L method deals with the second term, approximating the constitutive law. The other two terms are common to all control volume methods solving time dependent problems or \eqref{eq:stationary_heat} and we will not make modifications or discuss them further.
 	\par
@@ -58,6 +58,7 @@
 	
 	The fluxes on the right hand side of \eqref{eq:K2} are computed as for the Neumann case.
 	\section*{Modified finite element method}
+	
 	In this section we introduce a finite element method for solving \eqref{eq:semidiscrete heat}. We start by observing that by theorem \ref{th:L_triangulation} the L-triangles form a triangulation $\left \{ \tau_h \right \}$. The only modifications we need to make are to the linear form, we let the bi-linear form stay the same as before. We want to define an interpolation operator such that the dot products that make up the linear form become mass conservative in each control volume. We need some notation so that we can distinguish between nodes in the interior, at at cell centers along the boundary and at the boundary. In addition, corner cells introduce edge cases. 
 	\par 
 	Let $\mathcal{N}_h^*$ be a set of indexes corresponding to all interior nodes of $\left \{ \tau_h \right \}$, which are also the cell centers of the control volume mesh. This index set contains two disjoint sets $\mathcal{N}_h^* = \mathcal{N}_h^b \bigcup \mathcal{N}_h^i$, where superscript $i$ denotes the cell centers of the interior cells and $b$ the boundary cells. $\mathcal{N}^b_h$ are further subdivided as we see in figure \ref{fig:mesWithNodes}. The boundary nodes consists of the set $\mathcal{N}_h^N \bigcup \mathcal{N}_h^D$, where $N$ and $D$ represent neumann and dirichlet boundary nodes. The rest of the notation are explained in figure \ref{fig:mesWithNodes}
@@ -89,19 +90,17 @@
 		\end{equation}
 		$D_i = \Omega_i$, ie. the corresponding control volume, if $i \in \mathcal{N}_h^i$. If we are close or on the boundary the situation is more complicated: 
 		\begin{itemize}
-			\item $i \in N_h^e$: In this case the function vanishes for the quarter of the paralellogram closest to the boundary, ie. $D_i = \Omega_2$ from figure \ref{fig:volumepartition}
+			\item $i \in \mathcal{N}_h^e$: In this case the function vanishes for the quarter of the paralellogram closest to the boundary, ie. $D_i = \Omega_2$ from figure \ref{fig:volumepartition}
 			\item $i \in \mathcal{N}_h^{N_e}$ In this case of the neumann boundary node $	\hat{I}_h\phi_i(x)$ vanishes outside the quarter of the control volume closest to the edge, ie. $D_i = \Omega_1$ in figure \ref{fig:volumepartition}
 			\item On the corners there are special definitions, see (Cao Wolmuth \cite{https://doi.org/10.1002/num.20525},2009)
 		\end{itemize} 
 	\end{definition}
 	Let $\hat{I}_{\Gamma_N} = \hat{I}_{h}|_{\Gamma_N}$ be the trace of the interpolation operator on the neumann boundary.
-	The finite element method we end up with reads as follows:
+	The finite element method we end up with reads as follows: Find $u_h\in V_h$ such that
 	\begin{equation} \label{eq:modified_fem}
-		\begin{aligned}
-			\text{find }u_h\in&V_h \text{ such that}\\
-			\left \langle \hat{I}_h u_h,\hat{I}_h v_h \right \rangle_{0,\Omega} +   \left \langle \pmb{K} \nabla u_h,\nabla v_h \right \rangle_{0,\Omega} =& \left \langle F,\hat{I}_h v_h \right \rangle_{0,\Omega} + \left \langle g,\hat{I}_{\Gamma_N} v_h \right \rangle_{0,\Gamma_N} 
-		\end{aligned}
+			\left \langle \hat{I}_h u_h,\hat{I}_h v_h \right \rangle_{0,\Omega} +   \left \langle \pmb{K} \nabla u_h,\nabla v_h \right \rangle_{0,\Omega} = \left \langle f,\hat{I}_h v_h \right \rangle_{0,\Omega} + \left \langle g,\hat{I}_{\Gamma_N} v_h \right \rangle_{0,\Gamma_N},
 	\end{equation}
+	for all $v_h\in V_h$. 
 	The key takeaway here is that the inner products become conservative in the control volumes. This is often referred to as \emph{mass lumping}, see for \cite{baranger1996connection} for examples.  
 	\par
 		\begin{figure}[H]
@@ -122,34 +121,80 @@
 	\end{theorem}
 
 	\begin{proof}
-		First we show the equivalence for the interior, so
-		let $\Omega_i$ be an interior control volume and $\phi_i$ be the corresponding basis function evaluating to one at the centre of $\Omega_i$, ie. $i \in \mathcal{N}_h^i$. $T \in \tau_h \bigcap \text{supp}(\phi_i)$ is an element of the triangulation. $S=T\bigcap \Omega_i$ and $E \subset S\bigcap \partial \Omega_i$ are the half edges of $\Omega_i$. $e$ are the interior edges of $\tau_h$ inside the support of $\phi_i$, see fig \ref{fig:two triangles} and \ref{fig:control volume}. $\pmb{n}_e$ is the unit outer normal on $e$ with fixed and arbitrary orientation, and $\pmb{n}_E$ is the unit outer normal on $E$. Since $u_h$ and $\phi$ is piecewise linear and $\pmb{\hat{K}}$ is constant on each triangle $T$ we have:
-		\begin{equation}\label{eq:big computation}
-			\begin{aligned}
-				\left \langle \pmb{K}\nabla u_h, \nabla \phi_i \right \rangle_0 &= \int_{\text{supp}(\phi_i)} (\nabla u_h)^T \pmb{K}\nabla \phi_i \ dx = \sum_{T\in \text{supp}(\phi_i)} \int_T (\nabla u_h)^T \pmb{K}\nabla \phi_i \ dx \\
-				&= \sum_{T\in \text{supp}(\phi_i)} \left ( \int_{\partial T} (\pmb{K}\nabla u_h)^T \pmb{n}\phi_i \ ds-\int_T \nabla \cdot \pmb{K} \nabla u_h \phi_i \ dx \right ) \\
-				&=\sum_{T\in \text{supp}(\phi_i)}\int_{\partial T} (\pmb{K}\nabla u_h)^T \pmb{n}\phi_i \ ds \\
-				&= \sum_{e\in \text{supp}(\phi_i)} \int_e ((\pmb{K}\nabla u_h)^T \pmb{n}_e|_{T_{j}} - (\pmb{K}\nabla u_h)^T \pmb{n}_e|_{T_{j+1}})\phi_i \ ds\\
-				&= \sum_{e\in \text{supp}(\phi_i)}
-				((\pmb{K}\nabla u_h)^T \pmb{n}_e|_{T_{j}} - (\pmb{K}\nabla u_h)^T \pmb{n}_e|_{T_{j+1}}) \frac{|e|}{2}\\
-				&=\sum_{S\in \text{supp}(\phi)}\int_{\partial S}  (\pmb{K}\nabla u_h)^T \pmb{n} \ ds - \sum_{E\in \partial \Omega_i}\int_E (\pmb{K}\nabla u_h)^T \pmb{n}_E \ ds\\
-				&= \sum_{S\in \text{supp}(\phi)}\int_{ S} \nabla \cdot \pmb{K}\nabla u_h \ ds - \sum_{E\in \partial \Omega_i}\int_E (\pmb{K}\nabla u_h)^T \pmb{n}_E \ ds\\
-				&=- \sum_{E\in \partial \Omega_i} (\pmb{K}\nabla u_h)^T \pmb{n}_E |E| 
-			\end{aligned}
-		\end{equation}
-		Note that this last sum is a sum of integrals over the half edges of $\Omega_i$. We know from theorem \ref{lemma:L_potential} that the flux over each half edge in the L-method is given uniquely by the potential values of the three cell centers in the L-triangle.
-		Hence we have showed that the bi-linear form from the finite element method is equivalent to the flux integral in the finite volume L method. For the source terms and the mass matrix the equivalence is obvious:
-		\begin{equation}
-			\begin{aligned}
-				\left \langle \hat{I}_h  u_h,\hat{I}\phi_i \right \rangle_0 = \int_{\Omega}\hat{I}_h u_h \hat{I}_h \phi_i \ dx = u_h(x_i) \int_{\Omega_i} \ dx
-			\end{aligned}
-		\end{equation}
-		And 
-		\begin{equation}
-			\left \langle F,\hat{I}_h v_h \right \rangle = \int_{\Omega_i} F \ dx
-		\end{equation}
-		\todo[inline]{Prove equivalence for boundary cells and boundary nodes, possibly corner cells and nodes}
+		We do the proof in four steps:
+		\begin{enumerate}
+			\item First we show the equivalence for the interior, so
+			let $\Omega_i$ be an interior control volume and $\phi_i$ be the corresponding basis function evaluating to one at the centre of $\Omega_i$, ie. $i \in \mathcal{N}_h^i$.
+			Equation \eqref{eq:modified_fem} with $v_h=\phi_i$ then looks like:
+			\begin{equation}\label{eq:modified fem interior}
+				\left \langle \hat{I}_h u_h,\hat{I}_h \phi_i \right \rangle_{0,\Omega} +   \left \langle \pmb{K} \nabla u_h,\nabla \phi_i \right \rangle_{0,\Omega} = \left \langle f,\hat{I}_h \phi_i \right \rangle_{0,\Omega} .
+			\end{equation}
+			
+			 Let $T \in \tau_h \bigcap \text{supp}(\phi_i)$ be one of the elements in the triangulation that makes up the support of $\phi_i$. $S=T\bigcap \Omega_i$ is a part of the control volume that lies in some element, and $E \subset S\bigcap \partial \Omega_i$ are the half edges of $\Omega_i$. $e$ are the interior edges of $\tau_h$ inside the support of $\phi_i$, see fig \ref{fig:two triangles} and \ref{fig:control volume}. $\pmb{n}_e$ is the unit normal on $e$ with fixed and arbitrary orientation, and $\pmb{n}_E$ is the unit outer normal on $E$. Since $u_h$ and $\phi$ is piecewise linear and $\pmb{\hat{K}}$ is constant on each triangle $T$ we have:
+			\begin{equation}\label{eq:big computation}
+				\begin{aligned}
+					\left \langle \pmb{K}\nabla u_h, \nabla \phi_i \right \rangle_0 &= \int_{\text{supp}(\phi_i)} (\nabla u_h)^T \pmb{K}\nabla \phi_i \ dx = \sum_{T\in \text{supp}(\phi_i)} \int_T (\nabla u_h)^T \pmb{K}\nabla \phi_i \ dx \\
+					&= \sum_{T\in \text{supp}(\phi_i)} \left ( \int_{\partial T} (\pmb{K}\nabla u_h)^T \pmb{n}\phi_i \ ds-\int_T \nabla \cdot \pmb{K} \nabla u_h \phi_i \ dx \right ) \\
+					&=\sum_{T\in \text{supp}(\phi_i)}\int_{\partial T} (\pmb{K}\nabla u_h)^T \pmb{n}\phi_i \ ds \\
+					&= \sum_{e\in \text{supp}(\phi_i)} \int_e ((\pmb{K}\nabla u_h)^T \pmb{n}_e|_{T_{j}} - (\pmb{K}\nabla u_h)^T \pmb{n}_e|_{T_{j+1}})\phi_i \ ds\\
+					&= \sum_{e\in \text{supp}(\phi_i)}
+					((\pmb{K}\nabla u_h)^T \pmb{n}_e|_{T_{j}} - (\pmb{K}\nabla u_h)^T \pmb{n}_e|_{T_{j+1}}) \frac{|e|}{2}\\
+					&=\sum_{S\in \text{supp}(\phi)}\int_{\partial S}  (\pmb{K}\nabla u_h)^T \pmb{n} \ ds - \sum_{E\in \partial \Omega_i}\int_E (\pmb{K}\nabla u_h)^T \pmb{n}_E \ ds\\
+					&= \sum_{S\in \text{supp}(\phi)}\int_{ S} \nabla \cdot \pmb{K}\nabla u_h \ ds - \sum_{E\in \partial \Omega_i}\int_E (\pmb{K}\nabla u_h)^T \pmb{n}_E \ ds\\
+					&=- \sum_{E\in \partial \Omega_i} (\pmb{K}\nabla u_h)^T \pmb{n}_E |E| 
+				\end{aligned}
+			\end{equation}
+			Note that this last sum is a sum of integrals over the half edges of $\Omega_i$. 
+			Further, we have that 
+			\begin{equation}\label{eq:mass equiv 1}
+				\left \langle \hat{I}_h  u_h,\hat{I}\phi_i \right \rangle_0 = \int_{\Omega}\hat{I}_h u_h \hat{I}_h \phi_i \ dx =  \int_{\Omega_i}u_h(x_i) \ dx
+			\end{equation}
+			and
+			\begin{equation}\label{eq:load equiv 1}
+				\left \langle f,\hat{I}_h \phi_i \right \rangle_0 = \int_{\Omega_i}f(x_i) \ dx.
+			\end{equation}
+			Combining equation \eqref{eq:big computation}, \eqref{eq:mass equiv 1} and \eqref{eq:load equiv 1} we get that \eqref{eq:modified fem interior} is equivalent to:
+			\begin{equation}
+				\int_{\Omega_i}u_h(x_i) \ dx - \sum_{E\in \partial \Omega_i} (\pmb{K}\nabla u_h)^T \pmb{n}_E |E| = \int_{\Omega_i}f(x_i) \ dx.
+			\end{equation}
+			We know from theorem \ref{lemma:L_potential} that the flux over each half edge in the L-method is given uniquely by the potential values of the three cell centers in the L-triangle. Since the L-triangles and the elements are the same, $\nabla u_h$ corresponds to the gradient used in the L-method, see equation \eqref{eq:L flux simplified}. Hence, if $u$ is the solution to \eqref{eq:stationary_heat} with the original L-method in the interior, then $u(x_i)=u_h(x_i)$ for $x_i\in \mathcal{N}^i_h$. 
+			\item For a cell bordering the \textbf{Neumann} boundary, first let $i\in \mathcal{N}_h^e$, we have:
+			\begin{equation}\label{eq:case2}
+				\left \langle \hat{I}_h u_h,\hat{I}_h \phi_i \right \rangle_{0,\Omega} +   \left \langle \pmb{K} \nabla u_h,\nabla \phi_i \right \rangle_{0,\Omega} = \left \langle f,\hat{I}_h \phi_i \right \rangle_{0,\Omega}.
+			\end{equation}
+			With similar computations and reasoning as for \eqref{eq:big computation} we get:
+			\begin{equation}
+					\left \langle \pmb{K} \nabla u_h,\nabla \phi_i \right \rangle_{0,\Omega}= 
+					- \sum_{E\in \partial \Omega_{i,2}} (\pmb{K}\nabla u_h)^T \pmb{n}_E |E|, 
+			\end{equation}
+			where $\Omega_{i,2}$ is as $\Omega_2$ in figure \ref{fig:volumepartition}. As $\hat{I}_h$ is carefully defined close to the Neumann boundary, we get that \eqref{eq:case2} is equivalent to:
+			\begin{equation}\label{eq:FVML neumann cell}	\int_{\Omega_{i,2}}u_h(x_i) \ dx - \sum_{E\in \partial \Omega_{i,2}} (\pmb{K}\nabla u_h)^T \pmb{n}_E |E| = \int_{\Omega_{i,2}}f(x_i) \ dx.
+			\end{equation}
+			Next, let $\hat{i} \in \mathcal{N}_h^{N,e}$, ie the index of a node on the boundary. Then we have 
+			\begin{equation}\label{eq:case neumann node}
+				\left \langle \hat{I}_h u_h,\hat{I}_h \phi_i \right \rangle_{0,\Omega} +   \left \langle \pmb{K} \nabla u_h,\nabla \phi_i \right \rangle_{0,\Omega} = \left \langle f,\hat{I}_h \phi_i \right \rangle_{0,\Omega}+ \left \langle g,\hat{I}_{\Gamma_N} v_h \right \rangle_{0,\Gamma_N}.
+			\end{equation}
+			Similarly as in \eqref{eq:big computation} we have:
+			\begin{equation}\label{eq:case neumann 1}
+				\begin{aligned}
+						\left \langle \pmb{K}\nabla u_h, \nabla \phi_{\hat{i}} \right \rangle_0 &= \int_{\text{supp}(\phi_{\hat{i}})} (\nabla u_h)^T \pmb{K}\nabla \phi_{\hat{i}} \ dx = \sum_{T\in \text{supp}(\phi_{\hat{i}})} \int_T (\nabla u_h)^T \pmb{K}\nabla \phi_{\hat{i}} \ dx \\
+					&= \sum_{T\in \text{supp}(\phi_{\hat{i}})} \left ( \int_{\partial T} (\pmb{K}\nabla u_h)^T \pmb{n}\phi_{\hat{i}} \ ds-\int_T \nabla \cdot \pmb{K} \nabla u_h \phi_{\hat{i}} \ dx \right ) \\
+					&=\sum_{T\in \text{supp}(\phi_{\hat{i}})}\int_{\partial T} (\pmb{K}\nabla u_h)^T \pmb{n}\phi_{\hat{i}} \ ds.
+				\end{aligned}
+			\end{equation}
+			But because $\phi_{\hat{i}}\neq 0$ on $\text{supp}(\phi_{\hat{i}})\bigcap \Gamma_N$, we get
+			\begin{equation}\label{eq:case neumann 2}
+				\begin{aligned}
+					\sum_{T\in \text{supp}(\phi_{\hat{i}})}\int_{\partial T} (\pmb{K}\nabla u_h)^T \pmb{n}\phi_{\hat{i}} \ ds &= \sum_{e\in \text{supp}(\phi_{\hat{i}})} \int_e ((\pmb{K}\nabla u_h)^T \pmb{n}_e|_{T_{j}} - (\pmb{K}\nabla u_h)^T \pmb{n}_e|_{T_{j+1}})\phi_i \ ds\\ &+ \int_{\Gamma_N \bigcap \text{supp}(\phi_{\hat{i}})}(\pmb{K}\nabla u_h)^T \pmb{n}_E \ ds\\
+					&= \sum_{E\in \partial \Omega_{\hat{i}}\setminus \Gamma_N} (\pmb{K}\nabla u_h)^T \pmb{n}_E |E|
+				\end{aligned}
+			\end{equation}
+			Combining \eqref{eq:case neumann 1} and \eqref{eq:case neumann 2} and using the definition of $\hat{I}_h$, definition \ref{def:global_interpolator}, we get that \eqref{eq:case neumann node} is equivalent to:
+			\begin{equation}\label{eq:FVML neumann node}
+				\int_{\Omega_{\hat{i},1}}u_h(x_i) \ dx - \sum_{E\in \partial \Omega_{\hat{i},1}} (\pmb{K}\nabla u_h)^T \pmb{n}_E |E| = \int_{\Omega_{\hat{i},1}}f(x_i) \ dx.
+			\end{equation}
+			Where $\Omega_{\hat{i},1}$ is as $\Omega_1$ in figure \ref{fig:volumepartition}. Now, \eqref{eq:FVML neumann cell} and \eqref{eq:FVML neumann node} are exactly the L-method for the Neumann boundary, as described earlier, see figure \ref{fig:volemes along boundary}.  
+			\item For a control volume near the \textbf{Dirichlet} boundary, with the index the cell center $i\in \mathcal{N}_h^e$    
+		\end{enumerate}
 	\end{proof}
-
-	
 \end{document}
