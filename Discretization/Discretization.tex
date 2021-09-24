@@ -655,7 +655,7 @@
 	\begin{equation*}
 		\tilde{q}_j  = \sum_{k=1}^4 t^{k}_j u^k  \approx \int_{E_j}\hat{\bm{n}}_j^T \bm{K} \nabla u \  ds \ \ j,k \in \left \{ 1,2,3,4 \right \}
 	\end{equation*}
-	for the flux through each half edge $E_j$, where subscript $j$ denotes the half edges of the interaction region and superscript $k$ denotes cell center potential values.
+	for the flux through each half edge $E_j$ in the interaction region (figure \ref{fig:interactionregion}), where subscript $j$ denotes the half edges of the interaction region and superscript $k$ denotes cell center potential values.
 	\par
 	We assume for now that the potential is linear in each of the four sub cells in the interaction region, figure  \ref{fig:interactionregion}. This gives $4\cdot 3 = 12$ degrees of freedom. The linear potential must of course equal the cell center values of the potential in the cell centers, this removes four degrees of freedom. We also require flux continuity on the four half edges in the interaction region, this removes an additional four degrees of freedom. The last four degrees of freedom are spent on potential continuity of the midpoints of the edges. 
 	\par
@@ -674,7 +674,25 @@
 	\begin{equation*}
 		\sum_{k=1}^9 \hat{t}^{k}_{i,j}u^k = |\Omega_i|f(x_i).
 	\end{equation*}
-	The O-method is consistent for non K-orthogonal grids, and reduces to two point flux approximation when the grid is K-orthogonal.
+	The O-method is consistent for non K-orthogonal grids, and reduces to two point flux approximation when the grid is K-orthogonal. To see this, we write out the expressions for flux through the half edges of the interaction region, given the assumptions on linear potential, flux continuity and potential continuity.
+	We introduce the quantity:
+	\begin{equation}
+		\omega_{i,j,k} = -\frac{\bm{n}_i \bm{K}_j  \bm{v}_{j,k}}{T_j}
+	\end{equation}
+	
+	
+	\begin{equation}
+		\begin{aligned}
+			\left ( u(\overline{x}_1)-u(x_1)  \right )\bm{v}_{1,2}\bm{K}_1 \bm{n}_1 + (x(\overline{x}_4)-u(x_1))\bm{v}_{1,1}\bm{K}_1\bm{n}_1=	\left ( u(\overline{x}_1)-u(x_2)  \right )\bm{v}_{2,1}\bm{K}_1 \bm{n}_1 + (x(\overline{x}_2)-u(x_2))\bm{v}_{2,2}\bm{K}_1\bm{n}_1
+		\end{aligned}
+	\end{equation}
+	
+	\begin{figure}[H]
+		\centering
+		\includegraphics[]{O k orthogonal.pdf}
+		\caption{Orthogonal grid.}
+	\end{figure}
+	
 	\par
 	In \cite{nordbotten2020introduction}, Nordbotten and Keilegavlen describes a framework of MPFA methods where the O-method is a special case. They consider the problem of finding the four linear potential functions in each interaction region that minimizes the discontinuity across the edges. The discontinuity should be minimized given that the functions respect cell center potential values, that the flux models the constitute law and flux continuity. The O-method is then defined for some special cost function measuring the discontinuity. Other methods, with the potential continuity at other places than the edge midpoint, are also common.
 	\par 
