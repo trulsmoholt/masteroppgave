@@ -70,8 +70,20 @@
 	How this fit in with the convergence proof for Richards' equation with MPFA can be seen in the figure below.
 	\begin{figure}[H]
 		\centering
-		\includegraphics[width=0.8\textwidth]{homogenous_sumary.pdf}
+		\includegraphics[width=0.8\textwidth]{convergence schema.pdf}
+		\label{fig:convergence schema}
 	\end{figure}
+	\begin{theorem}
+		Richards' equation after Kirchoff transform \eqref{eq:richards simple} discretized with backward Euler in time, L-scheme linearization and MPFA-L discretization in space \eqref{eq:linearized richards fvm} converges,
+		\begin{equation}
+			\tilde{u}_h^{n,j}\rightarrow u,
+		\end{equation}
+		as $j\rightarrow \infty$, $h\rightarrow 0$ and $\tau \rightarrow 0$.
+	\end{theorem}
+	\begin{proof}
+		The proof will be done in three steps, see figure \ref{fig:convergence schema}.
+	\end{proof}
+	
 	
 	We still need to prove that \eqref{eq:linearized richards fem} converges to a fixed point as $j\rightarrow \infty$. This is done (List, Radu, 2016,\cite{list2016study}) for the normal finite element method, but we do the proof here for our modified finite element method. 
 	First we need assumptions on the parametrizations $\kappa $ and $\theta$:
@@ -112,7 +124,7 @@
 				\tau \left \langle \kappa\nabla e^{n,j},\nabla e^{n,j} \right \rangle_0  = \\ - \left \langle \hat{I}_h \theta(u^{n,j-1}_h) - \hat{I}_h \theta(u^{n}_h),\hat{I}_h e^{n,j} - \hat{I}_h e^{n,j-1}\right \rangle+\frac{L}{2}\left \| \hat{I} e^{n,j-1}\right \|^2
 			\end{gathered}
 		\end{equation}
-		Now we use the Cauchy Swarchz inequality, and the monotonicity $\textbf{A 1}$ on the first term. Similarly we use Cauchy Swarchz and $\textbf{A 2}$ on the second term. Finally we use Young's inequality on the first term on the right hand side.
+		Now we use the Cauchy-Schwarz inequality, and the monotonicity $\textbf{A 1}$ on the first term. Similarly we use Cauchy-Schwarz and $\textbf{A 2}$ on the second term. Finally we use Young's inequality on the first term on the right hand side.
 		\begin{equation}
 			\begin{gathered}
 				\frac{1}{L_{\theta}}\left \| \hat{I}_h (\theta(u^{n,j-1}-\theta(u^{n}))) \right \|^2 + \frac{L}{2}\left \| \hat{I} e^{n,j}\right \|^2 \\
@@ -120,7 +132,7 @@
 				\leq \frac{1}{2L} \left \| \hat{I}_h(\theta (u^{n,j-1})-\theta (u^n) ) \right \|^2  + \frac{L}{2} \left \|\hat{I}_h( e^{n,j} - e^{n,j-1}) \right \|^2+\frac{L}{2}\left \| \hat{I} e^{n,j-1}\right \|^2
 			\end{gathered}
 		\end{equation} 
-		Next we can use Poincare inequality:
+		Next we can use Poincaré inequality:
 		\begin{equation}\label{eq:L-proof}
 			\begin{gathered}
 				\frac{L}{2}\left \| \hat{I}_h e^{n,j}\right\|^2 + \frac{\tau \kappa_m}{C_{\Omega}} \left \|e^{n,j} \right \|^2 \leq (\frac{1}{2L} - \frac{1}{L_{\theta}}) \left \| \hat{I}_h(\theta (u^{n,j-1}-\theta (u^n))) \right \|^2 +\frac{L}{2}\left \| \hat{I} e^{n,j-1}\right \|^2
