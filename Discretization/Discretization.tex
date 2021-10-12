@@ -3,11 +3,11 @@
 \begin{document}
 	\graphicspath{{../Discretization/figs/}}
 	\chapter{Numerical approximation techniques}
-	\section{Finite Element Method}
+	\section{The Finite Element Method}
 	\addcontentsline{toc}{section}{Finite Element Method}
-	The finite element method was first developed in the 1940s by Richard Courant for problems in solid mechanics. As computers became better in the 1960s the method became  more mainstream \cite{Stein2014}. Today there are several general purpose finite element programs being used for a wide range of problems.\\
+	The finite element method was first developed in the 1940s by Richard Courant for problems in solid mechanics. As computers became better in the 1960s the method became  more mainstream \cite{Stein2014}. Today there are several general purpose finite element programs being used for a wide range of problems.\par
 	In this chapter we will introduce the finite element method and state results about stability and convergence.
-	We will concentrate on solving the Poisson equation, let $\Omega \subset \mathbb{R}^n$ be some open, bounded domain. Find $u$ such that:
+	We will concentrate on solving the Poisson equation. Let $\Omega \subset \mathbb{R}^n$ be some open and bounded domain. Find $u$ such that:
 	\begin{equation} \label{eq:poisson}
 		\begin{split}
 			-\nabla \cdot \bm{K} \nabla u(x) &= f(x) \ \  x\in \Omega \\ 
@@ -22,19 +22,27 @@
 	\addcontentsline{toc}{subsection}{Function spaces}
 	When discussing PDE's and the numerical schemes to solve them it is important to have a precise notion of what kind of functions we are looking for and their properties. The function spaces discussed here are all normed vector spaces. From now on we assume that $\Omega \subset \mathbb{R}^d$ is a bounded domain.
 	\begin{definition}[Lebesgue spaces, $L^p(\Omega)$]
-		For $p\in [1,\infty]$ let $L^p(\Omega)$ be the space of functions for which  $\left \| u \right \|_p = (\int_{\Omega} u^pdx)^{1/p} <\infty$
+		For $p\in [1,\infty)$ let $L^p(\Omega)$ be the space of functions for which  $\left \| u \right \|_p = (\int_{\Omega} u^pdx)^{1/p} <\infty$
 	\end{definition}
 
 	\begin{remark}
-		Note that a $L^p$ space induces equivalence relations on the set of functions. Two functions in $L^p$ are equal if they only differ on a set of measure zero.
+		Note that an $L^p(\Omega)$ norm induces equivalence relations on the set of functions. Two functions in $L^p(\Omega)$ are equal if they only differ on a set of measure zero.
 	\end{remark}
-	An important concept when discussing vector spaces are that they intuitively do not have any points missing, this is formally defined as spaces where every Cauchy sequence converges. This is known as \emph{complete} vector spaces or \emph{Banach spaces}.
+	An important concept when discussing normed vector spaces are that they intuitively do not have any points missing, this is formally defined as spaces where every Cauchy sequence converges. This is known as \emph{complete} vector spaces or \emph{Banach spaces}.
 	
 	\begin{theorem}[Riesz-Fischer Theorem \cite{Cheney} chapter 8]\label{theorem:Riesz-Fischer}
-		Each $L^p$ space is a Banach space.
+		Each $L^p(\Omega)$ space is a Banach space.
 	\end{theorem}
 	\begin{remark}
-		The space $L^2(\Omega)$ is a inner-product space, with inner product $\left \langle u,v\right \rangle_{L^2} = \int_{\Omega}uv \ dx$, Banach spaces with an inner product are called \textbf{Hilbert spaces}
+		The space $L^2(\Omega)$ is a inner product space, with inner product
+		\begin{equation*}
+			\left \langle u,v\right \rangle_{L^2} = \int_{\Omega}uv \ dx.
+		\end{equation*}
+		 Banach spaces with an inner product, that induces the norm 
+		\begin{equation*}
+			\left \langle u,u \right \rangle ^{\frac{1}{2}} = \left \| u \right \|,
+		\end{equation*}
+		are called \textbf{Hilbert spaces}. 
 	\end{remark}
 	
 	
@@ -42,16 +50,19 @@
 	
 	Before we continue the study of function spaces we develop some convenient notation for derivatives.
 	
-	\begin{definition}[multi index notation]
+	\begin{definition}[multi-index notation]
 		Let $\overline{\alpha}$ be an ordered n-tuple. We call this a multi-index and denote the length $|\overline{\alpha}| = \sum_{i=1}^n 		\alpha_i$.
-		Let $\phi \in C^{\infty}(\Omega)$ we define $D^{\overline{\alpha}} = (\frac{\partial }{\partial x_1})^{\alpha_1}(\frac{\partial }{\partial x_2})^{\alpha_2}...(\frac{\partial }{\partial x_n})^{\alpha_n}\phi$
+		For $\phi \in C^{\infty}(\Omega)$ we define $D^{\overline{\alpha}} = (\frac{\partial }{\partial x_1})^{\alpha_1}(\frac{\partial }{\partial x_2})^{\alpha_2}...(\frac{\partial }{\partial x_n})^{\alpha_n}\phi$
 	\end{definition}
 	
-	We would also like a more general notion of derivative than the one presented in the basic calculus books.
+	We would also like a more general notion of derivative than the one presented in A basic calculus book.
 	\begin{definition}[weak derivative]
 		Let $L_{loc}^1(\Omega) =\left \{  \right. f\in L^1(K):\forall K \in \Omega \text{  where K is compact}\left.  \right \}$.
-		Let $f \in L_{loc}^1(\Omega)$. If there exists $g\in L_{loc}^1 (\Omega)$ such that \\
-		$\int_{\Omega} g \phi dx = (-1)^{|\overline{\alpha}|} \int_{\Omega} f D^{\overline{\alpha}} \phi dx \ \ \forall \phi \in C^{\infty}$ with $\phi = 0$ on $\partial \Omega$ \\ we say that $g$ is the weak derivative of $f$ and denote it by $D_w^{\overline{\alpha}}f$.
+		Let $f \in L_{loc}^1(\Omega)$. If there exists $g\in L_{loc}^1 (\Omega)$ such that 
+		\begin{equation}
+			\int_{\Omega} g \phi dx = (-1)^{|\overline{\alpha}|} \int_{\Omega} f D^{\overline{\alpha}} \phi dx \ \ \forall \phi \in C^{\infty}
+		\end{equation}
+		 with $\phi = 0$ on $\partial \Omega$  we say that $g$ is the weak derivative of $f$ and denote it by $D_w^{\overline{\alpha}}f$.
 	\end{definition}
 	
 	
@@ -59,11 +70,11 @@
 	\begin{definition}[Sobolev space]
 		Let $k$ be a non-negative integer, define the Sobolev norm as 
 		\begin{equation*}
-			\left \| u \right \|_{W^{k,p}(\Omega)} := (\sum_{|\overline{\alpha}| \leq k} \left \| D_w^{\overline{\alpha}}u \right \|_{L^p(\Omega)}^p)^{1/p}.
+			\left \| u \right \|_{W^{k,p}(\Omega)} := \left (\sum_{|\overline{\alpha}| \leq k} \left \| D_w^{\overline{\alpha}}u \right \|_{L^p(\Omega)}^p\right )^{1/p}.
 		\end{equation*}
 		We then define the sovolev spaces as 
 		\begin{equation*}
-			W^{k,p}(\Omega) = \left \{  \right. f\in L^1_{loc}(\Omega):\left \| f \right \|_{W^{k,p}}<\infty\left.  \right \}
+			W^{k,p}(\Omega) = \left \{  \right. f\in L^1_{loc}(\Omega):\left \| f \right \|_{W^{k,p}}<\infty \left.  \right \}.
 		\end{equation*}
 	\end{definition}
 	\begin{theorem}
@@ -71,19 +82,19 @@
 	\end{theorem}
 	
 	\begin{proof}
-		Let $\left \{  u_i\right \}_{i=0}^{\infty} \subseteq W^{k,p}(\Omega)$ be a Cauchy sequence. This implies that for all $\overline{\alpha}, \  |\overline{\alpha}| \leq k$ we have a Cauchy sequence in $L^p(\Omega)$.
+		Let $\left \{  u_i\right \}_{i=0}^{\infty} \subseteq W^{k,p}(\Omega)$ be a Cauchy sequence. This implies that for all $\overline{\alpha}, \  |\overline{\alpha}| \leq k$ we have a Cauchy sequence in $L^p(\Omega)$:
 		\begin{gather*}
 			\left \| u_j -u_i \right \|_{W^{k,p}} =
 			(\sum_{|\overline{\alpha}|\leq k} \left \| D_w^{\overline{\alpha}}u_j - D_w^{\overline{\alpha}}u_i \right \|_{L^p(\Omega)}^p)^{1/p}  < \epsilon \ \forall i,j \geq N \\
 			\implies \left \| D_w^{\overline{\alpha}}u_j - D_w^{\overline{\alpha}}u_i \right \|_{L^p(\Omega)} < \epsilon
 		\end{gather*}
-		By \eqref{theorem:Riesz-Fischer} we know that $D_w^{\overline{\alpha}}u_i \rightarrow u_{\overline{\alpha}}$ as $i\rightarrow  \infty$. In particular $u_i \rightarrow u$, so now we just need to show that $D_w^{\overline{\alpha}}u =  u_{\overline{\alpha}}$. By the definition of weak derivative we have:
+		By \eqref{theorem:Riesz-Fischer}, every $L^P(\Omega)$ space is a Banach space. Therefore, for each $|\overline{\alpha}| \leq k$, $D_w^{\overline{\alpha}}u_i $ converges to some limit, $ u_{\overline{\alpha}}\in L^p(\Omega)$, as $i\rightarrow  \infty$. In particular $u_i \rightarrow u$ in  $L^p(\Omega)$, so the limit in the $\left \|\cdot \right \|_{W^{k,p}(\Omega)}$ norm, $u$, is well defined. Now we need to show that $\left \{ u_{\overline{\alpha}} \right \}_{\overline{\alpha}}$, are in fact the weak derivatives of $u$, ie. $D_w^{\overline{\alpha}}u =  u_{\overline{\alpha}}$. In other words, that the limit of $u_i$ in the $\left \|\cdot \right \|_{W^{k,p}(\Omega)}$ norm, $u$, is in fact in $W^{k,p}(\Omega)$. By the definition of weak derivative we have:
 		\begin{gather*}
 			\int_{\Omega} D_w^{\overline{\alpha}}u_i \phi dx = (-1)^{|\overline{\alpha}|} \int_{\Omega} u_i D^{\overline{\alpha}}\phi dx
 		\end{gather*}
-		Now applying Hölder's inequality on both sides we get the two inequalities:
+		Let $1=\frac{1}{q}+\frac{1}{p}$, applying Hölder's inequality on both sides we get the two inequalities:
 		\begin{gather*}
-			\int_{\Omega} (D_w^{\overline{\alpha}}u_i - u_{\overline{\alpha}}) \phi dx \leq \left \| (D_w^{\overline{\alpha}}u_i - u_{\overline{\alpha}} \right \|_{L_p} \left \| \phi \right \|_{L_q} \\
+			\int_{\Omega} (D_w^{\overline{\alpha}}u_i - u_{\overline{\alpha}}) \phi dx \leq \left \| D_w^{\overline{\alpha}}u_i - u_{\overline{\alpha}} \right \|_{L_p} \left \| \phi \right \|_{L_q} \\
 			\int_{\Omega} (u_i -u) D^{\overline{\alpha}}\phi dx \leq \left \|u_i -u  \right \|_{L_p} \left \| D^{\overline{\alpha}}\phi \right \|_{L_q}
 		\end{gather*}
 		Taking the limit, the right hand side goes to zero, and we end up with the fact that we can move the limit out of the integral:
@@ -91,23 +102,24 @@
 			\lim_{i\rightarrow \infty} \int_{\Omega} D_w^{\overline{\alpha}}u_i \phi dx =  \int_{\Omega}u_{\overline{\alpha}} \phi dx \\
 			\lim_{i\rightarrow \infty}\int_{\Omega} u_i D^{\overline{\alpha}}\phi dx = \int_{\Omega} u  D^{\overline{\alpha}}\phi dx
 		\end{gather*}
-		Now we can put the two equations together to obtain $D_w^{\overline{\alpha}}u =  u_{\overline{\alpha}}$
+		Now we can put the two equations together with the definition of the weak derivative:
 		\begin{equation*}
-			\int_{\Omega}u_{\overline{\alpha}} \phi dx = \lim_{i\rightarrow \infty} \int_{\Omega} D_w^{\overline{\alpha}}u_i \phi dx = \lim_{i\rightarrow \infty}\int_{\Omega} u_i D^{\overline{\alpha}}\phi dx = \int_{\Omega} u  D^{\overline{\alpha}}\phi dx
+			\int_{\Omega}u_{\overline{\alpha}} \phi dx = \lim_{i\rightarrow \infty} \int_{\Omega} D_w^{\overline{\alpha}}u_i \phi dx = \lim_{i\rightarrow \infty}(-1)^{|\overline{\alpha}|}\int_{\Omega} u_i D^{\overline{\alpha}}\phi dx = \int_{\Omega} u  D^{\overline{\alpha}}\phi dx.
 		\end{equation*}
+		We have shown $D_w^{\overline{\alpha}}u =  u_{\overline{\alpha}}$, and therefore, that $u\in W^{k,p}(\Omega)$. 
 	\end{proof}
 	\begin{definition}
-		We rename the $L^2$ based Sobolev spaces as follows 
+		We rename the $L^2(\Omega)$ based Sobolev spaces as follows 
 		\begin{equation*}
 			H^k(\Omega) = W^{k,2}(\Omega)
 		\end{equation*}
-		With the norm of $H^k$ being written in the more compact forms $\left \| \cdot \right \|_k$ and the inner product defined as follows:
+		With the norm of $H^k(\Omega)$ being written in the more compact form $\left \| \cdot \right \|_k$ and the inner product defined as follows:
 		\begin{equation*}
-			\left \langle u,v \right \rangle_k = \sum_{|\overline{\alpha}| \leq k} \int_{\Omega}D_w^{\overline{\alpha}}u,D_w^{\overline{\alpha}}v dx
+			\left \langle u,v \right \rangle_k = \sum_{|\overline{\alpha}| \leq k} \int_{\Omega}D_w^{\overline{\alpha}}u,D_w^{\overline{\alpha}}v dx.
 		\end{equation*}
 	\end{definition}
 
-	In Sobolev spaces it is not obvious that a function is well defined on a lower dimensional subset of $\Omega$, because two functions may map elements of this zero meassure subset to different values and still be of the same equivalence class. This is important to settle if we want to solve boundary value problems. The following results are stated for general $p$ based Sobolev spaces, but we will only use them for the Hilbert space $H^1$.
+	In Sobolev spaces it is not obvious that a function is well defined on a lower dimensional subset of $\Omega$, because two functions may map elements of this zero measure subset to different values and still be of the same equivalence class. This is important to settle if we want to solve boundary value problems. The following results holds for general $L^p(\Omega)$ based Sobolev spaces, but we will only state them for the Hilbert space $H^1(\Omega)$.
 	\begin{definition}
 		We denote by $H_0^{k}(\Omega)$ the closure of $C_c^{\infty}(\Omega)$ in $H^{k}(\Omega)$, where $C_c^{\infty}(\Omega)$ is the space of infinitely differentiable functions with compact support.
 	\end{definition}
@@ -143,26 +155,26 @@
 	Now we have the theory we need to study elliptic boundary value problems and their weak solutions.
 	\subsection{The variational problem}
 	\addcontentsline{toc}{subsection}{The variational problem}
-	We obtain the \textbf{variational formulation} by multiplying \eqref{eq:poisson} by a function $v$ in a suitable space $V$ called the \emph{test space}, integrating over $\Omega$ and using integration by parts/divergence theorem.
+	We obtain the \textbf{variational formulation} of \eqref{eq:poisson} with multiplying \eqref{eq:poisson} by a function $v$ in a suitable space $V$ called the \emph{test space}, integrating over $\Omega$ and using integration by parts/divergence theorem.
 	\begin{equation*}
 		-\int_{\Omega}v\nabla \cdot\bm{K}\nabla u \ dx = -\int_{\partial \Omega}v \bm{K}\nabla u \cdot \bm{n} \ dx + \int_{\Omega}(\nabla v)^{T}\bm{K} \nabla u \ dx = \int_{\Omega}vf\ dx
 	\end{equation*}
-	If we choose $v$ such that $v=0$ on $\partial \Omega$ the integral over the boundary vanishes. So the new formulation now reads: find $u$ such that 
+	If we choose $v$ such that $v=0$ on $\partial \Omega$, then the integral over the boundary vanishes. The new formulation reads: find $u$ such that 
 	\begin{equation}\label{eq:variational poisson}
 			 \int_{\Omega}(\nabla v)^T \bm{K} \nabla u \ dx = \int_{\Omega}vf\ dx \ \ \  \forall v \in V.
 	\end{equation}
 	A good choice of the test space $V$ is $V=H_0^1(\Omega)$. We also choose this as the solution space.
-	We see that if $u$ is a solution to \eqref{eq:poisson}, it also solves \eqref{eq:variational poisson}. But a solution to \eqref{eq:variational poisson} does not necessarily solve \eqref{eq:poisson}, that is why it is also called the \emph{weak formulation}.\\
-	The variational problems that we will look at, that arises from PDE's, will all have the form: Find $u$ such that
+	We see that if $u$ is a solution to \eqref{eq:poisson}, it also solves \eqref{eq:variational poisson}. But a solution to \eqref{eq:variational poisson} does not necessarily solve \eqref{eq:poisson}, that is why it is also called the \emph{weak formulation}.\par
+	The variational problems that we will look at, will all have the form: Find $u$ such that
 	\begin{equation}\label{eq:variational problem}
 			a(u,v) = b(v) \ \ \ \forall v \in V,
 	\end{equation}
-	where $a(\cdot,\cdot)$ is a \emph{bi linear form} on $V$ and $b(\cdot)$ is a \emph{linear functional} on $V$. To be precise we define a famous concept from functional analysis:
+	where $a(\cdot,\cdot)$ is a \emph{bilinear form} on $V$ and $b(\cdot)$ is a \emph{linear functional} on $V$. To be precise we define a famous concept from functional analysis:
 	\begin{definition}[dual space]
 		Let $V$ be a normed vector space, then we define it's dual space as the space of functions from $V$ to $\mathbb{R}$ that are linear and continuous, also called linear functionals. We denote it by $V^{'}$. This is a normed vector space with the norm: \begin{equation*}
-\left \| u \right \|_{V'} = \sup_{\left \| v \right \|=1}\left \{ |u(v)|:v\in V \right \}. 		\end{equation*}
+\left \| v \right \|_{V'} = \sup \left \{ |\phi(u)|:\left \| u\right \|_V = 1 \right \}. 		\end{equation*}
 	\end{definition}
-	In general, a variational formulation can we seen as finding the element in a Banach space that is mapped to an element in it's dual space by some linear map.
+	In general, a variational formulation can we seen as finding the element in a Banach space that is mapped to an element in its dual space by some map.
 	\subsubsection*{Boundary conditions}
 	Let $\partial \Omega = \Gamma_D\bigcup \Gamma_N$ with $\Gamma_D \bigcap \Gamma_N = \emptyset$, then \eqref{eq:poisson} with more complicated boundary conditions can be written:
 	\begin{equation}\label{eq:inhomogenous poisson}
@@ -182,7 +194,11 @@
 	\begin{equation*}
 		V = \left \{ v\in H^1(\Omega): T(v)=0 \text{ on }\Gamma_D\right \}
 	\end{equation*}
-	Next, assume there exists an element $w$ of $ H^1(\Omega)$ that are mapped by the trace operator such that Dirichlet boundary conditions are met: $T(w)=g_D$. Let $\hat{u} = u+w$, now we can use integration by parts to as before:
+	Next, we define the bilinear form:
+	\begin{equation}
+		a(u,v) := \int_{\Omega} \nabla u \bm{K} \nabla v \ dx.
+	\end{equation}
+	Further, assume there exists an element $w$ of $ H^1(\Omega)$ that are mapped by the trace operator such that Dirichlet boundary conditions are met: $T(w)=g_D$. Let $\hat{u} = u+w$, now we can use integration by parts to as before:
 	\begin{equation}
 		a(u+w,v) = \int_{\Omega}(\nabla u+\nabla w)^{T}\bm{K} \nabla v \ dx = \int_{\Omega}fv \ dx -\int_{\partial\Omega}\bm{K}\nabla (u+w)\cdot \bm{n}v \ dx .
 	\end{equation}
