@@ -1,6 +1,6 @@
 \documentclass[../Main/main.tex]{subfiles}
 \begin{document}
-	\chapter{Equivalence between MPFA-L and FEM}
+	\chapter{Convergence for MPFA L Method for Elliptic Problems}
 	\graphicspath{{../Equivalence between MPFA-L and FEM/figs/}}
 	In this chapter we show equivalence between a modified MPFA-L method and a modified finite element method for time dependent problems such as  \eqref{eq:semidiscrete heat}. The challenge of discretizing time dependent, possibly linearized, problems boils down to solving the elliptic problem:
 	\begin{equation}\label{eq:stationary_heat}
@@ -19,12 +19,12 @@
 	We saw in the section about the MPFA-L method that the interaction regions(L-triangles) may form a triangulation of our domain.
 	Modifications are made to both methods so that we can exploit this fact and obtain equivalence. This section is adapted from (Cao, Y., Helmig, R. and Wohlmuth, B.I. (2009),\cite{https://doi.org/10.1002/num.20525})
 	\section*{Modified MPFA-L method}
-	First of all we assume that we have a parallelogram grid.
-	\begin{figure}[H]\label{fig:paralellogram mesh}
-		\centering
-		\includegraphics[width=1\textwidth]{paralellogram_mesh.pdf}
-	\end{figure}
-	With appropriate boundary conditions and source term.
+	First of all we assume that we have a parallelogram grid, 
+	%\begin{figure}[H]\label{fig:paralellogram mesh}
+	%	\centering
+	%	%\includegraphics[width=1\textwidth]{paralellogram_mesh.pdf}
+	%\end{figure}
+	with appropriate boundary conditions and source term.
 	As we saw in the previous chapter, one gets with the finite volume method the following relation for all control volumes $\Omega_i$:
 	\begin{equation}
 		\int_{\Omega_i} u \ dx - \int_{\partial \Omega_i} \pmb{K}\nabla u \cdot \hat{\pmb{n}}\ dx = \int_{\Omega_i} f \ dx
@@ -47,16 +47,16 @@
 		\label{fig:volumepartition}
 	\end{figure}
 	For the \textbf{Neumann} boundary conditions, we split the cell into two, $y_1 y_6 y_9 y_8$ as $\Omega_2$ and $y_8 y_9 y_4 y_3$ as  $\Omega_1$, see figure \ref{fig:volumepartition} or \ref{fig:volemes along boundary}. For the fluxes on $\Omega_2$ we have six interaction triangles and a normal seven point stencil. For the $\Omega_1$ we compute the flux through $\overline{y_3 y_8}$ using $\triangle x_1 x_3 x_2$, the flux through $\overline{y_8 y_{10}}$ using $\triangle x_1 x_i x_3$, for $\overline{y_{10}y_9}$ and $\overline{y_9 y_4}$ the L triangle  $\triangle x_i x_4 x_3$ is used. Finally the Neumann boundary condition is used at the the edge $\overline{y_4 x_3}$ and $\overline{x_3 y_3}$. We are not able to eliminate the unknown value at $x_3$ and it remains a degree of freedom, which makes sense if we want equivalence with finite element method.
-	\todo[inline]{should perhaps explain more here}
 	\par
 	In the case of \textbf{Dirichlet} boundary conditions, we compute the fluxes into $y_1 y_6 y_4 y_3$ using seven L-triangles, as can be seen in figure \ref{fig:volemes along boundary}. The flux over the edge $\overline{y_3 y_1}$ are computed as the sum of the flux over $\overline{y_3 y_8}$, $\overline{y_8 y_2}$ and $\overline{y_2 y_1}$ using the L-triangles $\triangle x_1 x_3 x_2$, $\triangle x_1 x_i x_3$ and $\triangle x_1 x_7 x_i$ respectively. Similarly for the edge $\overline{y_6 y_4}$. For $\overline{y_1 y_6}$ we only use the two big L-triangles at the bottom. 
 	\par 
 	The flux over $\overline{y_4 y_3}$, at the boundary, we compute by balancing it by the other fluxes into the small control volume $\Omega_1$. Let $	q_{\overline{y_i y_j}}:= \int_{\overline{y_i y_j}}  -\pmb{K}\nabla u \cdot \pmb{\hat{n}}\ dx $, then we get
 	\begin{equation}\label{eq:K2}
-		q_{\overline{y_4 y_3}} = q_{\overline{y_3 y_8}} + q_{\overline{y_8 y_{10}}}+q_{\overline{y_{10}y_9}}+q_{\overline{y_9 y_4}}.
+		q_{\overline{y_4 y_3}} =-( q_{\overline{y_3 y_8}} + q_{\overline{y_8 y_{10}}}+q_{\overline{y_{10}y_9}}+q_{\overline{y_9 y_4}}) + \int_{\Omega_1} f \ dx.
 	\end{equation}
 	
 	The fluxes on the right hand side of \eqref{eq:K2} are computed as for the Neumann case.
+	\par On the corners we make 
 	\section*{Modified finite element method}
 	
 	In this section we introduce a finite element method for solving \eqref{eq:semidiscrete heat}. We start by observing that by theorem \ref{th:L_triangulation} the L-triangles form a triangulation $\left \{ \tau_h \right \}$. The only modifications we need to make are to the linear form, we let the bi-linear form stay the same as before. We want to define an interpolation operator such that the dot products that make up the linear form become mass conservative in each control volume. We need some notation so that we can distinguish between nodes in the interior, at at cell centers along the boundary and at the boundary. In addition, corner cells introduce edge cases. 
@@ -151,11 +151,11 @@
 			\end{equation}
 			and
 			\begin{equation}\label{eq:load equiv 1}
-				\left \langle f,\hat{I}_h \phi_i \right \rangle_0 = \int_{\Omega_i}f(x_i) \ dx.
+				\left \langle f,\hat{I}_h \phi_i \right \rangle_0 = \int_{\Omega_i}f \ dx.
 			\end{equation}
 			Combining equation \eqref{eq:big computation}, \eqref{eq:mass equiv 1} and \eqref{eq:load equiv 1} we get that \eqref{eq:modified fem interior} is equivalent to:
 			\begin{equation}
-				\int_{\Omega_i}u_h(x_i) \ dx - \sum_{E\in \partial \Omega_i} (\pmb{K}\nabla u_h)^T \pmb{n}_E |E| = \int_{\Omega_i}f(x_i) \ dx.
+				\int_{\Omega_i}u_h(x_i) \ dx - \sum_{E\in \partial \Omega_i} (\pmb{K}\nabla u_h)^T \pmb{n}_E |E| = \int_{\Omega_i}f \ dx.
 			\end{equation}
 			We know from theorem \ref{lemma:L_potential} that the flux over each half edge in the L-method is given uniquely by the potential values of the three cell centers in the L-triangle. Since the L-triangles and the elements are the same, $\nabla u_h$ corresponds to the gradient used in the L-method, see equation \eqref{eq:L flux simplified}. Hence, if $u$ is the solution to \eqref{eq:stationary_heat} with the original L-method in the interior, then $u(x_i)=u_h(x_i)$ for $x_i\in \mathcal{N}^i_h$. 
 			\item For a cell bordering the \textbf{Neumann} boundary, first let $i\in \mathcal{N}_h^e$, we have:
@@ -186,7 +186,7 @@
 			\begin{equation}\label{eq:case neumann 2}
 				\begin{aligned}
 					\sum_{T\in \text{supp}(\phi_{\hat{i}})}\int_{\partial T} (\pmb{K}\nabla u_h)^T \pmb{n}\phi_{\hat{i}} \ ds &= \sum_{e\in \text{supp}(\phi_{\hat{i}})} \int_e ((\pmb{K}\nabla u_h)^T \pmb{n}_e|_{T_{j}} - (\pmb{K}\nabla u_h)^T \pmb{n}_e|_{T_{j+1}})\phi_i \ ds\\ &+ \int_{\Gamma_N \bigcap \text{supp}(\phi_{\hat{i}})}(\pmb{K}\nabla u_h)^T \pmb{n}_E \ ds\\
-					&= \sum_{E\in \partial \Omega_{\hat{i}}\setminus \Gamma_N} (\pmb{K}\nabla u_h)^T \pmb{n}_E |E|
+					&= -\sum_{E\in \partial \Omega_{\hat{i}}\setminus \Gamma_N} (\pmb{K}\nabla u_h)^T \pmb{n}_E |E|
 				\end{aligned}
 			\end{equation}
 			Combining \eqref{eq:case neumann 1} and \eqref{eq:case neumann 2} and using the definition of $\hat{I}_h$, definition \ref{def:global_interpolator}, we get that \eqref{eq:case neumann node} is equivalent to:
@@ -194,7 +194,167 @@
 				\int_{\Omega_{\hat{i},1}}u_h(x_i) \ dx - \sum_{E\in \partial \Omega_{\hat{i},1}} (\pmb{K}\nabla u_h)^T \pmb{n}_E |E| = \int_{\Omega_{\hat{i},1}}f(x_i) \ dx.
 			\end{equation}
 			Where $\Omega_{\hat{i},1}$ is as $\Omega_1$ in figure \ref{fig:volumepartition}. Now, \eqref{eq:FVML neumann cell} and \eqref{eq:FVML neumann node} are exactly the L-method for the Neumann boundary, as described earlier, see figure \ref{fig:volemes along boundary}.  
-			\item For a control volume near the \textbf{Dirichlet} boundary, with the index the cell center $i\in \mathcal{N}_h^e$    
+			\item For a control volume near the \textbf{Dirichlet} boundary, let first $i\in \mathcal{N}_h^e$, ie the cell center. Then, our modified finite element method
+			\begin{equation}
+				\left \langle \hat{I}_h u_h,\hat{I}_h \phi_i \right \rangle_{0,\Omega} +   \left \langle \pmb{K} \nabla u_h,\nabla \phi_i \right \rangle_{0,\Omega} = \left \langle f,\hat{I}_h \phi_i \right \rangle_{0,\Omega}
+			\end{equation}   
+			is equivalent to 
+			\begin{equation} 
+				\int_{\Omega_{i,2}} u_h (x_i) \ dx- \sum_{E\in \partial \Omega_{i,2}} (\pmb{K}\nabla u_h)^T \pmb{n}_E |E| = \int_{\Omega_{i,2}} f \ dx,
+			\end{equation} 
+			with the same reasoning as in \eqref{eq:big computation}, \eqref{eq:mass equiv 1} and \eqref{eq:load equiv 1}. As $\Omega_i = \Omega_{i,1}\bigcup \Omega_{i,2}$ and $\Omega_{i,1}\bigcap \Omega_{i,2}= \emptyset$, see figure \ref{fig:volumepartition}, we have:
+			\begin{equation}
+				-\sum_{E\in \Omega_i \setminus \Gamma_D}(\pmb{K}\nabla u_h)^T \pmb{n}_E |E| + \sum_{E\in \Omega_{i,1} \setminus \Gamma_D}(\pmb{K}\nabla u_h)^T \pmb{n}_E |E| + \int_{\Omega_{i,1}} f \ dx = \int_{\Omega_i} f \ dx.
+			\end{equation}
+			We recognize the second and third terms in the above equation as the flux across the Dirchlet boundary in the modified L method, see \eqref{eq:K2}.
+			\item \todo[inline]{Corner cells!}
 		\end{enumerate}
+	\end{proof}
+	\section*{Convergence rate estimates}
+	\begin{lemma}[First Lemma of Strang, page 155 \cite{Knabner}]\label{lemma:strang}
+		Suppose there exists some $\alpha>0$ such that for all $h>0$ and $v\in V_h$
+		\begin{equation*}
+			\alpha \left \| v \right \|^2_1 \leq a_h(v,v) 
+		\end{equation*}
+		and let $a$ be continuous in $V\times V$. Then there exist some constant $C$ independent of $V_h$ such that
+		\begin{equation}\label{eq:strang_ineq}
+			\left \| u-u_h \right \|_1 \leq C\left \{ \inf_{v \in V_h}\left \{ \left \| u-v \right \|_1 + \sup_{w\in V_h}\frac{|a(v,w)-a_h(v,w)|}{\left \| w \right \|_1}+\sup_{w\in V_h}\frac{|l(w)-l_h(w)|}{\left \| w \right \|_1} \right \} \right \}
+		\end{equation}
+	\end{lemma}
+	From \eqref{eq:modified_fem} we see that our bi-linear form looks like
+	\begin{equation}
+		a_u(u,v) = \left \langle \hat{I}_h u, \hat{I}_h v \right \rangle_{0,\Omega} +  \left \langle \pmb{K} \nabla u, \nabla v \right \rangle_{0,\Omega} 
+	\end{equation}
+	And the linear form:
+	\begin{equation}
+		b_h(v)= \left \langle F,\hat{I}_h v \right \rangle_{0,\Omega} + \left \langle g,\hat{I}_{\Gamma_N} v \right \rangle_{0.\Gamma_N}
+	\end{equation}
+	To apply the first Lemma of Strang \ref{lemma:strang} we first show that $a_h$ is coercive:
+	\begin{equation}
+		\begin{aligned}
+			\left \| u \right \|_1^2 &= \left \| \partial_{x_1} u \right \|_0^2 + \left \| \partial_{x_2} u \right \|_0^2 + \left \| u \right \|_0^2 \\
+			&= \frac{\left \langle \nabla u,\nabla u \right \rangle}{\tau K} + \left \| u \right \|_0^2 \\
+			&\leq \frac{\left \langle \nabla u,\nabla u \right \rangle}{\tau K} + C_{\Omega} \left \langle \nabla u, \nabla u \right \rangle \\
+			&\leq (\frac{1}{\tau K} + C_{\Omega})(\left \langle \nabla u, \nabla u \right \rangle + \left \langle \hat{I}_h u, \hat{I}_h u \right \rangle)\\
+			&\leq \frac{1}{\alpha} a_h(u,u) 
+		\end{aligned}
+	\end{equation} 
+	Another important piece that must be in place for a convergence proof is the piecewise interpolation error:
+	\begin{lemma}\label{lemma:int_error}
+		For the previously defined piecewise global interpolator $\hat{I}_h$, definition \ref{def:piecewise_interpolator}, we have the estimate:
+		\begin{equation}
+			\left \| \hat{I}_h u - u \right \|_0 \leq c h | u |_1 \ \forall u \in H^1
+		\end{equation}
+	\end{lemma}
+	\begin{proof}
+		\todo[inline]{todo}
+		Consider the linear mapping:
+		\begin{equation}\label{eq:324}
+			\begin{aligned}
+				G: H^1(\hat{K})&\rightarrow L^2(\hat{K}) \\
+				u &\mapsto \hat{I}_h u - u.
+			\end{aligned}
+		\end{equation}
+		It is continuous by the Sobolev embedding theorem.
+		A standard result in functional analysis gives us the estimate:
+		\begin{equation}
+			\left \| G(v) \right \|_{0,\hat{K}} = \sup \left \{ |\phi (G(v)) |: \phi \in (L^2(\hat{K}))' \text{ and } \left \|\phi \right \|=1 \right \}
+		\end{equation}
+		For given $\phi$, we have that $\tilde{G}(\cdot) :=\phi(G(\cdot))$ is a continuous linear functional, moreover, $\tilde{G}(q)=0$ for all constant functions $q$. By Bramble Hilbert lemma, we have 
+		\begin{equation}
+			|\tilde{G}(v)|\leq C \left \| \tilde{G} \right \| |v|_{1,\hat{K}}
+		\end{equation}
+		Inserting this into \eqref{eq:324}, we obtain:
+		\begin{equation}
+				\left \| G(v) \right \|_{0,\hat{K}} \leq C \left \| \tilde{G} \right \|  |v|_{1,\hat{K}} \leq C \left \| G \right \| |v|_{1,\hat{K}} \leq C^*|v|_{1,\hat{K}}.
+		\end{equation}
+		Hence, we have the estimate
+		\begin{equation}
+			\left \| \hat{I}_h u - u \right \|_{0,\hat{K}} \leq C |u|_{1,\hat{K}},
+		\end{equation}
+		for some reference element $\hat{K}$.
+	\end{proof}
+
+	We are now ready to state the $H^1$ error estimate for the modified finite element method and thus the MPFA-L method:
+	\begin{theorem}
+		Let $u$ solve \eqref{eq:stationary_heat} and $u_h$ be the solution resulting from MPFA-L , then there exists a positive constant $C$ such that
+		\begin{equation}\
+			\left \|u_h - u \right \|_1 \leq c h (\left \| u \right \|_2 + \left \| f \right \|_0 + \left \| g \right \|_{\frac{1}{2},\Gamma_N})
+		\end{equation}
+	\end{theorem}
+	\begin{proof}
+		The hypothesis in Strang's lemma \ref{lemma:strang} are fulfilled.
+		We start by controlling the second term on the right hand side in \eqref{eq:strang_ineq}, the truncation error in the bi-linear form:
+		\begin{equation}
+			\begin{gathered}
+				\sup_{w\in V_h} \frac{|a(v,w)-a_h(v,w)|}{\left \|w \right \|_1} \\
+				=\sup_{w\in V_h} \frac{|\left \langle v,w\right \rangle + \tau \left \langle \pmb{K} \nabla v,\nabla w \right \rangle - \left \langle \hat{I}_h v, \hat{I}_h w \right \rangle - \tau \left \langle \pmb{K} \nabla v, \nabla w \right \rangle|}{\left \| w \right \|_1} \\
+				=\sup_{w\in V_h} \frac{|\left \langle v,w\right \rangle - \left \langle \hat{I}_h v, w \right \rangle + \left \langle \hat{I}_h v, w \right \rangle - \left \langle \hat{I}_h v, \hat{I}_h w \right \rangle|}{\left \| w \right \|_1}\\
+				= \sup_{w\in V_h}\frac{|\left \langle \hat{I}_h v - v,w \right \rangle + \left \langle \hat{I}_h v, \hat{I}_h w - w \right \rangle |}{\left \| w \right \|_1}. \\
+			\end{gathered}
+		\end{equation}
+		We see from the above computations, that the truncation error in the bi-linear form, only has a contribution from the \emph{mass lumping}.
+		By Cauchy Schwarz inequality and lemma \ref{lemma:int_error} we get:
+		\begin{equation}
+			\begin{gathered}
+				\leq \sup_{w\in V_h}\frac{Ch\left \| v \right \|_0 | w|_1 + \left \|\hat{I}_h v\right \|_0 Ch|w|_1}{\left \| w \right \|_1}\\
+				\leq 				 \sup_{w\in V_h}\frac{Ch\left \| v \right \|_0 | w|_1 + \left \|\hat{I}_h v\right \|_0 Ch|w|_1}{\left \| w \right \|_1} + \frac{ch\left \| v \right \|_0 \left \| w \right \|_0 + \left \|\hat{I}_h v\right \|_0 \left \| w \right \|_0}{\left \| w \right \|_1}\\
+				\leq Ch \left (\left \| v \right \|_0 + \left \| \hat{I}_h v \right \|_0 \right ).
+			\end{gathered}
+		\end{equation}
+		The third term, the linear form, can be controlled similarly:
+		\begin{equation}\label{eq:334}
+			\begin{aligned}
+				\sup_{w \in V_h} \frac{l(w)-l_h(w)}{\left \| w \right \|_1} &= \sup_{w \in V_h} \frac{\left \langle f,w-\hat{I}_h w \right \rangle_{0,\Omega} + \left \langle g,w-\hat{I}_{\Gamma_N} w \right \rangle_{0,\Gamma_N}}{\left \| w \right \|_1}\\
+				&\leq \sup_{w \in V_h} \frac{\left \|f\right \|_0 Ch\left \|w \right \|_1 + \left \|g\right \|_{\frac{1}{2},\Gamma_N}\left \|w-\hat{I}_{\Gamma_N} w\right \|_{-\frac{1}{2},\Gamma_N}}{\left \| w \right \|_1}.
+			\end{aligned}
+		\end{equation}
+		Now, we want to bound $\left \|w-\hat{I}_{\Gamma_N} w\right \|_{-\frac{1}{2},\Gamma_N}$ by $\left \| w \right \|_1$. Let $v_h$ be piecewise constant functions on the boundary in each Neumann boundary triangle. Then we have:
+		\begin{equation}
+			\begin{aligned}
+				\left \|w-\hat{I}_{\Gamma_N} w\right \|_{-\frac{1}{2},\Gamma_N} &= \sup_{0 \neq v \in H^{\frac{1}{2}}(\Omega)}\frac{\left \langle w-\hat{I}_{\Gamma_N} w,v\right \rangle_{\Gamma_N}}{\left \| v \right \|_{\frac{1}{2},\Gamma_N}}\\
+				&=\sup_{0 \neq v \in H^{\frac{1}{2}}(\Omega)}\frac{\left \langle w-\hat{I}_{\Gamma_N} w,v-v_h\right \rangle_{\Gamma_N}}{\left \| v\right \|_{\frac{1}{2},\Gamma_N}},
+			\end{aligned}
+		\end{equation}
+	\todo{What is this inner product?}
+		as $\int_{\Gamma_N} (w-\hat{I}_{\Gamma_N} w) \ dx = 0$\todo{Does this make sense?}. Now, we can use Cauchy Schwarz inequality:
+		\begin{equation}\label{eq:neumann CS estimate}
+			\left \|w-\hat{I}_{\Gamma_N} w\right \|_{-\frac{1}{2},\Gamma_N} \leq \sup_{0 \neq v \in H^{\frac{1}{2}}(\Omega)}\frac{\left \| w-\hat{I}_{\Gamma_N} w\right \|_{0,\Gamma_N}\left \| v-v_h\right \|_{0,\Gamma_N}}{\left \| v\right \|_{\frac{1}{2},\Gamma_N}}.
+		\end{equation}
+		By the inequality
+		\begin{equation}\label{eq:difficult inequality}
+			\left \| v-v_h\right \|_{0,\Gamma_N} \leq C h^{\frac{1}{2}} \left \| v \right \|_{\frac{1}{2}, \Gamma_N},
+		\end{equation}
+		we can bound the right hand side of  \eqref{eq:neumann CS estimate}: 
+		\begin{equation}
+				\left \|w-\hat{I}_{\Gamma_N} w\right \|_{-\frac{1}{2},\Gamma_N} \leq Ch^{\frac{1}{2}} \left \| w-\hat{I}_{\Gamma_N} w \right \|_{0,\Gamma_N}.
+		\end{equation}
+		Using \eqref{eq:difficult inequality} again, we get
+		\begin{equation}
+				\left \|w-\hat{I}_{\Gamma_N} w\right \|_{-\frac{1}{2},\Gamma_N} \leq Ch \left \|w\right \|_{\frac{1}{2},\Gamma_N} \leq Ch\left \| w \right \|_1.
+		\end{equation}
+		Where the last inequality is due to the definition of the $H^{\frac{1}{2}}$ norm. Inserting this into \eqref{eq:334}, gives us a bound on the truncation error of our linear form:
+		\begin{equation}
+			\sup_{w \in V_h} \frac{l(w)-l_h(w)}{\left \| w \right \|_1} \leq Ch(\left \|f \right \|_0 + \left \| g \right \|_{\frac{1}{2},\Gamma_N}).
+		\end{equation}
+		Hence, from \eqref{eq:strang_ineq}, we have the error estimate:
+		\begin{equation}\label{eq:341}
+					\left \| u - u_h \right \|_1 \leq \inf_{v_h \in V_h}\left \{ \left \| u - v_h \right \|_1 + Ch \left (\left \| v_h\right \|_0 + \left \| \hat{I}_h v_h \right \|_0 + \left \| f \right \|_0 + \left \| g \right \|_{\frac{1}{2},\Gamma_N}\right ) \right \}
+		\end{equation}
+	If we let $v_h = I_h u \in V_h$ in \eqref{eq:341}, we get the inequality:
+	\begin{equation}\label{eq:342}
+	\left \| u - u_h \right \|_1 \leq \left \| u - I_h u \right \|_1 + Ch \left (\left \| I_h u\right \|_0 + \left \| \hat{I}_h I_h u \right \|_0 + \left \| f \right \|_0 + \left \| g \right \|_{\frac{1}{2},\Gamma_N} \right )
+	\end{equation}
+	As discussed earlier, in section \ref{sec:convergence} about convergence of finite element method, we have the estimate:
+	\begin{equation}
+ \left \| u - I_h u \right \|_1 \leq C h|u|_2.
+	\end{equation}
+	If we insert this into \eqref{eq:342}, we get:
+	\begin{equation}
+	\left \| u - u_h \right \|_1 \leq  Ch \left ( |u|_2 + \left \| I_h u\right \|_0 + \left \| \hat{I}_h I_h u \right \|_0 + \left \| f \right \|_0 + \left \| g \right \|_{\frac{1}{2},\Gamma_N} \right ).
+	\end{equation}
+	As $I_h u, \hat{I}_h u \rightarrow u$ as $h\rightarrow 0$, we can control the first three terms inside the parenthesis by the $H^2$ norm of $u$, and we get the desired result:
+	\begin{equation}
+\left \| u - u_h \right \|_1 \leq  Ch \left ( \left \|u\right \|_2 + \left \| f \right \|_0 + \left \| g \right \|_{\frac{1}{2},\Gamma_N} \right ).	\end{equation}
 	\end{proof}
 \end{document}

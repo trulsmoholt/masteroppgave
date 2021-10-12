@@ -5,6 +5,7 @@
 	\chapter{Convergence of Richards' equation}
 	\section*{Constant permeability}
 	\addcontentsline{toc}{section}{Richards' equation}
+	\todo[inline]{Show kirchoff transform from richards'}
 	We will first consider the non-linear, parabolic equation:
 	\begin{equation}\label{eq:richards simple}
 		\begin{aligned}[c]
@@ -73,6 +74,8 @@
 		\includegraphics[width=0.8\textwidth]{convergence schema.pdf}
 		\label{fig:convergence schema}
 	\end{figure}
+
+	
 	\begin{theorem}
 		Richards' equation after Kirchoff transform \eqref{eq:richards simple} discretized with backward Euler in time, L-scheme linearization and MPFA-L discretization in space \eqref{eq:linearized richards fvm} converges,
 		\begin{equation}
@@ -85,7 +88,9 @@
 	\end{proof}
 	
 	
-	We still need to prove that \eqref{eq:linearized richards fem} converges to a fixed point as $j\rightarrow \infty$. This is done (List, Radu, 2016,\cite{list2016study}) for the normal finite element method, but we do the proof here for our modified finite element method. 
+	\vspace{100pt}
+	\textbf{Convergence of L-scheme for modified FEM}
+	This is done (List, Radu, 2016,\cite{list2016study}) for the normal finite element method, but we do the proof here for our modified finite element method. 
 	First we need assumptions on the parametrizations $\kappa $ and $\theta$:
 	\begin{itemize}
 		\item[\textbf{A 1}] The water content parametrization $\theta(\cdot)$ is monotonically increasing with $sup|\theta'| = L_{\theta}$ and Lipschitz continuos.
