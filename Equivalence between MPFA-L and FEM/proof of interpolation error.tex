@@ -1,0 +1,56 @@
+\begin{lemma}\label{lemma:int_error}
+	For the previously defined piecewise global interpolator $\hat{I}_h$, definition \ref{def:piecewise_interpolator}, we have the estimate:
+	\begin{equation}
+		\left \| \hat{I}_h u - u \right \|_0 \leq c h | u |_1 \ \forall u \in H^1
+	\end{equation}
+\end{lemma}
+\begin{proof}
+	We will only sketch an informal proof to highlight the main ideas in these types of estimates. 
+	Consider the linear mapping:
+	\begin{equation}\label{eq:324}
+		\begin{aligned}
+			G: H^1(\hat{K})&\rightarrow L^2(\hat{K}) \\
+			u &\mapsto \hat{I}_h u - u.
+		\end{aligned}
+	\end{equation}
+	It is continuous by the Sobolev embedding theorem.
+	A standard result in functional analysis gives us the estimate:
+	\begin{equation}
+		\left \| G(v) \right \|_{0,\hat{K}} = \sup \left \{ |\phi (G(v)) |: \phi \in (L^2(\hat{K}))' \text{ and } \left \|\phi \right \|=1 \right \}
+	\end{equation}
+	For given $\phi$, we have that $\tilde{G}(\cdot) :=\phi(G(\cdot))$ is a continuous linear functional, moreover, $\tilde{G}(q)=0$ for all constant functions $q$. By Bramble Hilbert lemma, we have 
+	\begin{equation}
+		|\tilde{G}(v)|\leq C \left \| \tilde{G} \right \| |v|_{1,\hat{K}}
+	\end{equation}
+	Inserting this into \eqref{eq:324}, we obtain:
+	\begin{equation}
+		\left \| G(v) \right \|_{0,\hat{K}} \leq C \left \| \tilde{G} \right \|  |v|_{1,\hat{K}} \leq C \left \| G \right \| |v|_{1,\hat{K}} \leq C^*|v|_{1,\hat{K}}.
+	\end{equation}
+	Hence, we have the estimate
+	\begin{equation}\label{eq:bramble}
+		\left \| \hat{I}_h u - u \right \|_{0,\hat{K}} \leq C^* |u|_{1,\hat{K}},
+	\end{equation}
+	for some reference element $\hat{K}$. The constant $C^*$ depends on the the reference element $\hat{K}$. If we choose this as in \ref{fig:reference element}, and define the mapping as before 
+	\begin{equation}
+		\begin{aligned}
+			F: K &\rightarrow \hat{K}\\
+			x &\mapsto B x + d,
+		\end{aligned}
+	\end{equation}
+	we can obtain the same estimate for an arbitrary element. First, we transform to the reference element, using standard integration techniques we get
+	\begin{equation}
+		\left \| \hat{I}_h u - u \right \|_{0,K}= |det(B^{-1})|^{\frac{1}{2}}\left \| \hat{I}_h u - u \right \|_{0,\hat{K}}.
+	\end{equation}
+	Further, we use \eqref{eq:bramble} to obtain:
+	\begin{equation}
+		\left \| \hat{I}_h u - u \right \|_{0,K}=|det(B^{-1})|^{\frac{1}{2}}\left \| \hat{I}_h u - u \right \|_{0,\hat{K}}\leq  |det(B^{-1})|^{\frac{1}{2}} C |u|_{1,\hat{K}}.
+	\end{equation}
+	Then, since our discretization satisfies the maximum angle principle we get
+	\begin{equation}
+		|det(B^{-1})|^{\frac{1}{2}} C |u|_{1,\hat{K}}\leq C|det(B^{-1})|^{\frac{1}{2}} |det(B^{-1})|^{-\frac{1}{2}} h_K |u|_{1,K}= C h_K |u|_{1,K},
+	\end{equation}
+	see \cite{Knabner} for details. Now, we finally have an estimate on the entire domain:
+	\begin{equation}
+		\left \| \hat{I}_h u - u \right \|_{0,\Omega} = \left (\sum_{K\in \tau}\left \| \hat{I}_h u - u \right \|_{0,K}^2 \right )^{\frac{1}{2}}\leq C h \left (\sum_{K\in \tau}| u |_{1,K}^2 \right )^{\frac{1}{2}} = c h |u|_{1,\Omega}
+	\end{equation}
+\end{proof}

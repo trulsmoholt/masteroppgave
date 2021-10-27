@@ -3,9 +3,10 @@
 \begin{document}
 \graphicspath{{../Flow in porous media/figs/}}
 \chapter{Flow in Porous Media}
-\section*{The Representative Elementary Volume}\label{REV}
+In this chapter we introduce the basic concepts of flow in porous media, briefly covering the modeling choices and physics that leads to Richards' equation. The theory in this chapter is to a large extent adapted from \cite{Nordbotten} and UIB's Porous media course.
+\section{The Representative Elementary Volume}\label{REV}
 \addcontentsline{toc}{section}{The REV}
-A porous medium consists of a solid matrix and some void filled with fluid of one or more phases. In porous media research, one has come to the realization that the solid matrix is too complex to model. Instead one takes averages of variables over a reasonable length scale, ie the \emph{representative elementary volume} (REV).
+A porous medium consists of a solid matrix and some void filled with fluid of one or more phases. In porous media research, one has come to the realization that the solid matrix is too complex to model. Instead one takes averages of variables over a reasonable length scale, ie. the \emph{representative elementary volume} (REV).
 An important characterization of a porous medium is the \emph{porosity} $\phi$, it is defined as 
 \begin{equation}
 	\phi := \frac{\textit{volume of voids in REV}}{\textit{volume of REV}}.
@@ -16,7 +17,7 @@ Another measure is the \emph{saturation} $S_{\alpha}$ of phase $\alpha$,  this i
 \end{equation}
 In single phase flow, the saturation is irrelevant as the saturation is always one. Also note that the volumetric content of phase $\alpha$ in the REV, $\theta_{\alpha}$, is given by $\theta_{\alpha} = S_{\alpha} \phi$.
 
-\section*{Darcy's Law}
+\section{Darcy's Law}
 \addcontentsline{toc}{section}{Darcy's law}
 In 1856, Henri Darcy performed a famous experiment where he studied the flow of water through sand. To understand his experiment we must first define some variables for measuring water content. First, we assume that the external gravitational force on some fluid is balanced by the pressure gradient force, also known as \emph{hydrostatic equilibrium}. Then the pressure at height $z$ above datum developed by a water column of height $h$ above datum is given by
 \begin{equation*}
@@ -31,7 +32,7 @@ This can be rearranged to give an expression for the height, which we from now o
 \begin{equation}\label{eq:hydraulic}
 h = \frac{p}{\rho g} + z.
 \end{equation}
-A \emph{manometer} is a tube with one end in the reservoir and one in open atmosphere, the water level in this tube is then $h$. The volumetric flow of water is denoted by $q_d$. Darcy's experiment is shown in figure \ref{fig:darcy}, where water is poured trough a cylinder filled with sand. The cylinder has length $L$ and has cross sectional area $A$. His observations are given by the equation called Darcy's law:
+A \emph{manometer} is a tube with one end in the reservoir and one in open atmosphere, the water level in this tube is then $h$. The volumetric flow of water is denoted by $q_d$. Darcy's experiment is shown in figure \ref{fig:darcy}, where water is poured through a cylinder filled with sand. The cylinder has length $L$ and has cross sectional area $A$. His observations are given by the equation called Darcy's law:
 \begin{equation}
 q_d = -\kappa \frac{A(h_2-h_1)}{L}.
 \end{equation}
@@ -43,7 +44,7 @@ Where $\kappa$ is a positive coefficient of proportionality.
 \label{fig:darcy}
 \end{figure}Let $q$ denote the volumetric flow-rate per area:
 \begin{equation*}
-q := \frac{q_d}{A} = \kappa \frac{h_2-h_1}{L},
+q := \frac{q_d}{A} = -\kappa \frac{h_2-h_1}{L},
 \end{equation*}
 we will refer to this as the \emph{flux} of hydraulic potential. We can now state the differential version of Darcy's law. Taking the limit as $L\rightarrow 0$ we get 
 \begin{equation}\label{eq:darcy}
@@ -55,13 +56,13 @@ With further experiments, similar to the one already described, we can understan
 \begin{equation} \label{eq:conductivity}
 \bm{\kappa} = \frac{\bm{k} \rho g}{\mu}.
 \end{equation}
-The \emph{permeability}, which is a property of the soil in the reservoir, is also a rank two tensor which is symmetric positive definite and is in general a function of space, ie heterogeneous.
+The \emph{permeability}, which is a property of the soil in the reservoir, is also a rank two tensor which is symmetric positive definite and is in general a function of space, ie. heterogeneous.
 \par If we define the \emph{pressure head} $\psi$ as $\psi := \frac{p}{\rho g}$, we can combine \eqref{eq:hydraulic}, \eqref{eq:darcy} and \eqref{eq:conductivity} to get another variant of Darcy's law;
 \begin{equation}\label{eq:darcyv2}
 \bm{q} = -\frac{\bm{k}\rho g}{\mu}\nabla(\psi + z)
 \end{equation}
  which will be useful later.
-\section*{Mass Conservation}
+\section{Mass Conservation}
 \addcontentsline{toc}{section}{Governing equations}
 Darcy's law is not enough if we want to determine the pressure or flow in a reservoir, but we can use the principle of \emph{mass conservation} to add one more equation. 
 The idea is that for every enclosed region in the reservoir, the change of mass inside the region is balanced by the mass flux into the region and the production of mass inside the region.
@@ -81,7 +82,7 @@ Since this is true for all enclosed regions $\omega\subset \Omega$, it also hold
 This, together with Darcy's law \eqref{eq:darcy} and appropriate boundary and initial conditions close the system
 \begin{equation}\label{eq:singlephase}
 \left \{ \begin{aligned}
-	\bm{q} &=\bm{\kappa} \nabla h, & \bm{x} &\in \Omega,  &t &>0 \\
+	\bm{q} &=-\bm{\kappa} \nabla h, & \bm{x} &\in \Omega,  &t &>0 \\
 	\frac{\partial (\rho \phi) }{\partial t} + \nabla \cdot(\rho \bm{q}) &=f(\bm{x},t), & \bm{x} &\in \Omega, & t &>0 \\
 	h(\bm{x}) &= g(\bm{x},t), &\bm{x} &\in \partial \Omega,&t &>0 \\
 	h(\bm{x}) &= f(\bm{x}), & 	\bm{x} &\in \Omega,  &	t &=0 
@@ -89,7 +90,7 @@ This, together with Darcy's law \eqref{eq:darcy} and appropriate boundary and in
 \end{equation}
 Now we have a model for single-phase flow. As it is stated now, it is a linear parabolic equation, but for incompressible fluid and matrix it becomes an elliptic equation. One often writes the density as a function of pressure, it then becomes non-linear. See chapter two of \cite{Nordbotten} for a more detailed discussion of \eqref{eq:singlephase} and modelling options.
 
-\section*{Two-phase Flow and Richards' Equation}
+\section{Two-phase Flow and Richards' Equation}
 \addcontentsline{toc}{section}{Twophase flow and Richards' equation}
 We restrict our discussion to two phases for simplicity, but the theory can be extended to more phases. In two-phase systems one has a \emph{wetting phase} and a \emph{non-wetting phase}. Denoted by the subscripts $w$ and $n$, respectively. \\
 When we introduce more phases, we continue with the equations we already introduced, ie. we assume that Darcy's law  \eqref{eq:darcyv2} holds for both phases. Let the subscript $\alpha$ denote the phase, then we have Darcy's law for each phase
@@ -127,7 +128,7 @@ Finally, we can multiply the above equation by the porosity to get an expression
 \end{equation*}  
 Combining this with the two-phase Darcy law \eqref{eq:darcytwo} and mass balance \eqref{eq:massbalancetwo} we get \textbf{Richards' equation}
 \begin{equation}\label{eq:richards}
-	\frac{\partial \theta(\psi)}{\partial t} - \nabla \cdot (\bm{\kappa} (\theta (\psi))(\nabla \psi + e_z)) = F
+	\frac{\partial \theta(\psi)}{\partial t} - \nabla \cdot (\bm{\kappa} (\theta (\psi))(\nabla \psi + e_z)) = f
 \end{equation}
 where $\theta = \theta_w$. Note that the density is eliminated, this is because it is assumed to be constant for water. The hydraulic conductivity is parametrized as a function of water content through experiments and can be written  $\frac{\bm{k}_{r,\alpha}\bm{k}\rho g}{\mu} = \bm{\kappa}(\theta)$. \par 
 Richards' equation contains two non-linearities, $\theta$ and $\bm{\kappa}$, which make the analysis and numerical simulation more interesting and challenging as we will see. They may also cause the equation to degenerate, ie. the parabolic equation may "collapse" into an elliptic PDE (see figure \ref{fig:richards} ) or even an ODE.
