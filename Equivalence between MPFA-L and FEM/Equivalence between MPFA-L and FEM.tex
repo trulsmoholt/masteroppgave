@@ -27,7 +27,6 @@
 	We saw in the section about the MPFA-L method that the interaction regions (L-triangles) may form a triangulation of our domain.
 	With this observation in mind, modifications are made to both methods so that we obtain equivalence. This entire chapter is adapted from (Cao, Y., Helmig, R. and Wohlmuth, B.I. (2009),\cite{https://doi.org/10.1002/num.20525}), there, convergence is proved for the Poisson equation, ie. without the $u$ term.
 	\section{Modified MPFA-L method}
-	\addcontentsline{toc}{section}{Modified MPFA-L method}
 	First of all, we assume that we have a uniform parallelogram grid, as in \ref{fig:paralellogram-L}. 
 	%\begin{figure}[H]\label{fig:paralellogram mesh}
 	%	\centering
@@ -72,7 +71,6 @@
 		\label{fig:boundary volume Dirichlet}
 	\end{figure}
 	\section{Modified finite element method}
-	\addcontentsline{toc}{section}{Modified finite element method}
 	In this section we introduce a finite element method for solving \eqref{eq:stationary_heat}. By theorem \ref{th:L_triangulation} the L-triangles form a triangulation $\left \{ \tau_h \right \}$, we will use linear Lagrange elements on this triangulation. The only modifications we need to make are to the mass matrix and the load vector, we let the stiffness matrix stay the same as before. That is, we do not touch the discretization of the constitutive law. We do want however, to define an interpolation operator such that the dot products that make up the mass matrix and load vector, become mass conservative in each control volume. 
 	\par
 	We need some notation so that we can distinguish between nodes in the interior, at cell centers along the boundary and at the boundary. In addition, corner cells introduce edge cases. 
@@ -230,8 +228,7 @@
 			\item \todo[inline]{Corner cells!}
 		\end{enumerate}
 	\end{proof}
-	\section*{Convergence rate estimates}
-	\addcontentsline{toc}{section}{convergence rate estimates}
+	\section{Convergence rate estimates}
 	Our modified finite element method only approximates the bi-linear and linear form, and we need to take this into account when proving a convergence rate estimate. The following lemma is an extension of Cèa's lemma \ref{lemma:cea}, it is useful for estimating the error when our bi-linear and linear form is not exact.
 	\begin{lemma}[First Lemma of Strang, page 155 \cite{Knabner}]\label{lemma:strang}
 		Suppose there exists some $\alpha>0$ such that for all $h>0$ and $v_h\in V_h$
@@ -277,7 +274,7 @@
 	\end{lemma}
 The proof is trivial as our test space, $V_h \subset H^1(\Omega)\bigcap C(\Omega)$, consists of continuous functions.
 	We are now ready to state the $H^1$ error estimate for the modified finite element method and thus the MPFA-L method.
-	\begin{theorem}
+	\begin{theorem}\label{th:convergence of elliptic}
 		Let $u$ solve \eqref{eq:stationary_heat} and $u_h$ be the solution resulting from MPFA-L , then there exists a positive constant $C$ such that
 		\begin{equation}\
 			\left \|u - u_h \right \|_1 \leq C h (\left \| u \right \|_2 + \left \| f \right \|_0 + \left \| g \right \|_{\frac{1}{2},\Gamma_N}).

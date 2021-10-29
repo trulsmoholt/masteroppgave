@@ -5,7 +5,7 @@
 	\chapter{Numerical approximation techniques}
 	In this chapter, we first discuss two important frameworks for space discretization of PDE's, followed by a brief introduction of time discretization, and at the end, an introduction to linearization. The focus will be on two dimensional elliptic and parabolic equations, but the concepts covered can easily be generalized to three dimensions. After reading this chapter, the reader hopefully has some idea of how to implement a few different methods for solving the Poisson equation, the heat equation or maybe even Richards' equation, and some of their properties. 
 	\section{The Finite Element Method}\label{sec:fem}
-	\addcontentsline{toc}{section}{Finite Element Method}
+
 	The finite element method was first developed in the 1940s by Richard Courant for problems in solid mechanics. As computers became better in the 1960s the method became  more mainstream \cite{Stein2014}. Today there are several general purpose finite element programs being used for a wide range of problems.\par
 	In this section we will introduce the finite element method and state results about stability and convergence.
 	We will concentrate on solving the Poisson equation. Let $\Omega \subset \mathbb{R}^n$ be some open and bounded domain. Find $u$ such that:
@@ -20,7 +20,7 @@
 	
 	
 	\subsection{Function spaces}
-	\addcontentsline{toc}{subsection}{Function spaces}
+
 	When discussing PDE's and the numerical schemes to solve them it is important to have a precise notion of what kind of functions we are looking for and their properties. The function spaces discussed here are all normed vector spaces. From now on we assume that $\Omega \subset \mathbb{R}^d$ is a bounded domain.
 	\begin{definition}[Lebesgue spaces, $L^p(\Omega)$]
 		For $p\in [1,\infty)$ let $L^p(\Omega)$ be the space of functions for which  $\left \| u \right \|_p = (\int_{\Omega} u^pdx)^{1/p} <\infty$
@@ -155,7 +155,7 @@
 	\end{remark}
 	Now we have the theory we need to study elliptic boundary value problems and their weak solutions.
 	\subsection{The variational problem}
-	\addcontentsline{toc}{subsection}{The variational problem}
+
 	We obtain the \textbf{variational formulation} of \eqref{eq:poisson} with multiplying \eqref{eq:poisson} by a function $v$ in a suitable space $V$ called the \emph{test space}, integrating over $\Omega$ and using integration by parts/divergence theorem.
 	\begin{equation*}
 		-\int_{\Omega}v\nabla \cdot\bm{K}\nabla u \ dx = -\int_{\partial \Omega}v \bm{K}\nabla u \cdot \bm{n} \ dx + \int_{\Omega}(\nabla v)^{T}\bm{K} \nabla u \ dx = \int_{\Omega}vf\ dx
@@ -210,7 +210,7 @@
 	Hence both Dirichlet and Neumann boundary conditions are incorporated into the right hand side. For homogeneous Dirichlet boundary conditions, the second term on the right hand side of \eqref{eq:inhomogenous poisson weak} vanishes. 
 	
 	\subsection{Existence and uniqueness}
-	\addcontentsline{toc}{subsection}{Existence and uniqueness}
+
 	We still need to show that \eqref{eq:inhomogenous poisson weak} has an unique solution.
 	First, we define some important properties that a variational problem should have in order to have a unique solution. Let $(V,\left \| \cdot \right \|_V)$ be a Hilbert space.
 	\begin{definition} Let $a(\cdot,\cdot):V\times V \rightarrow \mathbb{R}$ be a \emph{bi linear form}. We say that:
@@ -344,7 +344,7 @@
 	\end{example}
 
 	\subsection{Galerkin FEM} \label{sec:galerkin_fem}
-	\addcontentsline{toc}{subsection}{Galerkin FEM}
+
 	Now we want to discretize the variational equation \eqref{eq:variational problem}, we do this by replacing the test space $V$ by a finite dimensional subspace $V_h$. This is called the \emph{Galerkin method}. The discretization now reads: Find $u \in V_h$ such that 
 	\begin{equation}\label{eq:galerkin}
 		\begin{gathered}
@@ -406,7 +406,7 @@
 	So we get a system of linear equations $\bm{A}\hat{\bm{u}}_h = \bm{b}$, where $\bm{A}_{i,j}=a(\phi_i,\phi_j)$ and $\bm{b}_j = b(\phi_j)$. The matrix, $\bm{A}$, has as many rows and columns as there are nodes (the Dirichlet nodes can be removed, depending on implementation). If we solve \eqref{eq:variational poisson}, our variational problem, and also matrix, will be symmetric. The matrix is then often called a \emph{stiffness matrix}. These names originated from mechanics and structural analysis, where the solution represents displacement and the force function represents load. The stiffness matrix is also sparse, which is a very important property when designing algorithms to solve it.\par
 	With the setup described in this subsection, the degrees of freedom are the same as the dimension of $V_h$. If we in definition \ref{def:linear ansatz} instead had chosen a space of quadratic polynomials on each element, we had gained three degrees of freedom on each element. In this thesis we focus on linear finite elements because we do not gain anything from increasing regularity, as the solutions are not expected to be very regular. 
 	\subsection{Implementation}
-	\addcontentsline{toc}{subsection}{Implementation}
+
 	Here we explain the most important parts of the algorithm for discretizing elliptic PDE's with linear Lagrange finite elements. We consider the homogenous elliptic model problem \eqref{eq:variational poisson} in two dimensions, with $\bm{K} = \bm{I}$ and zero Dirichlet boundary conditions. The procedure goes as follows:
 	\begin{enumerate}
 		\item Make a triangulation of the domain. This can be done in a number of different ways, see chapter 4 of Knabner \cite{Knabner}. If we have $N$ nodes, our triangulation would be stored as a $N \times 2$ array of floats, being the coordinates of the nodes. And a $E\times 3$ array of ints being the elements, where each entry is the index of a coordinate in the coordinate matrix, E is the number of elements.
@@ -490,7 +490,7 @@
 		If we have inhomogeneous Dirichlet boundary conditions this is in practice done the same way as in the homogenous case, eliminating the degrees of freedom on the boundary. For Neumann conditions one has to evaluate integrals along the boundary as in \eqref{eq:inhomogenous poisson weak}, using one-dimensional elements.
 	\end{remark}
 	\subsection{Convergence}\label{sec:convergence}
-	\addcontentsline{toc}{subsection}{Convergence}
+
 	
 	In this subsection, we review the most important concepts in studying the convergence fo FEM, for a detailed discussion see \cite{Knabner}.
 	The starting point of convergence estimates for the finite element method already described are \textbf{Cèa's lemma}:
@@ -563,7 +563,7 @@
 		In this chapter we have only discussed the convergence behaviour of the solution to the Galerkin problem \eqref{eq:galerkin}. In practice, one often only solves this approximately. For example the term  $b(v_h)=\int_{\Omega}fv_h \ dx$ is impossible to evaluate exactly for most source terms $f$. We will later see error estimates with this taken into account.
 	\end{remark}
 	\section{The Finite Volume Method}
-	\addcontentsline{toc}{section}{Finite Volume Method}
+
 
 		Finite volume methods are designed such that the conservation law we solve hold everywhere in the domain. Consider our elliptic model problem \eqref{eq:poisson}:
 		Find $u$ such that
@@ -600,8 +600,8 @@
 	The motivation for using finite volume methods for problems in porous media, for example Richards' equation, is that the flux appears explicitly in our discretization. If one, for example, wants to simulate the spread of some contaminant by groundwater flow, one can easily obtain a local mass conservative flux field using the finite volume method. This flux field can then be used in the desired transport equation.
 	\par 
 	When it comes to boundary conditions, it is usually straightforward to implement Neumann boundary conditions. Especially no-flow boundary conditions, where one creates a strip of cells outside the boundary with zero permeability. The same discretization algorithm can the be applied everywhere in the domain. Dirichlet boundary conditions often require special care. If one, however, knows the solution somewhere outside the domain, one could make a strip of cells outside the boundary where the potential values are known, this is known as ghost Dirichlet boundary conditions. We will focus on discretizing the interior of the domain in the following sections.
-	\subsection*{Two point flux approximation}
-	\addcontentsline{toc}{subsection}{Two point flux approximation}The simplest way of constructing $t_{i,j}^k$ is also the most popular in the industry. As the name suggests, we only use the function value at two points, $x_{0}$ and $x_{1}$, to compute the numerical flux $\tilde{q}_{E_{0,1}}$.
+	\subsection{Two point flux approximation}
+	The simplest way of constructing $t_{i,j}^k$ is also the most popular in the industry. As the name suggests, we only use the function value at two points, $x_{0}$ and $x_{1}$, to compute the numerical flux $\tilde{q}_{E_{0,1}}$.
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=0.5\textwidth]{two point.pdf}
@@ -657,8 +657,8 @@
 	for a uniform parallelogram mesh with the normal vectors $\bm{n}_1$ and $\bm{n}_2$. We then call the grid \textbf{K-orthogonal}. 
 	 In the setting of figure \ref{fig:tpfa control volume}, our grid would not be K-orthogonal as the control volumes are not a parallelograms. All meshes with orthogonal control volumes are K-orthogonal if the permeability is isotropic.
 	 \todo[inline]{reference a figure showing the failed convergence of TPFA}
-	\subsection*{O-method}
-	\addcontentsline{toc}{subsection}{O-method}
+	\subsection{O-method}
+
 	The O-method is a multi-point flux approximation method, these types of methods were developed to make control volume methods converge for grids that are not K-orthogonal. It is described in detail in  \cite{Aavatsmark2002}, we only give a brief introduction.
 	\\
 	Consider the control volumes in \ref{fig:dualmesh}.
@@ -710,8 +710,8 @@ Computing \eqref{eq:O trans matrix} involves inverting a four by four matrix wit
 	In \cite{nordbotten2020introduction}, Nordbotten and Keilegavlen describes a framework of MPFA methods where the O-method is a special case. They consider the problem of finding the four linear potential functions in each interaction region that minimizes the discontinuity across the edges. The discontinuity should be minimized given that the functions respect cell center potential values, that the flux models the constitute law and flux continuity. The O-method is then defined for some special cost function measuring the discontinuity. Other methods, with the potential continuity at other places than the edge midpoint, are also common.
 	\par 
 	With our implementation of MPFA-O method, one needs for each interaction region to assemble four, four by four, matrices. Compute the inverse of one of them, and do two matrix multiplications and one subtraction. All of this could be done in parallel. However, for my implementation, it slows matrix assembly down a lot compared to two point flux approximation. Another drawback of the O-method is the \emph{monotonicity} properties: One can risk having positive entries off the main diagonal of the discretization matrix for difficult meshes. This may lead to oscillations in the solution and violation of the minimum principle. For two point flux approximation we avoid this issue altogether, as the signs of the five point stencil always are one plus and four negatives. Even for the linear finite element method, this issue is avoided if one imposes some maximum angle condition, see [Knabner,\cite{Knabner}] page 175. When solving for example the Richards' equation, violating the minimum principle can lead to air bubbles being formed spontaneously in the saturated region. For a discussion on monotonicity see \cite{10.1007/s00211-006-0060-z}.
-	\subsection*{L-method}
-	\addcontentsline{toc}{subsection}{L-method}
+	\subsection{L-method}
+
 	\epigraph{The L-method is the Ferrari of discretization techniques for porous media flow problems, while conformal finite elements is the Volvo.}{\textit{Professor Jan Martin Nordbotten}}
 	Like the O-method, the L-method is also a multi-point flux approximation method. It was introduced in \cite{https://doi.org/10.1002/num.20320}, where the authors demonstrate improved monotonicity properties with numerical experiments. This method is similar to the O-method, in that it goes through the half edges and uses information from the same interaction regions. But instead of using four points for the flux across each half edge, we use three, with two half edges between them. \par
 	As in the O-method, we assume linear potential in each cell, this gives us $3\cdot 3 = 9$ degrees of freedom. Three are eliminated because we respect the cell center value of the potential, this leaves six degrees of freedom. We use two, one at each edge, for flux continuity. The last four are used for potential continuity at the two edges. 
@@ -839,7 +839,7 @@ Computing \eqref{eq:O trans matrix} involves inverting a four by four matrix wit
 %	\end{remark}
 	\par 
 	To conclude; the L-method is the most sophisticated method. It has the best monotonicity properties, it is consistent for non K orthogonal grids, but it is more complicated than the O-method. 
-	\section*{Time Discretization}	\addcontentsline{toc}{section}{Time Discretization}
+	\section*{Time Discretization}	
 		We start by considering the most famous parabolic equation, namely the heat equation. Let $u = u(x,t)$, given appropriate boundary and initial conditions, find $u$ such that:
 	
 	\begin{equation}\label{eq:heat equation}
@@ -910,7 +910,7 @@ Computing \eqref{eq:O trans matrix} involves inverting a four by four matrix wit
 	The matrix $\pmb{A}^V$ is as in chapter 3, with the fluxes through the edges of cell $i$ described by the $j$th row of $\pmb{A}^V$. The matrix $\pmb{B}^V$ is diagonal with the entry $i$ being the volumes of the volume of cell $i$. That is, for two dimensional problems, the entries of $\bm{B}^V$ are the areas of the control volumes.
 	
 	If $\pmb{A}= \pmb{A}^V$, then the discretization of the constitutive law is the same for both the finite volume and the finite element method. As we will see later, this is challenging.	
-	\section*{Linearization}
+	\section{Linearization}
 We have seen that the heat equation leads to a sequence of linear systems. In the same way, we expect that our non-linear Richards' equation \eqref{eq:richards} leads to a system of non-linear equations. We start by discussing this in a general setting: Find $x\in U$ such that 
 \begin{equation}\label{eq:non-linear-problem}
 	 \pmb{f}(\pmb{x})=\pmb{0} \\ \text{ where } f:U\subset\mathbb{R}^n\rightarrow\mathbb{R}^n.

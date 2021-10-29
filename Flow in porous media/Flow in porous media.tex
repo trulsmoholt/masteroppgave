@@ -5,7 +5,6 @@
 \chapter{Flow in Porous Media}
 In this chapter we introduce the basic concepts of flow in porous media, briefly covering the modeling choices and physics that leads to Richards' equation. The theory in this chapter is to a large extent adapted from \cite{Nordbotten} and UIB's Porous media course.
 \section{The Representative Elementary Volume}\label{REV}
-\addcontentsline{toc}{section}{The REV}
 A porous medium consists of a solid matrix and some void filled with fluid of one or more phases. In porous media research, one has come to the realization that the solid matrix is too complex to model. Instead one takes averages of variables over a reasonable length scale, ie. the \emph{representative elementary volume} (REV).
 An important characterization of a porous medium is the \emph{porosity} $\phi$, it is defined as 
 \begin{equation}
@@ -18,7 +17,6 @@ Another measure is the \emph{saturation} $S_{\alpha}$ of phase $\alpha$,  this i
 In single phase flow, the saturation is irrelevant as the saturation is always one. Also note that the volumetric content of phase $\alpha$ in the REV, $\theta_{\alpha}$, is given by $\theta_{\alpha} = S_{\alpha} \phi$.
 
 \section{Darcy's Law}
-\addcontentsline{toc}{section}{Darcy's law}
 In 1856, Henri Darcy performed a famous experiment where he studied the flow of water through sand. To understand his experiment we must first define some variables for measuring water content. First, we assume that the external gravitational force on some fluid is balanced by the pressure gradient force, also known as \emph{hydrostatic equilibrium}. Then the pressure at height $z$ above datum developed by a water column of height $h$ above datum is given by
 \begin{equation*}
 p_{abs}(z) = p_{atm} + \rho g(h-z).
@@ -63,7 +61,6 @@ The \emph{permeability}, which is a property of the soil in the reservoir, is al
 \end{equation}
  which will be useful later.
 \section{Mass Conservation}
-\addcontentsline{toc}{section}{Governing equations}
 Darcy's law is not enough if we want to determine the pressure or flow in a reservoir, but we can use the principle of \emph{mass conservation} to add one more equation. 
 The idea is that for every enclosed region in the reservoir, the change of mass inside the region is balanced by the mass flux into the region and the production of mass inside the region.
 \\
@@ -91,7 +88,7 @@ This, together with Darcy's law \eqref{eq:darcy} and appropriate boundary and in
 Now we have a model for single-phase flow. As it is stated now, it is a linear parabolic equation, but for incompressible fluid and matrix it becomes an elliptic equation. One often writes the density as a function of pressure, it then becomes non-linear. See chapter two of \cite{Nordbotten} for a more detailed discussion of \eqref{eq:singlephase} and modelling options.
 
 \section{Two-phase Flow and Richards' Equation}
-\addcontentsline{toc}{section}{Twophase flow and Richards' equation}
+
 We restrict our discussion to two phases for simplicity, but the theory can be extended to more phases. In two-phase systems one has a \emph{wetting phase} and a \emph{non-wetting phase}. Denoted by the subscripts $w$ and $n$, respectively. \\
 When we introduce more phases, we continue with the equations we already introduced, ie. we assume that Darcy's law  \eqref{eq:darcyv2} holds for both phases. Let the subscript $\alpha$ denote the phase, then we have Darcy's law for each phase
 \begin{equation}\label{eq:darcytwo}

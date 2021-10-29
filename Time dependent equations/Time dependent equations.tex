@@ -3,59 +3,94 @@
 \begin{document}
 	\graphicspath{{../Time dependent equations/figs/}}
 	\chapter{Convergence of Richards' equation}
-	\section*{Constant permeability}
-	\addcontentsline{toc}{section}{Richards' equation}
-	\todo[inline]{Show kirchoff transform from richards'}
-	We will first consider the non-linear, parabolic equation:
-	\begin{equation}\label{eq:richards simple}
+	In this chapter we use the results from chapter three to prove convergence of the Richards equation discretized in space with MPFA-L method, in time with backward Euler and linearized with the L-scheme.
+	We start by considering the Richards' equation without the gravity term in an isotropic medium: Find $\psi = \psi(x,t)$ such that
+	\begin{equation}\label{eq:richards w bc}
+		\left \{
 		\begin{aligned}[c]
-			\partial_t \theta(u) - \nabla \cdot \kappa \nabla u &= q \\
-			u &= g \\
-			u &= u_0
+			\partial_t \theta(\psi) - \nabla \cdot \left (\kappa(\theta (\psi)) \nabla \psi \right ) &= f, \\
+			\psi &= 0, \\
+			-\kappa(\theta (\psi)) \nabla \psi &= g_N,\\
+			\psi &= u_0,
 		\end{aligned}
 		\ \ \
 		\begin{aligned}[c]
-			x &\in \Omega  \\
-			x &\in \partial \Omega \\
-			x &\in \Omega  
+			\text{ in }& \Omega \times (0,T]\\
+			\text{ on }& \partial \Gamma_D \times (0,T]\\
+			\text{ on }& \partial \Gamma_N \times (0,T)\\
+			\text{ on }& \Omega \times \left\{t=0\right \}
 		\end{aligned}
-		\ \ \
+		\right.
+	\end{equation}
+	This equation has a non linearity in the flux, $\bm{q}=-\kappa(\theta (\psi)) \nabla \psi$, which makes it hard to apply our results, as they require a homogeneous medium. The hydraulic conductivity, $\kappa(\theta (\psi))$, depends on our solution which is heterogeneous, and is thus itself heterogeneous.
+	To remedy this we use the Kirchhoff transform 
+	\begin{equation}
 		\begin{aligned}
-			t&\in (0,T] \\
-			t&\in (0,T] \\
-			t&=0.
+			\mathcal{K} :\mathbb{R} &\rightarrow \mathbb{R}^{+}\\
+			\psi &\mapsto \int_{0}^{\psi} \kappa(\theta(\phi)) \ d \phi = u.
 		\end{aligned}
 	\end{equation}
-	Which is similar to Richards' equation \eqref{eq:richards}, only without the gravity and non-linear permeability. We start by discretizing \eqref{eq:richards simple} with the MPFA-L method, we divide our domain into $d$ quadrilaterals. Writing \eqref{eq:semidiscrete FVM} in vector form we find $\tilde{u}_h \in \mathbb{R}^d$ such that:
+	As previously discussed, the functions $\theta(\cdot)$ and $\kappa(\cdot)$ are continuous, monotone increasing functions, the Kirchhoff transform, $\mathcal{K}$, therefore has an inverse, $\mathcal{K}^{-1}$. 
+	We define
 	\begin{equation}
-		\partial_t\pmb{B}^{V} \theta(\tilde{u}_h) + \pmb{A}^V \tilde{u}_h = \pmb{q}^V. 
+		\begin{aligned}
+			b(u) &:= \theta(\mathcal{K}^{-1}(u))\\
+			k(u) &:= \kappa (\theta (\mathcal{K}^{-1}(u))).
+		\end{aligned}
+	\end{equation}
+	\todo[inline]{make assumptions ensuring that b is nicely behaved}
+	by the chain rule, we get
+	\begin{equation}
+		\nabla u = \kappa(\theta(\psi))\nabla \psi.
+	\end{equation}
+	We can write the Richards' equation \eqref{eq:richards w bc} in the transformed variable $u$ to get: Find $u=u(x,t)$ such that 
+	\begin{equation}\label{eq:richards simple}
+	\left \{
+	\begin{aligned}[c]
+		\partial_t b(u) - \nabla \cdot \nabla u &= f, \\
+		u &= 0, \\
+		-\nabla u &= g_N,\\
+		u &= u_0,
+	\end{aligned}
+	\ \ \
+	\begin{aligned}[c]
+		\text{ in }& \Omega \times (0,T]\\
+		\text{ on }& \partial \Gamma_D \times (0,T]\\
+		\text{ on }& \partial \Gamma_N \times (0,T)\\
+		\text{ on }& \Omega \times \left\{t=0\right \}
+	\end{aligned}
+	\right.
+\end{equation}
+We start by discretizing \eqref{eq:richards simple} with the MPFA-L method, we divide our domain into $d$ quadrilaterals (control volumes). Writing \eqref{eq:semidiscrete FVM} in vector form we find $\tilde{u}_h \in \mathbb{R}^d$ such that:
+	\begin{equation}
+		\partial_t\pmb{B}^{V} b(\tilde{u}_h) + \pmb{A}^V \tilde{u}_h = \pmb{q}^V. 
 	\end{equation}
 	We can then discretize in time using backward euler. Given $ \tilde{u}_h^{n-1},\pmb{q}^n \in \mathbb{R}^d$ we should then find $ \tilde{u}_h^n \in \mathbb{R}^d$ such that: 
 	\begin{equation} \label{eq:non-linear richards FVM}
-		\pmb{B}^V  \theta(\tilde{u}_h)^n + \tau \pmb{A}^V \tilde{u}_h^n = \tau \pmb{q}^{Vn} + \pmb{B}^V  \theta(\tilde{u}_h)^{n-1}.
+		\pmb{B}^V  b(\tilde{u}_h)^n + \tau \pmb{A}^V \tilde{u}_h^n = \tau \pmb{q}^{Vn} + \pmb{B}^V  b(\tilde{u}_h)^{n-1}.
 	\end{equation}
 	Now we need to linearize \eqref{eq:non-linear richards FVM} with the L-scheme. We see from \eqref{eq:L-scheme} that the applying this linearization leads to the equation:
 	\begin{equation}\label{eq:linearized richards fvm}
 		L\pmb{B}^V(\tilde{u}^{n,j}_h-\tilde{u}^{n,j-1}_h) + \tau \pmb{A} \tilde{u}_h^{n,j} = -\pmb{B}^V \theta (\tilde{u}_h^{n,j-1})  + \tau \pmb{q}^{Vn} +  \pmb{B}^V \theta (\tilde{u}_h^{n-1}).
 	\end{equation}
-	The above equation can be solved for $\tilde{u}_h^{n,j}$, and is in principal the same as solving \eqref{eq:stationary_heat} which we have proved equivalence with the modified finite element method for.
-	Now let us see how it would look if we discretized \eqref{eq:richards simple} with the modified finite element method. Let $u_h, v_h\in V_h$, where $V_h$ is defined as piecewise linear functions as in definition \ref{def:linear ansatz}. Then our semidisrectization would be to find $u_h \in V_h$ such that
+	The above equation can be solved for $\tilde{u}_h^{n,j}$, and is in principal the same as solving a time discretized heat equation \eqref{eq:stationary_heat}, which we have proved equivalence with the modified finite element method for.\par
+	Let us see how it would look if we discretized \eqref{eq:richards simple} with the modified finite element method. Let $u_h, v_h\in V_h$, where $V_h$ is defined as piecewise linear functions as in definition \ref{def:linear ansatz}. Then our semidisrectization would be to find $u_h \in V_h$ such that
 	\begin{equation}
-		\left \langle \partial_t\hat{I}_h \theta(u_h^n),\hat{I}_h v_h \right \rangle_0 + \left \langle \kappa \nabla u^n_h, \nabla v_h \right \rangle_0 = \left \langle q,v_h \right \rangle_0 \ \ \forall v_h \in V_h.
+		\left \langle \partial_t\hat{I}_h b(u_h^n),\hat{I}_h v_h \right \rangle_0 + \left \langle \nabla u^n_h, \nabla v_h \right \rangle_0 = \left \langle q,v_h \right \rangle_0 \ \ \forall v_h \in V_h.
 	\end{equation}
 	Next we would discretize in time, our discretization now reads; given $u_h^{n-1} \in V_h$ find $u_h \in V_h$
 	\begin{equation}
-		\left \langle \hat{I}_h \theta(u_h^n),\hat{I}_h v_h \right \rangle_0 +\tau \left \langle \kappa \nabla u^n_h, \nabla v_h \right \rangle_0 = \tau \left \langle q^n,\hat{I}_h v_h \right \rangle_0 + \left \langle \hat{I}_h u_h^{n-1},\hat{I}_h v_h \right \rangle_0
+		\left \langle \hat{I}_h b(u_h^n),\hat{I}_h v_h \right \rangle_0 +\tau \left \langle  \nabla u^n_h, \nabla v_h \right \rangle_0 = \tau \left \langle q^n,\hat{I}_h v_h \right \rangle_0 + \left \langle \hat{I}_h b(u_h^{n-1}),\hat{I}_h v_h \right \rangle_0
 	\end{equation}
 	for all $v_h \in V_h$. Finally we also linearize this with the L-scheme. Following the same procedure as for \eqref{eq:linearized richards fvm} we get; given  $u_h^{n-1},u_h^{n,j-1} \in V_h$ find $u_h^{n,j} \in V_h$ such that
 	\begin{equation}\label{eq:linearized richards fem}
 		\begin{aligned}
-			&L \left \langle \hat{I}_h u^{n,j}_h -  \hat{I}_h u^{n,j-1}_h,\hat{I}_h v_h \right \rangle_0 + \tau \left \langle \kappa \nabla u^{n,j}_h,\nabla v_h \right \rangle \\&=\tau \left \langle q^n,\hat{I}_h v_h \right \rangle_0 + \left \langle \hat{I}_h u_h^{n-1},\hat{I}_h v_h \right \rangle_0 -\left \langle \hat{I}_h \theta(u^{n,j-1}_h),\hat{I}_h v_h \right \rangle_0
+			&L \left \langle \hat{I}_h u^{n,j}_h -  \hat{I}_h u^{n,j-1}_h,\hat{I}_h v_h \right \rangle_0 + \tau \left \langle  \nabla u^{n,j}_h,\nabla v_h \right \rangle \\&=\tau \left \langle q^n,\hat{I}_h v_h \right \rangle_0 + \left \langle \hat{I}_h u_h^{n-1},\hat{I}_h v_h \right \rangle_0 -\left \langle \hat{I}_h b(u^{n,j-1}_h),\hat{I}_h v_h \right \rangle_0
 		\end{aligned}
 	\end{equation}
-	for all $v_h \in V_h$. Since the mass matrix is diagonal with our modified finite element method, we can express \eqref{eq:linearized richards fem} as a matrix-vector equation similar to the MPFA-L method \eqref{eq:linearized richards fvm}. Let $\hat{u}_h^{n,j} \in \mathbb{R}^d$ be the coefficients that together with the basis functions make up $u_h^{n,j} \in V_h$. Then our \eqref{eq:richards simple} discretized with modified finite elements in space, backward euler in time and L-scheme linearization reads; given $\hat{u}_h^{n,j-1},\hat{u}_h^{n-1} \in \mathbb{R}^d$ find  $\hat{u}_h^{n,j} \in \mathbb{R}^d$ such that 
+	for all $v_h \in V_h$. Since the mass matrix is diagonal with our modified finite element method, we can express \eqref{eq:linearized richards fem} as a matrix-vector equation similar to the MPFA-L method \eqref{eq:linearized richards fvm}.  Let $\hat{u}_h^{n,j} \in \mathbb{R}^d$ be the coefficients that together with the basis functions that represents $u_h^{n,j} \in V_h$. Then our \eqref{eq:richards simple} discretized with modified finite elements in space, backward euler in time and L-scheme linearization reads; given $\hat{u}_h^{n,j-1},\hat{u}_h^{n-1} \in \mathbb{R}^d$ find  $\hat{u}_h^{n,j} \in \mathbb{R}^d$ such that 
 	\begin{equation}\label{eq:linearized richards fem system}
-		L\pmb{B}(\hat{u}^{n,j}_h-\hat{u}^{n,j-1}_h) + \tau \pmb{A} \hat{u}_h^{n,j} = -\pmb{B} \theta (\hat{u}_h^{n,j-1})  + \tau \pmb{q}^n +  \pmb{B} \theta (\hat{u}_h^{n-1}).
+		L\pmb{B}(\hat{u}^{n,j}_h-\hat{u}^{n,j-1}_h) + \tau \pmb{A} \hat{u}_h^{n,j} = -\pmb{B} \theta (\hat{u}_h^{n,j-1})  + \tau \pmb{q}^n +  \pmb{B} b (\hat{u}_h^{n-1}).
 	\end{equation}
 	We can now state an important result for obtaining a convergence estimate for Richards' equation.
 	\begin{lemma}
@@ -72,19 +107,36 @@
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=0.8\textwidth]{convergence schema.pdf}
+		\caption{}
 		\label{fig:convergence schema}
 	\end{figure}
 
 	
 	\begin{theorem}
-		Richards' equation after Kirchoff transform \eqref{eq:richards simple} discretized with backward Euler in time, L-scheme linearization and MPFA-L discretization in space \eqref{eq:linearized richards fvm} converges,
+		Richards' equation after Kirchhoff transform \eqref{eq:richards simple} discretized with backward Euler in time, L-scheme linearization and MPFA-L discretization in space \eqref{eq:linearized richards fvm} converges,
 		\begin{equation}
 			\tilde{u}_h^{n,j}\rightarrow u,
 		\end{equation}
 		as $j\rightarrow \infty$, $h\rightarrow 0$ and $\tau \rightarrow 0$.
 	\end{theorem}
 	\begin{proof}
+		As the MPFA-L method and the modified finite element method are equivalent, we prove the convergence of our finite element solution, $u^{n,j}_h$.
 		The proof will be done in three steps, see figure \ref{fig:convergence schema}.
+		We have by the triangle inequality
+		\begin{equation}
+			\left \|u_h^{n,j}-u\right \|_1 \leq \left \|u_h^{n,j}-u^{n,j}\right \|_1 + \left \|u^{n,j}-u^n\right \|_1 + \left \|u^n - u \right \|_1.
+		\end{equation}
+		\begin{enumerate}
+			\item The first term is the error of solving an elliptic problem
+			\begin{equation}\label{eq:first ineq}
+				u^{n,j}-\frac{\tau}{L} \nabla \cdot \nabla u^{n,j} = \frac{L u^{n,j-1} + \tau f^n - b(u^{n,j-1}) + u^{n-1}}{L}.
+			\end{equation}
+			By theorem \ref{th:convergence of elliptic} we have the error estimate
+			\begin{equation}
+				\left \|u_h^{n,j}-u^{n,j}\right \|_1  \leq C h (\left \| u^{n,j-1} \right \|_2 + \left \| \frac{L u^{n,j-1} + \tau f^n - b(u^{n,j-1}) + u^{n-1}}{L} \right \|_0 + \left \| g \right \|_{\frac{1}{2},\Gamma_N}).
+			\end{equation}
+		\item The second term, $\left \|u^{n,j}-u^n\right \|_1$,...
+		\end{enumerate}
 	\end{proof}
 	
 	
