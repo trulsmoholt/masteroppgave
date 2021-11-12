@@ -1,5 +1,5 @@
 %Set up
-\documentclass[12pt,oneside]{book}
+\documentclass[12pt]{book}
 
 %Subfiles
 \usepackage{subfiles}
@@ -18,6 +18,35 @@
 \geometry{a4paper, includehead, includefoot, bottom=3cm}
 \usepackage{float}
 \usepackage{watermark}
+
+%code
+\usepackage{listings}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+
+\lstdefinestyle{mystyle}{
+	backgroundcolor=\color{backcolour},   
+	commentstyle=\color{codegreen},
+	keywordstyle=\color{magenta},
+	numberstyle=\tiny\color{codegray},
+	stringstyle=\color{codepurple},
+	basicstyle=\ttfamily\footnotesize,
+	breakatwhitespace=false,         
+	breaklines=true,                 
+	captionpos=b,                    
+	keepspaces=true,                 
+	numbers=left,                    
+	numbersep=5pt,                  
+	showspaces=false,                
+	showstringspaces=false,
+	showtabs=false,                  
+	tabsize=2
+}
+\lstset{style=mystyle}
+
 
 %Bold
 \usepackage{bm}
@@ -64,7 +93,7 @@
 \begin{document}
 \titlepage
 \begin{center}
-{\bf \LARGE Something about convergence for MPFA discretization of Richards' equation}\\
+{\bf \LARGE MPFA schemes for Richards' equation}\\
 \vspace{10\in}
 \vspace{150\in}
 {\large Truls Moholt\\ \vspace{30\in}}
@@ -75,18 +104,17 @@
 \end{center}
 \tableofcontents
 \newpage
-%\subfile{../Intro/intro}
+\subfile{../Intro/intro}
 \subfile{../Flow in porous media/Flow in porous media}
 \subfile{../Discretization/Discretization}
 \subfile{../Equivalence between MPFA-L and FEM/Equivalence between MPFA-L and FEM}
 \subfile{../Time dependent equations/Time dependent equations}
 %\subfile{../Convergence/Convergence}
 \subfile{../numerical results/Numerical results}
-\subfile{../Computer Code/Computer Code}
 
 
 
-\bibliographystyle{unsrt}
+\bibliographystyle{siam}
 \bibliography{../References/sample}
 \addcontentsline{toc}{chapter}{References}
 
