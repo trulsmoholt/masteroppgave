@@ -3,6 +3,7 @@
 \begin{document}
 	\graphicspath{{../Discretization/figs/}}
 	\chapter{Numerical Approximation Techniques}
+	\label{chap:numerical approximation}
 	In this chapter, we first discuss two important frameworks for spatial discretization of PDE's, followed by a brief introduction of time discretization, and at the end, an introduction to linearization. The focus will be on two dimensional elliptic and parabolic equations, but the concepts covered can easily be generalized to three dimensions. After reading this chapter, the reader hopefully has some idea of how to implement a few different methods for solving the Poisson equation, the heat equation and maybe even Richards' equation, and some of their properties. 
 	\section{The Finite Element Method}\label{sec:fem}
 
@@ -389,7 +390,7 @@
 	There are no basis functions defined for the nodes at the Dirichlet boundary.
 	\begin{figure}[H]
 		\centering
-		\includegraphics[width=0.8\textwidth]{hat_function_python_plot_2.pdf}
+		\includegraphics[width=1\textwidth]{hat_function_python_plot_2.pdf}
 		\caption{A hat function.}
 		\label{fig:hat1}
 	\end{figure}
@@ -599,9 +600,9 @@
 	\par
 	The motivation for using finite volume methods for problems in porous media, for example Richards' equation, is that the flux appears explicitly in our discretization. If one, for example, wants to simulate the spread of some contaminant by groundwater flow, one can easily obtain a local mass conservative flux field using the finite volume method. This flux field can then be used in the desired transport equation.
 	\par 
-	We always make sure that our control volumes are inside our domain, with the boundary of our domain aligning the edges of our grid. To set our boundary conditions we thus need to specify the flux across the boundary. If we have Neumann boundary conditions, this is straightforward. One way of implementing zero Neumann boundary conditions is to make a strip of cells outside our domain with zero permeability. 
+	We always make sure that our control volumes are inside our domain, with the boundary of our domain aligning the edges of our grid. To set our boundary conditions we thus need to specify the flux across the boundary. If we have Neumann boundary conditions, this is usually straightforward. One way of implementing no-flow boundary conditions is to make a strip of cells outside our domain with zero permeability. 
 	\par
-	Dirichlet boundary conditions is not always so natural for the equations we consider, that is knowing the pressure or the saturation on a thin line in a two dimensional domain. This is reflected in the finite volume framework, where a common approach is to make ghost cells outside our domain where the potential is known, see figure \ref{fig:ghost_cell}. We can make these ghost cells as small as we like, and this approach is easy to implement. On the other hand, if we insist we only know the potential at $\partial \Omega$, there exists techniques for determining the flux across the boundary as well. In section \ref{sec:modified_mpfa-l} demonstrate an approach for the MPFA-L-method where this is achieved.
+	Dirichlet boundary conditions are not always so natural for the equations we consider, that is, knowing the pressure or the saturation on a thin line in a two dimensional domain. This is reflected in the finite volume framework, where a common approach is to make ghost cells outside our domain where the potential is known, see figure \ref{fig:ghost_cell}. We can make these ghost cells as small as we like, and this approach is easy to implement. On the other hand, if we insist that we only know the potential at $\partial \Omega$, there exists techniques for determining the flux across the boundary as well. In section \ref{sec:modified_mpfa-l} demonstrate an approach for the MPFA-L-method where this is achieved.
 	\begin{figure}[H]
 		\centering
 		\includegraphics{ghostcell.pdf}
@@ -613,7 +614,7 @@
 	The simplest way of constructing $t_{i,j}^k$ is also the most popular in the industry. As the name suggests, we only use the function value at two points, $x_{0}$ and $x_{1}$, which are the cell center of two neighbouring cells, to compute the numerical flux $\tilde{q}_{E_{0,1}}$ between them.
 	\begin{figure}[H]
 		\centering
-		\includegraphics[width=0.5\textwidth]{two point.pdf}
+		\includegraphics[width=0.8\textwidth]{two point (1).pdf}
 		\caption{The two point flux approximation (TPFA) setup.}
 		\label{fig:tpfa control volume}
 	\end{figure}
@@ -672,27 +673,27 @@
 	Consider the control volumes in \ref{fig:dualmesh}.
 	\begin{figure}[H]
 		\centering
-		\includegraphics{dualmesh.pdf}
+		\includegraphics{dualmesh1.pdf}
 		
-		\caption{The solid lines are the control volumes, the dashed lines are the dual mesh connecting the cell centers, going through the midpoints of each edge. The solid circles are cell centers, the white circles are grid points.}
+		\caption{The solid lines are the edges of the control volumes, the dashed lines are the dual mesh connecting the cell centers, going through the midpoints of each edge. The solid circles are cell centers, the white circles are interaction points, and the volumes enclosed by the dotted lines are referred to as interaction regions.}
 		\label{fig:dualmesh}
 	\end{figure}
-	For each grid point, that means where four control volumes intersect, we consider an interaction region. This is the polygon drawn by the dual mesh around the grid point.
+	For each interaction point, that means where four control volumes intersect, we consider an interaction region. This is the polygon drawn by the dual mesh around the interaction point.
 	\begin{figure}[H]
 		\centering
 		\includegraphics[width=0.6\textwidth]{Interaction region.pdf}
-		\caption{The four subcells in the interaction region corresponding to cells $1,2,3,4$ and grid point $5$. Here, $\mathcal{R}_5 = \left \{1,2,3,4 \right\}$.}
+		\caption{The four subcells in the interaction region corresponding to cells $1,2,3,4$ and interaction point $5$. Here, $\mathcal{R}_5 = \left \{1,2,3,4 \right\}$.}
 		\label{fig:interactionregion}
 	\end{figure}
 	In each interaction region there are four half edges. Our goal is to obtain an expression 
 	\begin{equation}\label{eq:O trans}
 		\tilde{q}_{E_{i,j}^n}  = \sum_{k\in \mathcal{R}_n} t^{k,n}_{i,j} u^k  \approx \int_{E_{i,j}}\hat{\bm{n}}_j^T \bm{K} \nabla u \  ds \ \ i,j \in \mathcal{R}_n
 	\end{equation}
-	for the flux through each half edge $E_{i,j}^n$ in the interaction region corresponding to grid point $n$ (figure \ref{fig:interactionregion}). Where $\mathcal{R}_n$ is the index set of the four cells neighbouring grid point $n$.
+	for the flux through each half edge $E_{i,j}^n$ in the interaction region corresponding to interaction point $n$ (figure \ref{fig:interactionregion}). Where $\mathcal{R}_n$ is the index set of the four cells neighbouring interaction point $n$.
 	\par
 	We assume for now that the potential is linear in each of the four sub cells in the interaction region, figure  \ref{fig:interactionregion}. This gives $4\cdot 3 = 12$ degrees of freedom. The linear potential must of course equal the cell center values of the potential in the cell centres, this removes four degrees of freedom. We also require flux continuity on the four half edges in the interaction region, this removes an additional four degrees of freedom. The last four degrees of freedom are spent on potential continuity of the midpoints of the edges. 
 	\par
-	By these assumptions on flux and potential continuity, the linear potential in each sub cell is well defined given values at the cell center. We can now use this to compute the four by four matrix of transmissibility coefficients for each of the four half edges. In the situation of figure \ref{fig:interactionregion} and equation \eqref{eq:O trans} it would look like
+	The linear potential in each sub cell is now well defined given values at the cell center, provided the assumptions on flux and potential continuity. We can now use this to compute the four by four matrix of transmissibility coefficients for each of the four half edges. In the situation of figure \ref{fig:interactionregion} and equation \eqref{eq:O trans} it would look like
 	\begin{equation}\label{eq:O trans matrix}
 		\bm{T}^5 = \begin{bmatrix}
 			t^{1,5}_{1,2} &t^{2,5}_{1,2} &t^{3,5}_{1,2}  &t^{4,5}_{1,2} \\ 
@@ -704,32 +705,39 @@
 where each row corresponds to the flux over some half edge, and each column corresponds to some cell center.
 Computing \eqref{eq:O trans matrix} involves inverting a four by four matrix with coefficients depending on the mesh and permeability, see \cite{Aavatsmark2002} for details. Finally, we assemble the system of equations \eqref{eq:fvm system} with the transmissibility coefficients. Note that we write the flux over the $j$th edge of cell $i$, $\tilde{q}_{i,j}$ as the flux over the two half edges:
 	\begin{equation}\label{eq:O method system}
-			\sum_{j\in \mathcal{S}_i} (\tilde{q}_{\hat{E}_{i,j}^1} + \tilde{q}_{\hat{E}_{i,j}^2}) = |\Omega_i|f(x_i) 
+			\sum_{j\in \mathcal{S}_i} (\tilde{q}_{\hat{E}_{i,j}^1} + \tilde{q}_{\hat{E}_{i,j}^2}) = |\Omega_i|f(x_i),
 	\end{equation}
-	Where $\hat{E}_{i,j}^1 = E_{i,j}^n$ for some $n$, see \eqref{eq:O trans}. Hence, computing the transmissibility coefficients and assembling them into the discretization matrix, requires two different indexing systems.\par
-	Next, we see that the interaction regions of the two half edges sharing same edge overlaps, so we get a six point flux stencil. In other words, for each $j$ in \eqref{eq:O method system}, the union of the two interaction regions used to compute $\tilde{q}_{E_{i,j}^1}$ and $\tilde{q}_{E_{i,j}^2}$ consists of six points.
-	Taking the union of the four flux stencils connected to a cell, we observe that the O-method yields a nine point stencil
+	where the half edge fluxes $\hat{E}_{i,j}^1$ and $\hat{E}_{i,j}^1$ are related to some interaction point, i.e., $\hat{E}_{i,j}^1=E_{i,j}^n$ for some $n$, see \eqref{eq:O trans}. Hence, computing the transmissibility coefficients and assembling them into the discretization matrix, requires two different indexing systems.\par
+	Next, we see that the interaction regions of the two half edges sharing same edge overlaps, so that we get a six point flux stencil. In other words, for each $j$ in \eqref{eq:O method system}, the union of the two interaction regions used to compute $\tilde{q}_{E_{i,j}^1}$ and $\tilde{q}_{E_{i,j}^2}$ consists of six points.
+	Taking the union of the four flux stencils connected to a cell, we observe that the O-method yields a nine-point potential stencil
 	\begin{equation*}
 		\sum_{k\in\mathcal{M}_i} \hat{t}^{k}u^k = |\Omega_i|f(x_i),
 	\end{equation*}
-	where $\mathcal{M}_i$ is the set of nine indices corresponding to cell $i$ and its eight neighbour cells.\par
-	The O-method is consistent for non K-orthogonal grids, and reduces to two point flux approximation when the grid is K-orthogonal. This happens because the systems of equations to be solved for the transmissibility coefficients in each interaction region, becomes diagonal. This is because $\bm{n}^T \bm{K} \nabla u$ can be expressed as two points when $u$ is a linear function given by three points which forms two K-orthogonal vectors.
+	where $\mathcal{M}_i$ is the set of nine indices corresponding to cell $i$ and its eight neighbouring cells.\par
+	The O-method is consistent for non K-orthogonal grids, and reduces to the two-point flux approximation when the grid is K-orthogonal. This happens because the systems of equations to be solved for the transmissibility coefficients in each interaction region, becomes diagonal. This is because $\bm{n}^T \bm{K} \nabla u$ can be expressed as two points when $u$ is a linear function given by three points which forms two K-orthogonal vectors.
 	\par
-	In \cite{nordbotten2020introduction}, Nordbotten and Keilegavlen describes a framework of MPFA methods where the O-method is a special case. They consider the problem of finding the four linear potential functions in each interaction region that minimizes the discontinuity across the edges. The discontinuity should be minimized given that the functions respect cell center potential values, that the flux models the constitute law and flux continuity. The O-method is then defined for some special cost function measuring the discontinuity. Other methods, with the potential continuity at other places than the edge midpoint, are also common.
+	In \cite{nordbotten2020introduction}, Nordbotten and Keilegavlen describes a framework of MPFA methods where the O-method we introduced is a special case. They consider the problem of finding the four linear potential functions in each interaction region that minimizes the potential discontinuity across the edges. This should be minimized given the three constraints:
+	\begin{enumerate}
+		\item the potentials respect cell center potential values.
+		\item the flux models the constitute law, that is, consistency of Darcy's law.
+		\item flux continuity across the half edges.
+	\end{enumerate} 
+	Other methods, with the potential continuity at other places than the edge midpoint, have also been proposed. An early example is the nine-point finite difference scheme of J.L Yanosik and T.A McCracken \cite{10.2118/5734-PA}, which has continuity at the midpoints of the half edges.
 	\par 
-	With our implementation of MPFA-O method, one needs for each interaction region to assemble four, four by four, matrices. Compute the inverse of one of them, and do two matrix multiplications and one subtraction. All of this could be done in parallel. However, for my implementation, it slows matrix assembly down a lot compared to two point flux approximation. Another drawback of the O-method is the \emph{monotonicity} properties: One can risk having positive entries off the main diagonal of the discretization matrix for difficult meshes. This may lead to oscillations in the solution and violation of the minimum principle. For two point flux approximation we avoid this issue altogether, as the signs of the five point stencil always are one plus and four negatives. Even for the linear finite element method, this issue is avoided if one imposes some maximum angle condition, see [Knabner,\cite{Knabner}] page 175. When solving for example the Richards' equation, violating the minimum principle can lead to air bubbles being formed spontaneously in the saturated region. For a discussion on monotonicity see \cite{10.1007/s00211-006-0060-z}.
+	With our implementation of MPFA-O method, one needs for each interaction region to assemble four, four by four, matrices. Compute the inverse of one of them, and do two matrix multiplications and one subtraction. All of this could be done in parallel. However, for my implementation, it slows matrix assembly down a lot compared to two point flux approximation. Another drawback of the O-method is the \emph{monotonicity} properties: One can risk having positive entries off the main diagonal of the discretization matrix for difficult meshes. This may lead to unphysical oscillations in the solution and violation of the maximum principle. For two-point flux approximation we avoid this issue altogether, as the signs of the five-point stencil always are one plus and four negatives. Even for the linear finite element method, this issue is avoided if one imposes some maximum angle condition, see [Knabner,\cite{Knabner}] page 175. When solving for example the Richards' equation, violating the maximum principle can lead to air bubbles being formed spontaneously in the saturated region. For a discussion on monotonicity see \cite{10.1007/s00211-006-0060-z}.
 	\subsection{MPFA L-Method}
+	\label{sec:L-method}
 
 	\epigraph{The L-method is the Ferrari of discretization techniques for porous media flow problems, while conformal finite elements is the Volvo.}{\textit{Professor Jan Martin Nordbotten}}
 	Like the O-method, the L-method is also a multi-point flux approximation method. It was introduced in \cite{https://doi.org/10.1002/num.20320}, where the authors demonstrate improved monotonicity properties with numerical experiments. This method is similar to the O-method, in that it goes through the half edges and uses information from the same interaction regions. But instead of using four points for the flux across each half edge, we use three, with two half edges between them. \par
 	As in the O-method, we assume linear potential in each cell, this gives us $3\cdot 3 = 9$ degrees of freedom. Three are eliminated because we respect the cell center value of the potential, this leaves six degrees of freedom. We use two, one at each edge, for flux continuity. The last four are used for potential continuity at the two edges. 
 	\par
-	We have two choices of flux stencil for each half edge, see figure \ref{fig:two choices}. We compute the transmissibility coefficients for both, then we choose the one "best" aligned with the flow: Let $t_1^i$ be the $i$th transmissibility coefficient of $T_1$, then
+	We have two choices of flux stencil for each half edge, see figure \ref{fig:two choices}. We compute the transmissibility coefficients for both, then we choose the one "best" aligned with the flow: Let $t_1^i$ be the $i$th transmissibility coefficient of $\triangle_1$, then
 	\begin{equation}\label{eq:L-criterion}
 		\begin{aligned}
 			&\text{if} \ |t^1_1| < |t^2_2| \\
-			&\text{choose} \ T_1 \ \text{else} \\
-			&\text{choose} \ T_2.
+			&\text{choose} \ \triangle_1 \ \text{else} \\
+			&\text{choose} \ \triangle_2.
 		\end{aligned}
 	\end{equation}
 	\begin{figure}[H]
@@ -737,34 +745,34 @@ Computing \eqref{eq:O trans matrix} involves inverting a four by four matrix wit
 		\begin{subfigure}[b]{0.4\textwidth}
 			\centering
 			\includegraphics[width=\textwidth]{left choice.pdf}
-			\caption{$T_1$}
+			\caption{$\triangle_1$}
 		\end{subfigure}
 		\hfill
 		\begin{subfigure}[b]{0.4\textwidth}
 			\centering
 			\includegraphics[width=\textwidth]{right choice.pdf}
-			\caption{$T_2$}
+			\caption{$\triangle_2$}
 			\label{fig:three sin x}
 		\end{subfigure}
-		\caption{The two choices of which cell centers to use for computing the flux over the half edge in red. We call the hexagons spanned $T_1$ and $T_2$ for L-triangles, as they consists of three cell centers.}
+		\caption{The two choices of which cell centers to use for computing the flux over the half edge in red. We call the interaction regions (the dotted lines) for L-triangles, as they related to three cell centers.}
 		\label{fig:two choices}
 	\end{figure}
-	A cheap intuition behind \eqref{eq:L-criterion} is that if $|t_1^1|<|t_2^2|$, it is more likely that $sgn(t_1^1) = sgn(t_1^4)$ and if not, $sgn(t_2^2) = sgn(t_2^3)$ is more likely. This is due to the fact that $\sum t^i = 0$. Choosing L-triangle as in \eqref{eq:L-criterion} increases the chances that we get the same sign of $t^i$ on the same side of the half edge, thus increasing the chance that we get a monotone discretization.  See \cite{https://doi.org/10.1002/fld.1926} for a more detailed geometric intuition of choosing L-triangle in the case of homogenous permeability. 
+	A cheap intuition behind \eqref{eq:L-criterion} is that if $|t_1^1|<|t_2^2|$, it is more likely that $sgn(t_1^1) = sgn(t_1^4)$ than $sgn(t_2^2) = sgn(t_2^3)$ due to the fact that $\sum t^i = 0$. Choosing L-triangle as in \eqref{eq:L-criterion} increases the chances that we get the same sign of $t^i$ on the same side of the half edge, thus increasing the chance that we get a monotone discretization.  See \cite{https://doi.org/10.1002/fld.1926} for a more detailed geometric intuition of choosing L-triangle in the case of homogenous permeability. 
 	\par 
 	To compute transmissibility coefficients in a given L-triangle, we use the assumptions on flux and potential continuity, to construct a linear system. The coefficients depends on mesh and permeability in the three cells. 
 		As with the O-method, we end up with a system assembled from the fluxes over the half edges:
 	\begin{equation}
 		\begin{aligned}
-			\sum_{j=1}^4 (\tilde{q}_{i,j}^1 + \tilde{q}_{i,j}^2) &= |\Omega_i|f(x_i) \\
-			\sum_{j=1}^4 (\sum_{k=1}^3 t^{k,1}_{i,j}u^k + \sum_{k=1}^3 t^{k,2}_{i,j}u^k)&= |\Omega_i|f(x_i).\\
+			\sum_{j\in \mathcal{S}_i} (\tilde{q}_{\hat{E}_{i,j}^1} + \tilde{q}_{\hat{E}_{i,j}^2}) &= |\Omega_i|f(x_i) \\
+			\sum_{j=1}^4 (\sum_{k=1}^3 t^{k,a}_{i,j}u^k + \sum_{k=1}^3 t^{k,b}_{i,j}u^k)&= |\Omega_i|f(x_i),\\
 		\end{aligned}
 	\end{equation}
-	But the flux stencil across each edge is possibly smaller, often just four points.
+	where $a$ and $b$ corresponds to the two interaction points sharing edge $E_{i,j}$. Thus, the flux stencil across each edge always consists of four points.
 	\begin{remark}
-		In the L-method, we need to construct and solve a matrix equation twice for each half edge to compute the transmissibility coefficients, as there are always two choices. In contrast, the O-method only needs this done once for each grid point, and its four half edges.
+		In the L-method, we need to construct and solve a matrix equation twice for each half edge to compute the transmissibility coefficients, as there are always two choices. In contrast, the O-method only needs this done once for each interaction point, and its four half edges.
 	\end{remark}
 	\par
-	In figure \ref{fig:L-triangles} we see the criterion in practice for a homogenous medium: In figure \ref{fig:paralellogram-L} all L-triangles are used by two half-edges, and they are chosen in the same way throughout the domain. In figure \ref{fig:complicated-L} there are some triangles that overlap, this is due to the fact that some L-triangles are used by only one half edge.
+	In figure \ref{fig:L-triangles}, we see the criterion in practice for a homogenous medium: In figure \ref{fig:paralellogram-L} all L-triangles are used by two half edges, and they are chosen in the same way throughout the domain. In figure \ref{fig:complicated-L} there are some triangles that overlap, this is due to the fact that some L-triangles are used by only one half edge.
 	\begin{figure}[H]
 		\centering
 		\begin{subfigure}[b]{0.8\textwidth}
@@ -780,7 +788,7 @@ Computing \eqref{eq:O trans matrix} involves inverting a four by four matrix wit
 			\caption{Complicated grid, note that some of the L-triangles overlap.}
 			\label{fig:complicated-L}
 		\end{subfigure}
-		\caption{Examples of L-triangles(in red) in a domain with homogenous permeability tensor.}
+		\caption{Examples of L-triangles (in red) in a domain with homogenous permeability tensor.}
 		\label{fig:L-triangles}
 	\end{figure}
 	The observation in figure \ref{fig:paralellogram-L} can be stated as a theorem:
@@ -789,9 +797,9 @@ Computing \eqref{eq:O trans matrix} involves inverting a four by four matrix wit
 		For homogeneous media and uniform parallelogram grids, the MPFA L-method
 		has a seven-point cell stencil for the discretization of each interior cell, i.e., the discretization of each cell is a seven point stencil including the center cell and the six closest potential cells, as shown in \ref{fig:paralellogram-L}.
 	\end{theorem}
-	In case of parallelogram grid with heterogeneous permeability, it may also happen that one gets overlapping L-triangles. This is the case even if the permeability only changes as a scalar in the domain. In figure \ref{fig:L-triangles-heterogeneous} the L-triangles are shown for a random, scalar permeability. Let $K_{m,n}$ be the permeability of the $m$th cell in $y$ direction and $n$th cell in $x$ direction. Then the random permeability used in figure \ref{fig:L-triangles-heterogeneous} given by
+	In the case of a parallelogram grid with heterogeneous permeability, it may also happen that one gets overlapping L-triangles. This is the case even if the permeability only changes as a scalar in the domain. In figure \ref{fig:L-triangles-heterogeneous} the L-triangles are shown for a random, scalar permeability. Let $K_{m,n}$ be the permeability of the $m$th cell in $y$ direction and $n$th cell in $x$ direction. Then the random permeability used in figure \ref{fig:L-triangles-heterogeneous} given by
 	\begin{equation}
-		K_{n,m} = (e^{\hat{x}}-1)^2
+		K_{n,m} = (e^{\hat{x}}-1)^2,
 	\end{equation}
 	where $\hat{x}$ is a random sample drawn from a uniform distribution over $[0,1)$. We see that two of the L-triangles overlap. This is due to some combination of permeability at four neighbouring cells. Also note that the permeability is not so low that it causes numerical rounding errors, as $\min_{m,n}K_{m,n}=0.0017$ in figure \ref{fig:L-triangles-heterogeneous}.
 	\begin{figure}[H]
@@ -800,10 +808,8 @@ Computing \eqref{eq:O trans matrix} involves inverting a four by four matrix wit
 		\caption{L-triangles on a random permeability.}
 		\label{fig:L-triangles-heterogeneous}
 	\end{figure}
-
-
 	\par 
-	For homogenous media the L-method becomes easier to simpler. We continue with a useful theorem which we will use later:
+	For homogenous media the L-method becomes simpler. We continue with a useful theorem which we will use later:
 	\begin{lemma}[Cao, Y., Helmig, R. and Wohlmuth, B.I. (2009),\cite{https://doi.org/10.1002/fld.1926}] \label{lemma:L_potential}
 		Assume that the permeability $\bm{K}$ is homogeneous on $\Omega$, then the flux through each half edge $e$, computed by the L-method, can be written as
 		\begin{equation}\label{eq:L flux simplified}
@@ -840,22 +846,22 @@ Computing \eqref{eq:O trans matrix} involves inverting a four by four matrix wit
 		Where we used flux continuity across each half edge in the last equality. Since $\bm{K}$ is positive definite, we have that $\bm{K}\bm{n}_{e_1}$ and $\bm{t}_{e_1}$ are independent, thus $[\nabla u]=0$ on $e_1$. Same arguments holds for $e_2$. Hence $\nabla u$ is constant on the original L-triangle and the desired result follows.
 	\end{proof}
 	\begin{remark}
-		The above lemma suggests that we can obtain the transmissibility coefficients without solving a system of equations for each half edge. This simplifies implementation, but it's only possible for homogenous media.
+		The above lemma suggests that we can obtain the transmissibility coefficients without solving a system of equations for each half edge. This simplifies implementation, but it is only possible for homogenous media.
 	\end{remark}
 	%\begin{remark}
 		%In the case of heterogeneous media, we do not easily get %meaningful, physical interpretations of the %transmissibility coefficients. Like the harmonic mean, %as we did for TPFA. 
 %	\end{remark}
 	\par 
-	To conclude; the L-method is the most sophisticated method. It has the best monotonicity properties, it is consistent for non K orthogonal grids, but it is more complicated than the O-method. 
-	\section*{Time Discretization}	
+	To conclude; the L-method is the most sophisticated method in that it adjusts to the anisotropy locally. It has the best monotonicity properties, it is consistent for non K-orthogonal grids, but it is more complicated to implement than the O-method. 
+	\section{Time Discretization}	
 		We start by considering the most famous parabolic equation, namely the heat equation. Let $u = u(x,t)$, given appropriate boundary and initial conditions, find $u$ such that:
 	
 	\begin{equation}\label{eq:heat equation}
 		\left \{
 		\begin{aligned}[c]
-			\partial_t u - \nabla \cdot \pmb{K} \nabla u &= f, \\
+			\partial_t u - \nabla \cdot \bm{K} \nabla u &= f, \\
 			u &= 0, \\
-			-\pmb{K}\nabla u &= g_N,\\
+			-\bm{K}\nabla u &= g_N,\\
 			u &= u_0,
 		\end{aligned}
 		\ \ \
@@ -863,70 +869,68 @@ Computing \eqref{eq:O trans matrix} involves inverting a four by four matrix wit
 			\text{ in }& \Omega \times (0,T]\\
 			\text{ on }& \partial \Gamma_D \times (0,T]\\
 			\text{ on }& \partial \Gamma_N \times (0,T)\\
-			\text{ on }& \Omega \times \left\{t=0\right \}
+			\text{ on }& \Omega \times \left\{t=0\right \}.
 		\end{aligned}
 	\right.
 	\end{equation}
 	The well-posedness of \eqref{eq:heat equation} is discussed in chapter seven of \cite{evans10}, it requires a more detailed discussion of Sobolev spaces and Bochner spaces, i.e., spaces containing functions from the real numbers to some Sobolev space.\par
-	We expect low regularity in time, so there is not much to be  gained by using a higher order discretization in time. The two choices we have left is the forward Euler (explicit) and the backward Euler (implicit). The obvious choice is backward Euler, as it is stable for large time-step sizes. This can be understood intuitively by considering the parabolic nature of the equation, the signals propagate through the domain instantaneously. A careful analysis of time discretizations of parabolic equations is done in (\cite{Knabner}, chapter 7).  There, it is shown that explicit schemes only are stable for time-step sizes proportional to the square of the diameter of the space discretization, whereas fully implicit schemes are stable for all time-step sizes. \par  Let $\left \{ t_n \right \}_n$ be a sequence of $N+1$ uniformly distributed numbers from $0$ to $T$ and let $\tau = \frac{T}{N}$ be the time-step size. Then we state the semi-discrete version of \eqref{eq:heat equation} by exchanging the time derivative by a difference quotient $\partial_t u = \frac{u^n-u^{n-1}}{\tau}$. We end up with: Given $u^{n-1}$ and $f^n$, find $u^n$ such that
+	We expect low regularity in time, so there is not much to be  gained by using a higher order discretization in time. Next, we need to decide whether we should use an explicit or an implicit scheme. The obvious choice is the implicit backward Euler, as it is stable for large time-step sizes. This can be understood intuitively by considering the parabolic nature of the equation, the signals propagate through the domain instantaneously. A careful analysis of time discretizations of parabolic equations is done in (\cite{Knabner}, chapter 7).  There, it is shown that explicit schemes only are stable for time-step sizes proportional to the square of the diameter of the space discretization, whereas fully implicit schemes are stable for all time-step sizes. \par  Let $\left \{ t_n \right \}_n$ be a sequence of $N+1$ uniformly distributed numbers from $0$ to $T$ and let $\tau = \frac{T}{N}$ be the time-step size. Then we state the semi-discrete version of \eqref{eq:heat equation} by exchanging the time derivative by a difference quotient $\partial_t u = \frac{u^n-u^{n-1}}{\tau}$. We end up with: Given $u^{n-1}$ and $f^n$, find $u^n$ such that
 	\begin{equation}\label{eq:semidiscrete heat}
 		\begin{aligned}[c]
-			u^n - \tau \nabla \cdot \pmb{K} \nabla u^n &= \tau f^n+u^{n-1}\\
-			u^n &= 0 \\
-			\pmb{K}\nabla u &= g_N\\
-			u^0 &= u_0
+			u^n - \tau \nabla \cdot \bm{K} \nabla u^n &= \tau f^n+u^{n-1},\\
+			u^n &= 0, \\
+			\bm{K}\nabla u &= g_N,\\
+			u^0 &= u_0,
 		\end{aligned}
 		\ \ \
 		\begin{aligned}[c]
-			x &\in \Omega  \\
-			x &\in \partial \Gamma_D \\
-			x &\in \partial \Gamma_N \\
+			x &\in \Omega,  \\
+			x &\in \partial \Gamma_D, \\
+			x &\in \partial \Gamma_N, \\
 			x &\in \Omega .
 		\end{aligned}
 	\end{equation}
-	The above equation shows that this time discretization is implicit, i.e., we cannot solve \eqref{eq:semidiscrete heat} for $u^n$ with simple algebraic manipulation.
-	Now, we have an elliptic problem \eqref{eq:semidiscrete heat} for each time-step. This has almost the same structure as the elliptic model problem \eqref{eq:poisson} we solved in the previous chapters, the difference being the $u^n$ term.
+	The above equation shows that this time discretization is implicit, i.e., we cannot solve \eqref{eq:semidiscrete heat} for $u^n$ with simple algebraic manipulation,
+	instead, we have an elliptic problem \eqref{eq:semidiscrete heat} for each time-step. This has almost the same structure as the elliptic model problem \eqref{eq:poisson} we solved in the previous chapters, the difference being the $u^n$ term.
 	\subsection*{Finite element approach}
 	We are now ready to fit this problem into our finite element framework from chapter 2.
 	The variational formulation of \eqref{eq:semidiscrete heat} is achieved as before by multiplying by test functions in $H^1_0(\Omega)$: Given $u^{n-1} \in V$, $f^n \in V'$, find $u^n \in V$ such that
 	\begin{equation}
-			\left \langle  u^n, v\right \rangle_0 + \tau \left \langle  \pmb{K} \nabla u^n, \nabla v \right \rangle_0 =\tau \left \langle f^n,v\right \rangle_0 + \left \langle u^{n-1},v \right \rangle_0
+			\left \langle  u^n, v\right \rangle_0 + \tau \left \langle  \bm{K} \nabla u^n, \nabla v \right \rangle_0 =\tau \left \langle f^n,v\right \rangle_0 + \left \langle u^{n-1},v \right \rangle_0
 	\end{equation}
 	for all $v$ in $V$.
 	If we exchange $V$ with  a finite dimensional subspace $V_h$, and write $u_h^n = \sum_{i = 1}^d \hat{u}_i^n \phi_i $, as in the Galerkin FEM section \ref{sec:galerkin_fem}, we end up with the system: Find $\hat{\bm{u}}^n\in \mathbb{R}^d$ such that 
 	\begin{equation}\label{eq:heat fem disc}
-			(\pmb{B}+\tau\pmb{A})\hat{\bm{u}}^n =\tau \pmb{f}^n +  \pmb{B}\hat{\bm{u}}^{n-1},
+			(\bm{B}+\tau\bm{A})\hat{\bm{u}}^n =\tau \bm{f}^n +  \bm{B}\hat{\bm{u}}^{n-1},
 	\end{equation}
-	where the \emph{stiffness matrix}, $\bm{A}$, is as before, that is $\bm{A}_{i,j} = \left \langle \bm{K} \nabla \phi_i,\nabla \phi_j \right \rangle$. The matrix $\bm{B}$ is often called the \emph{mass matrix} and is defined as $\pmb{B}_{i,j} = \int_{\Omega} \phi_i \phi_jdx$.
+	where the \emph{stiffness matrix}, $\bm{A}$, is as before, that is $\bm{A}_{j,i} := \int_{\Omega}(\nabla \phi_i)^T \nabla \phi_jdx$. The matrix $\bm{B}$ is often called the \emph{mass matrix} and is defined as $\bm{B}_{j,i} := \int_{\Omega} \phi_i \phi_jdx$.
 	\subsection*{Finite volume approach}
-	As before, we divide our domain $\Omega$ into $d$ control volumes $\left \{ \Omega_i \right \}_i$. Either, one can write the heat equation\eqref{eq:heat equation} in conservation form on each control volume
+	As before, we divide our domain $\Omega$ into $d$ control volumes $\left \{ \Omega_i \right \}_i$. Either, one can write the heat equation \eqref{eq:heat equation} in conservation form on each control volume
 	\begin{equation}\label{eq:semidiscrete FVM}
-		\partial_t\int_{\Omega_i}u \ dx -\int_{\partial \Omega_i} \pmb{K}\nabla u \cdot \hat{\pmb{n}}\ dx = \int_{\Omega_i} f \ dx,
+		\partial_t\int_{\Omega_i}u \ dx -\int_{\partial \Omega_i} \bm{K}\nabla u \cdot \hat{\bm{n}}\ dx = \int_{\Omega_i} f \ dx,
 	\end{equation}
 	and discretize the first term with backward Euler, or one can make sure the semi-discrete heat equation \eqref{eq:heat equation} holds for each control volume and use the divergence theorem. Both ways, we end up with
 	\begin{equation}
-		\int_{\Omega_i} u^n \ dx - \tau\int_{\partial \Omega_i} \pmb{K}\nabla u^n \cdot \hat{\pmb{n}}\ dx = \tau \int_{\Omega_i} f^n \ dx + \int_{\Omega_i} u^{n-1} \ dx,
+		\int_{\Omega_i} u^n \ dx - \tau\int_{\partial \Omega_i} \bm{K}\nabla u^n \cdot \hat{\bm{n}}\ dx = \tau \int_{\Omega_i} f^n \ dx + \int_{\Omega_i} u^{n-1} \ dx,
 	\end{equation}
 	if we, as discussed earlier, use the midpoint rule to evaluate the integrals, we get
 	\begin{equation}
-		\int_{\Omega_i} u^n(x_i) \ dx - \tau\int_{\partial \Omega_i} \pmb{K}\nabla u^n \cdot \hat{\pmb{n}}\ dx = \tau \int_{\Omega_i} f^n(x_i) \ dx + \int_{\Omega_i} u^{n-1}(x_i) \ dx.
+		\int_{\Omega_i} u^n(x_i) \ dx - \tau\int_{\partial \Omega_i} \bm{K}\nabla u^n \cdot \hat{\bm{n}}\ dx = \tau \int_{\Omega_i} f^n(x_i) \ dx + \int_{\Omega_i} u^{n-1}(x_i) \ dx.
 	\end{equation}
 	As in the previous section we end up with a system of equations, where superscript $V$ is just to distinct between FVM and FEM. Find $\tilde{\bm{u}} \in \mathbb{R}^d$, such that
 	\begin{equation}\label{eq:heat fvm disc}
-		(\pmb{B}^V + \tau \pmb{A}^V)\tilde{\bm{u}}^n = \tau \pmb{f}^n + \pmb{B}^V\tilde{\bm{u}}^{n-1}
+		(\bm{B}^V + \tau \bm{A}^V)\tilde{\bm{u}}^n = \tau \bm{f}^n + \bm{B}^V\tilde{\bm{u}}^{n-1}
 	\end{equation}
-	The matrix $\pmb{A}^V$ is as in chapter 3, with the fluxes through the edges of cell $i$ described by the $j$th row of $\pmb{A}^V$. The matrix $\pmb{B}^V$ is diagonal with the entry $i$ being the volumes of the volume of cell $i$. That is, for two dimensional problems, the entries of $\bm{B}^V$ are the areas of the control volumes.
-	
-	If $\pmb{A}= \pmb{A}^V$, then the discretization of the constitutive law is the same for both the finite volume and the finite element method. As we will see later, this is challenging.	
+	The matrix $\bm{A}^V$ is as in chapter 3, with the fluxes through the edges of cell $i$ described by the $j$th row of $\bm{A}^V$. The matrix $\bm{B}^V$ is diagonal with the entry $i$ being the volumes of the volume of cell $i$. That is, for two dimensional problems, the entries of $\bm{B}^V$ are the areas of the control volumes. In contrast, the $\bm{B}$ matrix from the finite element method, is in general not diagonal.
 	\section{Linearization}
 We have seen that the heat equation leads to a sequence of linear systems. In the same way, we expect that our non-linear Richards' equation \eqref{eq:richards} leads to a system of non-linear equations. We start by discussing this in a general setting: Find $x\in U$ such that 
 \begin{equation}\label{eq:non-linear-problem}
-	 \pmb{f}(\pmb{x})=\pmb{0} \\ \text{ where } f:U\subset\mathbb{R}^n\rightarrow\mathbb{R}^n.
+	 \bm{f}(\bm{x})=\bm{0} \\ \text{ where } f:U\subset\mathbb{R}^n\rightarrow\mathbb{R}^n.
 \end{equation}
 The solution of \eqref{eq:non-linear-problem} is called a \emph{root}, it is almost always found using an iterative method.\par 
-A common iterative scheme to solve \eqref{eq:non-linear-problem} is the \emph{Newton's method}. Let $D\pmb{f}(\pmb{x}_{j-1})^{-1}:\mathbb{R}^n\rightarrow\mathbb{R}^n$ be the Jacobian of $\pmb{f}(\pmb{x}_{j-1})$, then the newton iteration is given by:
+A common iterative scheme to solve \eqref{eq:non-linear-problem} is the \emph{Newton's method}. Let $D\bm{f}(\bm{x}_{j-1})^{-1}:\mathbb{R}^n\rightarrow\mathbb{R}^n$ be the Jacobian of $\bm{f}(\bm{x}_{j-1})$, then the newton iteration is given by:
 \begin{equation}
-	\pmb{x}_j = \pmb{x}_{j-1} -D\pmb{f}(\pmb{x}_{j-1})^{-1}\pmb{f}(\pmb{x}_{j-1}).
+	\bm{x}_j = \bm{x}_{j-1} -D\bm{f}(\bm{x}_{j-1})^{-1}\bm{f}(\bm{x}_{j-1}).
 \end{equation}
 In one dimension a convergence proof i easily obtained by techniques from calculus, the following theorem is found in  slightly more detail in (Cheney\cite{Cheney}, chapter 3):
 \begin{theorem}
@@ -959,7 +963,7 @@ In one dimension a convergence proof i easily obtained by techniques from calcul
 	\begin{equation}
 		| e_{1} | \leq \frac{2}{2\delta}|e_0|^2<|e_0|
 	\end{equation}
-	The above equation implies $x_1\in B_{\epsilon}(\overline{x})$, and by induction we get:
+	The above equation implies $x_1\in B_{\epsilon}(\overline{x})$, and by induction we get
 	\begin{equation}
 		|e_{j+1}|<|e_j|,
 	\end{equation}
@@ -970,12 +974,12 @@ In one dimension a convergence proof i easily obtained by techniques from calcul
 \end{proof}
 For a similar result in more dimensions see (Knabner \cite{Knabner}, chapter 8). One apparent drawback of this method is that it is only locally convergent, i.e., one needs to start the iteration in a neighbourhood of the root where the Jacobian is well defined. In practice one often solves the system
 \begin{equation}
-	D\pmb{f}(\pmb{x}_{j-1})\pmb{\delta}_{j} = -\pmb{f}(\pmb{x}_{j-1}),
+	D\bm{f}(\bm{x}_{j-1})\bm{\delta}_{j} = -\bm{f}(\bm{x}_{j-1}),
 \end{equation}
-and then update the current iterate: $\pmb{x}_j = \pmb{x}_{j-1} + \pmb{\delta}_{j}$. Typically, the matrix $D\pmb{f}(\pmb{x}_{j-1})$, needs to be computed and assembled for every iteration. This may be computationally expensive. So Newton's method may be slow despite its quadratic convergence, if it even converges.\par 
-A simpler approach is to exchange the Jacobian with a diagonal matrix $L\pmb{I}$ such that 
+and then update the current iterate: $\bm{x}_j = \bm{x}_{j-1} + \bm{\delta}_{j}$. Typically, the matrix $D\bm{f}(\bm{x}_{j-1})$, needs to be computed and assembled for every iteration. This may be computationally expensive. So Newton's method may be slow despite its quadratic convergence, if it even converges.\par 
+A simpler approach is to exchange the Jacobian with a diagonal matrix $L\bm{I}$ such that 
 \begin{equation}\label{eq:L-scheme}
-	L\pmb{\delta}_j = - \pmb{f}(\pmb{x}_{j-1}).
+	L\bm{\delta}_j = - \bm{f}(\bm{x}_{j-1}).
 \end{equation}
 This is called the \emph{L-scheme}, and will be the  method we use for linearization in this thesis. In one dimension it is easy to prove convergence:
 
@@ -987,18 +991,18 @@ This is called the \emph{L-scheme}, and will be the  method we use for lineariza
 	\begin{equation}
 		e_{j+1} = x_j-\frac{f(x_j)}{L}-\overline{x}=e_j-\frac{f(x_j)}{L}.
 	\end{equation}
-	We use the same trick as before with the Taylor expansion around the root:
+	We use the same trick as before with the Taylor expansion around the root
 	\begin{equation}
 		0 = f(\overline{x}) = f(x_j-e_j) = f(e_j)-f'(\psi)e_j\Rightarrow e_j = \frac{f(x_j)}{f'(\psi)}.
 	\end{equation}
 	Using this and the assumption on $L$, we get the estimate:
 	\begin{equation}
-		|e_{j+1}|=|e_j(1-\frac{f'(\psi)f(x_j)}{f(x_j)L})|\leq|e_j||1-\frac{f'(\psi)}{L}|<|e_j|.
+		|e_{j+1}|=\left |e_j \left (1-\frac{f'(\psi)f(x_j)}{f(x_j)L}\right )\right|\leq|e_j|\left|1-\frac{f'(\psi)}{L}\right|<|e_j|.
 	\end{equation}
 \end{proof}
 In practice we need to stop the linearization scheme at some point, and we decide on a \textbf{stopping criterion}. A common choice is, and the one we will use, is
 \begin{equation}\label{eq:stopping_criterion}
-	|x_{j}-x_{j-1}|<TOL+TOL|x_{j-1}|,
+	|x_{j}-x_{j-1}|<TOL_1+TOL_2|x_{j-1}|,
 \end{equation}
-Where $TOL$ is some constant chosen to be close to machine epsilon. See (Storvik, \cite{Erlend}) for a discussion of the L-scheme and how to choose the $L$ and $TOL$ parameters in a smart way. One can also study other linearization approaches with different properties. In (List and Radu, \cite{list2016study}) the authors compare different iterative linearization methods for the Richards equation and propose a method that combines the Newton method and the L-scheme with desirable convergence rate and robustness. 
+Where $TOL_1$ and $TOL_2$ is some constants chosen to be smaller than the error expected from spatial discretization, in our numerical experiments, we set both to be $10^{-8}$. See (Storvik, \cite{Erlend}) for a discussion of the L-scheme and how to choose the $L$ parameter in a smart way. One can also study other linearization approaches with different properties. In (List and Radu, \cite{list2016study}) the authors compare different iterative linearization methods for the Richards equation and propose a method that combines the Newton method and the L-scheme with desirable convergence rate and robustness. 
 \end{document}

@@ -1,6 +1,7 @@
 \documentclass[../Main/main.tex]{subfiles}
 \begin{document}
 	\chapter{Convergence of the MPFA-L Method}
+	\label{chap:convergence spatial mpfa}
 	\graphicspath{{../Equivalence between MPFA-L and FEM/figs/}}
 	In this chapter we show equivalence between a modified MPFA-L method and a modified Lagrange finite element method, for linear time dependent problems discretized in time with backward Euler  \eqref{eq:semidiscrete heat}.
 	 That is, we prove equivalence between the two discretizations  of the equation: Let $x\in \Omega \subset \mathbb{R}^2$, find $u(x)$ such that
@@ -25,7 +26,7 @@
 	After reading this chapter, the reader should be convinced that the finite element method covered in section \ref{sec:fem} is almost the same as the L-method. Moreover, that the L-method can be used as a locally mass conservative flux recovery algorithm on the modified finite element solution. See section \ref{sec:elliptic_numerical} for a comparison of the MPFA-L method and normal linear Lagrange finite element method.
 	\par
 	We saw in the section about the MPFA-L method that the interaction regions (L-triangles) may form a triangulation of our domain.
-	With this observation in mind, modifications are made to both methods so that we obtain equivalence. This entire chapter is adapted from (Cao, Y., Helmig, R. and Wohlmuth, B.I. (2009),\cite{https://doi.org/10.1002/num.20525}), where, convergence is proved for the Poisson equation,i.e., without the $u$ term.
+	With this observation in mind, modifications are made to both methods so that we obtain equivalence. This entire chapter is adapted from (Cao, Y., Helmig, R. and Wohlmuth, B.I. (2009),\cite{https://doi.org/10.1002/num.20525}), where, convergence is proved for the Poisson equation, i.e., without the first term $u$.
 	\section{Modified MPFA-L Method}
 	\label{sec:modified_mpfa-l}
 	First of all, we assume that we have a uniform parallelogram grid, as in \ref{fig:paralellogram-L}. 
@@ -285,8 +286,6 @@
 			\end{aligned}
 		\end{equation}
 	\end{proof}
-	\todo[inline]{Still working on a short proof here.}
-The proof is trivial as our test space, $V_h \subset H^1(\Omega)\bigcap C(\Omega)$, consists of continuous functions.
 	We are now ready to state the $H^1$ error estimate for the modified finite element method and thus the MPFA-L method.
 	\begin{theorem}\label{th:convergence of elliptic}
 		Let $u$ solve \eqref{eq:stationary_heat} and $u_h$ be the solution resulting from MPFA-L , then there exists a positive constant $C$ independent of the mesh diameter, $h$, such that

@@ -4,6 +4,7 @@
 \begin{document}
 	\graphicspath{{../Time dependent equations/figs/}}
 	\chapter{Convergence of the MPFA-L Method for Richards' Equation}
+	\label{chap:convergence richards}
 	In this chapter we use the results from chapter three to prove convergence of the Richards equation discretized in space with MPFA-L method, in time with backward Euler and linearized with the L-scheme.
 	We start by considering the Richards' equation without the gravity term in an isotropic medium: Find $\psi = \psi(x,t)$ such that
 	\begin{equation}\label{eq:richards w bc}
@@ -103,17 +104,18 @@ We start by discretizing \eqref{eq:richards simple} with the MPFA-L method, we d
 		Assume \textbf{A 1-3}, then
 		Richards' equation after Kirchhoff transform \eqref{eq:richards simple} discretized with backward Euler in time, L-scheme linearization and MPFA-L discretization in space \eqref{eq:linearized richards fvm} converges, and we have the estimate
 		\begin{equation}\label{eq:richards_estimate}
-			\left \|\tilde{u}_h^{n}-u(t^n)\right \|_0 \leq C (h+\tau),
+			\left \|\tilde{u}_h^{n,j}-u(t^n)\right \|_0 \leq C (h+\tau),
 		\end{equation}
-		where $C$ is some constant independent of the maximum mesh diameter $h$, the time step length $\tau$ and the minimum number of linearization iterations $j$.
+		where $C$ is some constant independent of the maximum mesh diameter $h$, the time step length $\tau$ and the linearization iterate $j$.
 	\end{theorem}
 	\begin{proof}
-		As the MPFA-L method and the modified finite element method are equivalent, we prove the convergence of our finite element solution, $u^{n,j}_h$.
+		As the MPFA-L method and the modified finite element method are equivalent, we prove the convergence of our finite element solution, $u^{n}_h$.
 		The proof will be done in three steps, see figure \ref{fig:convergence schema}.
 		We have by the triangle inequality
 		\begin{equation}
-			\left \|u(t_n)-u_h^{n,j}\right \|_0 \leq\left \|u(t_n) -u^n  \right \|_0 + \left \|u^{n}-u^{n,j}\right \|_0 + \left \|u^{n,j}-u_h^{n,j}\right \|_0  .
+			\left \|u(t_n)-u_h^{n,j}\right \|_0 \leq\left \|u(t_n) -u^n  \right \|_0 + \left \|u^{n}-u^{n,j}\right \|_0 + \left \|u^{n,j}-u_h^{n,j}\right \|_0,
 		\end{equation}
+		where $j$ denotes the linearization iterate.
 		\begin{itemize}
 			\item The third term is the error of solving the elliptic problem (C) in \ref{fig:convergence schema}, or 
 			\begin{equation}\label{eq:first ineq}
@@ -158,13 +160,12 @@ We start by discretizing \eqref{eq:richards simple} with the MPFA-L method, we d
 		\end{equation}
 		Since $L_B < 2L$ we reach the convergence estimate
 		\begin{equation}
-\left \|e^{n,j}\right \|^2 \leq \frac{L}{L+\frac{2\tau}{C_{\Omega}}}\left \|e^{n,j-1}\right \|^2
+\left \|e^{n,j}\right \|^2 \leq \frac{L}{L+\frac{2\tau}{C_{\Omega}}}\left \|e^{n,j-1}\right \|^2.
 		\end{equation}
-		Hence, $\left \| u^{n,j}-u^n\right \| = \left \| e^{n,j}\right \|\rightarrow 0$ as $j\rightarrow \infty$. Therefore, we choose $j$ such that
-		\begin{equation*}
-			\left \| u^{n,j}-u^n\right \|\leq (h+\tau), \ \ \forall n\in [1,N],
-		\end{equation*}
-		where $N=\lceil\frac{1}{\tau}\rceil $ is the number of time steps.
+		We can use recursion to obtain the estimate
+		\begin{equation}
+			\left \|e^{n,j}\right \| \leq \left(\sqrt{\frac{L}{L+\frac{2\tau}{C_{\Omega}}}} \right)^j  \left \|e^{n,1}\right \|.
+		\end{equation}
 		\item The first term $\left \| u(t^n)-u^n\right \|$ can be bounded by the techniques used in (Radu, Pop and Knabner, \cite{FlorinTimeConvergence}). We reach the estimate
 		\begin{equation}
 			\left \| u^n-u(t^n)\right \|_0 \leq C_1 \tau.
@@ -177,7 +178,7 @@ We start by discretizing \eqref{eq:richards simple} with the MPFA-L method, we d
 	\end{equation}
 	We see from the above equation, that the desired result \eqref{eq:richards_estimate} is reached with $C=(\max(C_1,C_3)+1)$
 	\end{proof}
-	We have showed convergence for Richards' equation after Kirchhoff transform \eqref{eq:richards simple},  discretized in space by MPFA-L method, in time by backward Euler and L-scheme for linearization. In section \ref{sec:numerics_richards} we do numerical results to confirm this.
+	We have showed convergence for Richards' equation after Kirchhoff transform \eqref{eq:richards simple},  discretized in space by MPFA-L method, in time by backward Euler and L-scheme for linearization. In section \ref{sec:numerics_richards} we do numerical tests to confirm this.
 	\begin{remark}
 		We expect that a better convergence rate estimate 
 		\begin{equation}

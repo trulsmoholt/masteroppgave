@@ -6,45 +6,45 @@ The style file: siam.bst
 Reallocating 'name_of_file' (item size: 1) to 21 items.
 Database file #1: ../References/sample.bib
 Warning--can't use both author and editor fields in Stein2014
-You've used 15 entries,
+You've used 22 entries,
             2030 wiz_defined-function locations,
-            602 strings with 6449 characters,
-and the built_in function-call counts, 5164 in all, are:
-= -- 499
-> -- 190
+            654 strings with 7620 characters,
+and the built_in function-call counts, 7965 in all, are:
+= -- 794
+> -- 273
 < -- 0
-+ -- 80
-- -- 61
-* -- 366
-:= -- 772
-add.period$ -- 15
-call.type$ -- 15
-change.case$ -- 72
++ -- 113
+- -- 87
+* -- 558
+:= -- 1162
+add.period$ -- 22
+call.type$ -- 22
+change.case$ -- 106
 chr.to.int$ -- 0
-cite$ -- 16
-duplicate$ -- 259
-empty$ -- 407
-format.name$ -- 61
-if$ -- 1136
+cite$ -- 23
+duplicate$ -- 406
+empty$ -- 613
+format.name$ -- 87
+if$ -- 1781
 int.to.chr$ -- 0
-int.to.str$ -- 15
-missing$ -- 18
-newline$ -- 48
-num.names$ -- 29
-pop$ -- 82
+int.to.str$ -- 22
+missing$ -- 25
+newline$ -- 69
+num.names$ -- 43
+pop$ -- 103
 preamble$ -- 1
-purify$ -- 62
+purify$ -- 89
 quote$ -- 0
-skip$ -- 229
+skip$ -- 384
 stack$ -- 0
-substring$ -- 361
-swap$ -- 118
+substring$ -- 602
+swap$ -- 202
 text.length$ -- 0
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 50
+type$ -- 78
 warning$ -- 1
-while$ -- 50
-width$ -- 17
-write$ -- 134
+while$ -- 78
+width$ -- 24
+write$ -- 197
 (There was 1 warning)

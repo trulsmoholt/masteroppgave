@@ -7,13 +7,39 @@
 
 \section*{Acknowledgements}
 
-\chapter{Introduction}
+\chapter*{Introduction}
+\addcontentsline{toc}{chapter}{Introduction}
 Understanding porous media and how fluid flows through it has many useful applications, for example predicting the spread of some contaminant in an aquifer. Other examples include $\text{CO}_2$-storage, geothermal energy and brain modelling. One way of understanding the processes involved in porous media flow is to describe it using partial differential equations, which may be time dependent, non-linear, degenerate and almost always impossible to solve with pen and paper. We therefore want numerical algorithms that solve these PDE's approximately, and at the same time respect important properties of the equations/problems we consider.\par
-In this thesis we focus numerical techniques to solve Richards' equation, 
+In this thesis, we focus numerical techniques for solving Richards' equation \cite{doi:10.1063/1.1745010} in two spatial dimensions
 \begin{equation}\label{eq:rihcards_I}
-	\frac{\partial \theta(\psi)}{\partial t} - \nabla \cdot (\bm{\kappa} (\theta (\psi))(\nabla \psi + e_z)) = f
+	\frac{\partial \theta(\psi)}{\partial t} - \nabla \cdot (\bm{\kappa} (\theta (\psi))(\nabla \psi + \bm{e}_z)) = f,
+\end{equation} 
+with boundary conditions. The above equation models groundwater flow in partially/fully saturated reservoirs. In equation \eqref{eq:rihcards_I}, we solve for $\psi$ which is the pressure head. The non-linear functions $\theta(\cdot)$ and $\kappa(\cdot)$ are determined experimentally and corresponds to saturation and hydraulic conductivity respectively. The vector $\bm{e}_z$ is the gravitational force which we will neglect in this thesis, and $f$ is any sources or sinks.
+Equation \eqref{eq:rihcards_I} is time dependent, parabolic, with two non-linearities and possibly degenerate. Because it is parabolic we discretize in time with an implicit method, and get a non-linear elliptic PDE for each time step. This is then linearized with a robust linearization scheme , the L-scheme linearization \cite{list2016study,10.1016/j.cam.2003.04.008}, leading to a sequence of linear elliptic PDE's for each time step. Next, we solve these linear elliptic PDE's with a spatial discretization, which will be the main focus of this thesis.
+\par 
+When solving \eqref{eq:rihcards_I} we are often interested in transport phenomena, and couple the flux, $\bm{q}=(\bm{\kappa} (\theta (\psi))(\nabla \psi + \bm{e}_z))$, with some transport equation
+\begin{equation}\label{eq:transport}
+	\frac{\partial u}{\partial t} - \nabla \cdot (\bm{q}u) = 0
 \end{equation}
-which models groundwater flow. 
-It is time dependent, parabolic, with two non-linearities and possibly degenerate. Because it is parabolic we discretize in time with an implicit method, and get a non-linear elliptic PDE for each time step. This is then linearized with a robust linearization scheme, leading to a sequence of linear elliptic PDE's for each time step. Next, we solve these linear elliptic PDE's with a spatial discretization, which will be the main focus of this thesis.
+where $u$ might be some contaminant. We therefore want our approximate solution of \eqref{eq:rihcards_I} to render an approximate flux field which is \emph{locally mass conservative}, which is important when solving \eqref{eq:transport}. Whether or not the approximated flux field is locally mass conservative is a property of the spatial discretization used. It turns out that the linear Lagrange finite element method, which we will cover in section \ref{sec:galerkin_fem}, does not in general have this property. There are however a class of finite element methods called \emph{mixed finite element methods}, which conserve mass locally, but have the disadvantage of having more unknowns, and are not discussed further in this thesis. We are therefore interested in finite volume methods, as they are designed to be locally mass conservative.
+\par
+There are also other properties we want our spatial discretization techniques for solving \eqref{eq:rihcards_I} to have. Among these are \emph{monotonicity}, which means that the discretization does not allow for unphysical oscillations in the approximated solution. Another desirable property is the ability to handle complex geometry, this manifests itself as grids that are not orthogonal, and that consists of general quadrilaterals (rough grids). The last property we mention is the computational time, this may, among other things, be related to the size of the cell stencil. In \cite{10.1007/s00211-006-0060-z}, the authors show that it if you have a locally mass conservative method, with small stencil (nine-point cell stencil in two spatial dimensions), that can handle rough grids, you cannot guarantee unconditional monotonicity.
+\par 
+The MPFA (Multi-Point Flux Approximation) L-method is a finite volume method, it was introduced in \cite{https://doi.org/10.1002/num.20320}. We will focus on this method throughout the thesis, as it is a compromise between all the properties we want. We introduce it in section \ref{sec:L-method}, and provide numerical experiments in chapter \ref{chap:numerical results}. 
+\par 
+Convergence rate estimates for finite volume methods does not come "out of the box", as they do with finite element methods, at leat not for non-orthogonal grids. In \cite{Stephansen2012ConvergenceOT}, A. F. Stephansen shows convergence for the MPFA-L-Method by formulating it as a mimetic finite difference method. Another approach successfully applied in \cite{https://doi.org/10.1002/fld.1787} for MPFA-L-method on a triangular mesh, is to show equivalence with a mixed finite element method. In \cite{klausen2006robust} Klausen and Winther used the same approach for the MPFA-O-method on a quadrilateral grid. In this thesis, we will show equivalence between the MPFA-L-method on a parallelogram mesh, and a modified linear Lagrange finite element method with triangular elements. After equivalence is obtained, we use the finite element framework to prove convergence. Our approach is similar to what is done in \cite{https://doi.org/10.1002/num.20525}. 
+\par
+After convergence for the MPFA-L-method is achieved, we will see how it can be applied to obtain a convergence rate estimate for Richards' equation. To achieve this, we use the techniques found in \cite{list2016study} for proving convergence of the linearization scheme, and the techniques in \cite{FlorinTimeConvergence,Pop2002} for convergence of the time discretization. In the end we reach a $L^2$ error estimate, which we confirm by numerical experiments in section \ref{sec:numerics_richards}.
+\section*{Outline}
+\addcontentsline{toc}{section}{Outline}
+In chapter one \ref{chap:porous media}, we give a brief introduction to flow in porous media. Highlighting the physical principles that leads to Richards' equation \eqref{eq:richards}.
+\par 
+In chapter two \ref{chap:numerical approximation}, we cover some of the numerical approximation techniques one may use to solve Richards' equation, with an emphasis on spatial discretization methods. We start by introducing function spaces, followed by the weak formulation and its well posedness. Then we introduce the finite element method, how it could be implemented, and the ideas behind proving its convergence. Further, we introduce finite volume methods, then we cover some common finite volume methods; two-point flux approximation, MPFA-O-method and MPFA-L-method. We give a short introduction to time discretization, specifically implicit backward Euler. We end the chapter by discussing iterative methods for solving non-linear problems.
+\par
+In chapter three \ref{chap:convergence spatial mpfa}, we introduce a way of handling boundary conditions for the MPFA-L-method, and show its equivalence with a modified finite element method. Then we apply standard finite element theory to show convergence for an elliptic problem.
+\par 
+In chapter four \ref{chap:convergence richards}, we discuss the Kirchhoff transform of Richards' equation, removing the non-linearity in the constitutive law. Then we prove convergence of a fully discretized and linearized scheme to solve the Kirchhoff transformed Richards' equation.
+\par 
+In chapter five \ref{chap:numerical results}, we present some of the code written for this thesis, and do numerical experiments involving elliptic and time-dependent equations on rough grids.
 
 \end{document}
