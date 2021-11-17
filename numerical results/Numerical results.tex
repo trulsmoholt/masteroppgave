@@ -81,18 +81,28 @@ for t in time_partition[1:]:
 		\
 		\section{Elliptic Equation}
 		\label{sec:elliptic_numerical}
-		The convergence tests in this section are similar to some of the tests done in chapter three of \cite{https://doi.org/10.1002/num.20320}. We consider the elliptic model problem \eqref{eq:poisson}, find $u\in H^1_0(\Omega)$ such that
-		\begin{equation} \label{eq:model}
-			\begin{split}
-				\nabla \cdot \bm{q} &= f \\
-				\bm{q} &= -\bm{K}\nabla u.
-			\end{split}
+		The convergence tests in this section are similar to some of the tests done in chapter three of \cite{https://doi.org/10.1002/num.20320}. We consider the elliptic model problem \eqref{eq:poisson}, find $u=u(x)$ such that
+
+		\begin{equation}\label{eq:model}
+			\left \{
+		\begin{aligned}[c]
+			\nabla \cdot \bm{q} &= f, \\
+			\bm{q} &= -\bm{K}\nabla u, \\
+			u &= u_{\partial \Omega},
+		\end{aligned}
+		\ \ \
+		\begin{aligned}[c]
+			\text{ in }& \Omega \\
+			\text{ in }& \Omega \\
+			\text{ on }& \partial \Omega
+		\end{aligned}
+		\right.
 		\end{equation}
 		We set the solution
 		\begin{equation}\label{eq:pressure_solution_model}
-			u = cosh(\pi x)cos(\pi y)
+			u = cosh(\pi x)cos(\pi y),
 		\end{equation} 
-		And set $\bm{K}$ to be the identity matrix. 
+		set $\bm{K}$ to be the identity matrix and compute the Dirichlet boundary condition, $u_{\partial \Omega}$, from the equation above. The domain $\Omega$ will vary through the rest of this section.\par
 		As in \cite{https://doi.org/10.1002/num.20320} page 1340 we define the normalized discrete $L_2$ norms:
 		\begin{equation}
 			\left \| u - u_h \right \|_{0,h} =  \left (  \frac{1}{V}\sum_i V_i(u_{h,i}-u_i)^2\right )^{\frac{1}{2}}
@@ -211,7 +221,6 @@ for t in time_partition[1:]:
 		\end{figure}
 	\section{Richards' Equation}
 	\label{sec:numerics_richards}
-	\todo[inline]{This section is not yet done}
 	\subsection{Constant Hydraulic Conductivity}
 	In this section we consider numerical experiments for \eqref{eq:richards simple}, with Dirichlet boundary conditions: Find $u=u(x,t)$ such that
 	\begin{equation}\label{eq:richards_conv_1}
@@ -235,11 +244,12 @@ for t in time_partition[1:]:
 	\end{equation}
 	and compute the source term, $f$, such that the solution becomes
 	\begin{equation}\label{eq:richards_conv_3}
-		u = -tx(1-x)y(1-y)-1.
+		u = -tx(1-x)y(1-y)-1,
 	\end{equation}
+	which is the same equation and solution as they use in \cite{RaduWang}.
 	We let $\Omega$ be the unit square perturbed by $(x,y)  \mapsto (x-0.5y,y)$.
-	The L-scheme linearization has the parameters $L:=1.5$ and error tolerance $TOL=5e^{-9}$. We perform grid refinement of a parallelogram  grid, see figure \eqref{fig:MeshRichards1}. In table \ref{tab:rihcards1} we observe a quadratic convergence when the time step length is equal to the square of the grid diameter. In table \ref{tab:rihcards2} we observe a linear convergence when the time step length and the grid diameter is equal.
-	\begin{figure}[H]
+	The L-scheme linearization has the parameters $L:=1.5$ and error tolerance $TOL=5e^{-9}$. The grid we use can be seen in figure \eqref{fig:MeshRichards1}. In table \ref{tab:rihcards1} we observe a quadratic convergence both when the time step length is set equal to the square of the mesh diameter, $\tau=h^2$. We observe the same convergence rate in table \ref{tab:rihcards2}, when $\tau=h$. One would expect this, as the the time discretization has linear convergence rate. An explanation could be that the solution \eqref{eq:richards_conv_2} is linear in time, and even with the non-linearity $b(\cdot)$, is approximated exactly by the backward Euler time discretization.
+	\begin{figure}
 	\centering
 	\includegraphics[width=0.8\linewidth]{MeshRichards1.pdf}
 	\caption{Parallelogram grid, with ghost Dirichlet boundary cells.}
@@ -272,15 +282,37 @@ for t in time_partition[1:]:
 			\hline
 			number & mesh diameter, $h$ & time step length, $\tau$ & discrete $L_2(\Omega)$ error & improvement \\
 			\hline
-1&$0.45069$&$0.45069$&$0.001694$&-\\ 
-2&$0.22535$&$0.22535$&$0.000374$&$4.52868$\\
-3&$0.11267$&$0.11267$&$0.000086$&$4.33993$\\
-4&$0.05634$&$0.05634$&$0.000020$&$4.24067$\\
+				1&$0.45069$&$0.45069$&$0.001694$&-\\ 
+				2&$0.22535$&$0.22535$&$0.000374$&$4.52868$\\
+				3&$0.11267$&$0.11267$&$0.000086$&$4.33993$\\
+				4&$0.05634$&$0.05634$&$0.000020$&$4.24067$\\
+				5&$0.02817$&$0.02817$&$0.000005$&$4.19727$\\
 			\hline
 		\end{tabular}
 		\caption{Convergence table for \eqref{eq:richards_conv_1},\eqref{eq:richards_conv_2} and \eqref{eq:richards_conv_3}. The time step length, $\tau$, is set proportional to the square of the mesh diameter, that is $\tau=h$.}
 		\label{tab:rihcards2}
 	\end{table}
+	If we however construct a solution which is not linear in time
+	\begin{equation}\label{eq:richards_conv_4}
+		u = -t^2x(1-x)y(1-y)-1.
+	\end{equation}
+	And do the same experiment as described above, with the time step length $\tau=h$, we do not observe quadratic convergence, see table \ref{tab:rihcards3}.
+	\begin{table}[H]
+	\centering
+	\begin{tabular}{|c c c c c|}
+		\hline
+		number & mesh diameter, $h$ & time step length, $\tau$ & discrete $L_2(\Omega)$ error & improvement \\
+		\hline
+			1&$0.45069$&$0.45069$&$0.001922$&-\\ 
+			2&$0.22535$&$0.22535$&$0.000471$&$4.08322$\\
+			3&$0.11267$&$0.11267$&$0.000125$&$3.76197$\\
+			4&$0.05634$&$0.05634$&$0.000036$&$3.43254$\\
+			5&$0.02817$&$0.02817$&$0.000012$&$2.97651$\\
+		\hline
+	\end{tabular}
+	\caption{Convergence table for \eqref{eq:richards_conv_1},\eqref{eq:richards_conv_2} and \eqref{eq:richards_conv_4}. The time step length, $\tau$, is set proportional to the square of the mesh diameter, that is $\tau=h$.}
+	\label{tab:rihcards3}
+\end{table}
 	\subsection{Non-Linear Hydraulic Conductivity}
 	Here, we consider Richards' equation \eqref{eq:richards} in pressure variable, find $p=p(x,t)$ such that
 	\begin{equation}
@@ -298,22 +330,29 @@ for t in time_partition[1:]:
 	\end{aligned}
 	\right.
 	\end{equation}
-	With $\Omega$ being the perturbed unit square as before, and $T=1$. We define 
-	\begin{equation}
-			\theta(u):=\left\{\begin{matrix}
+	With $\Omega$ being the perturbed unit square as before (see figure \ref{fig:MeshRichards1}), and $T=1$. We consider the Van Genuchten-Mualem parametrizations
+	\begin{equation}\label{eq:van_1}
+			\theta(p):=\left\{\begin{matrix}
 				(1+(-\alpha_{vG}p)^{n_{vG}})^{-\frac{n_{vG}-1}{n_{vG}}},&p\leq 0 \\ 
 				1,&p>0 
-			\end{matrix}\right.
+			\end{matrix}\right.,
 	\end{equation}
 and
-\begin{equation}
+\begin{equation}\label{eq:van_2}
 	\kappa(\theta):=
-		\frac{\kappa_{abs}}{\mu}\sqrt{\theta}\left(1-\left(1-\theta^{\frac{n_{vG}}{n_{vG}-1}}\right)^{\frac{n_{vG}-1}{n_{vG}}}\right)^2
+		\frac{\kappa_{abs}}{\mu}\sqrt{\theta}\left(1-\left(1-\theta^{\frac{n_{vG}}{n_{vG}-1}}\right)^{\frac{n_{vG}-1}{n_{vG}}}\right)^2,
 \end{equation}
-	and compute the source term, $f$, such that the solution becomes \eqref{eq:richards_conv_3}.
-	\begin{figure}
+	and compute the source term $f$ such that the solution becomes
+	\begin{equation}
+		p = -3tx(1-x)y(1-y)-1.
+	\end{equation}
+	We include the factor of three in the solution above, to make sure that we capture more of the non-linearity. That is, so low pressure that it affects the saturation. The L-scheme linearization has the parameters $L=0.3$ and $TOL=10^{-8}$.
+	\par 
+	In table \ref{tab:rihcards_nonlinear1}, we see a quadratic convergence when $\tau = h^2$, as expected. In table \ref{tab:rihcards_nonlinear2}, we see a slowly decreasing convergence rate, but still well above linear, when $\tau=h$. We expect this trend to continue for finer refinements.
+		\begin{figure}
 		\centering
-		\includegraphics[width=1.1\textwidth]{van.pdf}	
+		\includegraphics[width=1.1\textwidth]{van.pdf}
+		\caption{The Van Genuchten-Mualem non-linearities, \eqref{eq:van_1} and \eqref{eq:van_2}.}
 	\end{figure}
 	\begin{table}[H]
 		\centering
@@ -321,13 +360,14 @@ and
 			\hline
 			number & mesh diameter, $h$ & time step length, $\tau$ & discrete $L_2(\Omega)$ error & improvement \\
 			\hline
-				1&$0.45069$&$0.20312$&$0.001863$&-\\ 
-				2&$0.22535$&$0.05078$&$0.000455$&$4.09403$\\ 
-				3&$0.11267$&$0.01270$&$0.000110$&$4.13154$\\
+				1&$0.45069$&$0.20312$&$0.005779$&-\\ 
+				2&$0.22535$&$0.05078$&$0.001443$&$4.00516$\\
+				3&$0.11267$&$0.01270$&$0.000350$&$4.12657$\\
+				4&$0.05634$&$0.00317$&$0.000086$&$4.06126$\\
 			\hline
 		\end{tabular}
 		\caption{Convergence table for \eqref{eq:richards_conv_1},\eqref{eq:richards_conv_2} and \eqref{eq:richards_conv_3}. The time step length, $\tau$, is set proportional to the square of the mesh diameter, that is $\tau=h^2$.}
-		\label{tab:rihcards1}
+		\label{tab:rihcards_nonlinear1}
 	\end{table}
 	\begin{table}[H]
 		\centering
@@ -335,11 +375,13 @@ and
 			\hline
 			number & mesh diameter, $h$ & time step length, $\tau$ & discrete $L_2(\Omega)$ error & improvement \\
 			\hline
-1&$0.45069$&$0.45069$&$0.017904$&-\\ 
-2&$0.22535$&$0.22535$&$0.006011$&$2.97848$\\
-3&$0.11267$&$0.11267$&$0.001682$&$3.57467$\\
+				1&$0.45069$&$0.45069$&$0.005802$&-\\ 
+				2&$0.22535$&$0.22535$&$0.001484$&$3.90847$\\
+				3&$0.11267$&$0.11267$&$0.000378$&$3.93106$\\
+				4&$0.05634$&$0.05634$&$0.000099$&$3.81519$\\
 			\hline
 		\end{tabular}
 		\caption{Convergence table for \eqref{eq:richards_conv_1},\eqref{eq:richards_conv_2} and \eqref{eq:richards_conv_3}. The time step length, $\tau$, is set proportional to the square of the mesh diameter, that is $\tau=h$.}
+		\label{tab:rihcards_nonlinear2}
 	\end{table}
 \end{document}

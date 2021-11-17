@@ -49,7 +49,7 @@ we will refer to this as the \emph{flux} of hydraulic potential. We can now stat
 \begin{equation}\label{eq:darcy}
 \bm{q} = -\bm{\kappa} \nabla h.
 \end{equation}
-We call $\bm{\kappa}$ the \emph{hydraulic conductivity} and note that it in general is a rank two tensor, a matrix. The \emph{hydraulic conductivity} also has the property that it is \emph{symmetric}: This is because there are, at every point in the reservoir, two orthogonal directions; one with maximum, and one with minimum hydraulic conductivity. Thus, the matrix, $\bm{\kappa}$, is diagonalizable by a orthogonal matrix.\par
+We call $\bm{\kappa}$ the \emph{hydraulic conductivity} and note that it in general is a rank two tensor, a matrix. The hydraulic conductivity also has the property that it is \emph{symmetric}. This is because there are, at every point in the reservoir, two orthogonal directions; one with maximum, and one with minimum hydraulic conductivity. Thus, the matrix, $\bm{\kappa}$, is diagonalizable by a orthogonal matrix.\par
 The conductivity matrix, $\bm{\kappa}$, is also \emph{positive definite}, this is because there is never flux towards higher pressure. 
 With further experiments, similar to the one already described, we can understand what makes up $\bm{\kappa}$. Dimensionality analysis shows that it is  a function of viscosity $\mu$, density of the fluid $\rho$, gravity $g$ and \emph{permeability} $\bm{k}$,
 \begin{equation} \label{eq:conductivity}
@@ -91,7 +91,7 @@ Now we have a model for single-phase flow. As it is stated now, it is a linear p
 \section{Two-phase Flow and Richards' Equation}
 \label{sec:TwoPhase}
 
-We restrict our discussion to two phases for simplicity, but the theory can be extended to more phases. In two-phase systems one has a \emph{wetting phase} and a \emph{non-wetting phase}, denoted by the subscripts $w$ and $n$, respectively. \\
+We restrict our discussion to two phases for simplicity, but the theory can be extended to more phases. In two-phase systems one has a \emph{wetting phase} and a \emph{non-wetting phase}, denoted by the subscripts $w$ and $n$ respectively. \\
 When we introduce more phases, we continue with the equations we already introduced, i.e., we assume that Darcy's law  \eqref{eq:darcyv2} holds for both phases. Let the subscript $\alpha$ denote the phase, then we have Darcy's law for each phase
 \begin{equation}\label{eq:darcytwo}
 	\bm{q}_{\alpha} = \frac{\bm{k}_{r,\alpha}\bm{k}\rho g}{\mu}\nabla(\psi_{\alpha} + z),

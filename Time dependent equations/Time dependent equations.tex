@@ -83,9 +83,9 @@ We start by discretizing \eqref{eq:richards simple} with the MPFA-L method, we d
 	\begin{equation} \label{eq:non-linear richards FVM}
 		\pmb{B}^V  b(\tilde{u}_h)^n + \tau \pmb{A}^V \tilde{u}_h^n = \tau \pmb{q}^{Vn} + \pmb{B}^V  b(\tilde{u}_h)^{n-1}.
 	\end{equation}
-	Now we need to linearize \eqref{eq:non-linear richards FVM} with the L-scheme. We see from \eqref{eq:L-scheme} that the applying this linearization leads to the equation: Given $\tilde{u}^{n,j-1}_h, \tilde{u}^{n-1}_h \in \mathbb{R}^d$ find $\tilde{u}^{n,j}_h \in \mathbb{R}^d$ such that
+	Now, we to linearize \eqref{eq:non-linear richards FVM} with the L-scheme. We see from \eqref{eq:L-scheme} that the applying this linearization leads to the equation: Given $\tilde{u}^{n,j-1}_h, \tilde{u}^{n-1}_h \in \mathbb{R}^d$ find $\tilde{u}^{n,j}_h \in \mathbb{R}^d$ such that
 	\begin{equation}\label{eq:linearized richards fvm}
-		L\pmb{B}^V(\tilde{u}^{n,j}_h-\tilde{u}^{n,j-1}_h) + \tau \pmb{A} \tilde{u}_h^{n,j} = -\pmb{B}^V \theta (\tilde{u}_h^{n,j-1})  + \tau \pmb{q}^{Vn} +  \pmb{B}^V \theta (\tilde{u}_h^{n-1}).
+		L\pmb{B}^V(\tilde{u}^{n,j}_h-\tilde{u}^{n,j-1}_h) + \tau \pmb{A} \tilde{u}_h^{n,j} = -\pmb{B}^V \theta (\tilde{u}_h^{n,j-1})  + \tau \pmb{q}^{Vn} +  \pmb{B}^V \theta (\tilde{u}_h^{n-1}),
 	\end{equation}
 	We set $\tilde{u}^{n,0}_h=\tilde{u}^{n-1}_h$ and solve the above equation until we reach the stopping criterion \eqref{eq:stopping_criterion} each time step. See listing \ref{l:2} for the code. Note that \eqref{eq:linearized richards fvm} is equivalent to a finite element discretization, this is what we will use to prove convergence. 
 	\begin{figure}[H]
@@ -94,22 +94,22 @@ We start by discretizing \eqref{eq:richards simple} with the MPFA-L method, we d
 		\caption{}
 		\label{fig:convergence schema}
 	\end{figure}
-	To prove convergence we list some assumptions:
+	To prove convergence we need some assumptions:
 	\begin{itemize}
 		\item[\textbf{A-1}] The domain $\Omega\subset \mathbb{R}^2$ is bounded and have a Lipschitz continuos boundary, i.e., it is locally the graph of a Lipschitz continuous function.
-		\item[\textbf{A-2}] $b\in C^1$ is non-decreasing and Lipschitz continuous.
+		\item[\textbf{A-2}] $b\in C^1$ is non-decreasing and Lipschitz continuous, with Lipschitz constant $L_B$.
 		\item[\textbf{A-3}] $b(u_0)$ is essentially bounded in $\Omega$ and $u_0 \in L^2(\Omega)$.
 	\end{itemize}
 	\begin{theorem}
 		Assume \textbf{A 1-3}, then
 		Richards' equation after Kirchhoff transform \eqref{eq:richards simple} discretized with backward Euler in time, L-scheme linearization and MPFA-L discretization in space \eqref{eq:linearized richards fvm} converges, and we have the estimate
 		\begin{equation}\label{eq:richards_estimate}
-			\left \|\tilde{u}_h^{n,j}-u(t^n)\right \|_0 \leq C (h+\tau),
+			\left \|\tilde{u}_h^{n,j}-u(t^n)\right \|_0 \leq C \left(h+\tau + \tau \left(\sqrt{\frac{L}{L+\frac{2\tau}{C_{\Omega}}}} \right)^j \right),
 		\end{equation}
 		where $C$ is some constant independent of the maximum mesh diameter $h$, the time step length $\tau$ and the linearization iterate $j$.
 	\end{theorem}
 	\begin{proof}
-		As the MPFA-L method and the modified finite element method are equivalent, we prove the convergence of our finite element solution, $u^{n}_h$.
+		As the MPFA-L method and the modified finite element method are equivalent, we prove the convergence of our finite element solution, $u^{n,j}_h$.
 		The proof will be done in three steps, see figure \ref{fig:convergence schema}.
 		We have by the triangle inequality
 		\begin{equation}
@@ -119,11 +119,11 @@ We start by discretizing \eqref{eq:richards simple} with the MPFA-L method, we d
 		\begin{itemize}
 			\item The third term is the error of solving the elliptic problem (C) in \ref{fig:convergence schema}, or 
 			\begin{equation}\label{eq:first ineq}
-				u^{n,j}-\frac{\tau}{L} \nabla \cdot \nabla u^{n,j} = \frac{L u^{n,j-1} + \tau f^n - b(u^{n,j-1}) + u^{n-1}}{L}.
+				u^{n,j}-\frac{\tau}{L} \nabla \cdot \nabla u^{n,j} = \frac{L u^{n,j-1} + \tau f^n - b(u^{n,j-1}) + b(u^{n-1})}{L}.
 			\end{equation}
 			By theorem \ref{th:convergence of elliptic} we have the error estimate
 			\begin{equation}
-				\left \|u_h^{n,j}-u^{n,j}\right \|_1  \leq C h (\left \| u^{n,j-1} \right \|_2 + \left \| \frac{L u^{n,j-1} + \tau f^n - b(u^{n,j-1}) + u^{n-1}}{L} \right \|_0 + \left \| g \right \|_{\frac{1}{2},\Gamma_N}).
+				\left \|u_h^{n,j}-u^{n,j}\right \|_1  \leq C h (\left \| u^{n,j-1} \right \|_2 + \left \| \frac{L u^{n,j-1} + \tau f^n - b(u^{n,j-1}) + b(u^{n-1})}{L} \right \|_0 + \left \| g \right \|_{\frac{1}{2},\Gamma_N}).
 			\end{equation}
 			The expression involving $u^{n-1}$ and $u^{n,j-1}$ are bounded independently of the mesh, see \cite{FlorinTimeConvergence} page 1459 for a stability estimate, hence $\left \|u_h^{n,j}-u^{n,j}\right \|_0 \leq C_3h$.
 		\item To bound the second term, $\left \|u^{n,j}-u^n\right \|_0$, we will use techniques found in (Radu, List, \cite{list2016study}). First, we subtract the variational form of (B) from the variational form of (C) in figure \ref{fig:convergence schema}:
@@ -163,9 +163,41 @@ We start by discretizing \eqref{eq:richards simple} with the MPFA-L method, we d
 \left \|e^{n,j}\right \|^2 \leq \frac{L}{L+\frac{2\tau}{C_{\Omega}}}\left \|e^{n,j-1}\right \|^2.
 		\end{equation}
 		We can use recursion to obtain the estimate
-		\begin{equation}
+		\begin{equation}\label{eq:recursion}
 			\left \|e^{n,j}\right \| \leq \left(\sqrt{\frac{L}{L+\frac{2\tau}{C_{\Omega}}}} \right)^j  \left \|e^{n,1}\right \|.
 		\end{equation}
+		To bound $\left \|e^{n,1}\right \| = \left \|u^{n,1}-u^{n-1}\right \|$, we subtract the variational form of (B) at time step $n-1$
+		\begin{equation}
+			\left \langle b(u^{n-1}),v\right \rangle + \tau \left \langle \nabla u^{n-1},\nabla v \right \rangle =\tau \left \langle f^{n-1},v\right \rangle + \left \langle b(u^{n-2}),v\right\rangle,
+		\end{equation}
+		 from the variational form of (C), with $j=1$
+		 \begin{equation}
+		 	L\left \langle u^{n,1}-u^{n-1},v \right \rangle+\tau \left \langle \nabla u^{n,1},\nabla v \right\rangle = \tau\left \langle f^n,v\right\rangle.
+		 \end{equation}
+	 	Note that $u^{n,0}=u^{n-1}$, so two terms cancel in the above equation.
+	  	Next, we test with $v=e^{n,1}$
+		\begin{equation}
+			\begin{aligned}
+				L\left \langle u^{n,1}-u^{n-1},u^{n,1}-u^{n-1}\right \rangle + \tau \left \langle \nabla e^{n,1},\nabla e^{n,1}\right \rangle &- \left \langle b(u^{n-1}),e^{n,1}\right \rangle \\
+				 =\tau \left \langle f^n-f^{n-1},e^{n,1}\right \rangle &- \left \langle b(u^{n-2}),e^{n,1}\right \rangle.
+			\end{aligned}
+			\end{equation}
+		Using the Poincarè inequality, we get
+		\begin{equation}
+			(L+C_{\Omega})\left \|e^{n,1}\right \|^2 \leq \tau \left \langle f^n-f^{n-1},e^{n,1}\right \rangle + \left \langle b(u^{n-1})-b(u^{n-2}),e^{n,1}\right \rangle.
+		\end{equation}
+		Next, we apply the Cauchy Schwarz inequality on the right hand side and divide by $\left \|e^{n,1}\right \|$ to obtain
+		\begin{equation}
+			(L+C_{\Omega})\left \|e^{n,1}\right \| \leq \tau \left \| f^n-f^{n-1}\right \| + \left \| b(u^{n-1})-b(u^{n-2})\right \| .
+		\end{equation}
+		The last term on the right hand side is bounded by using the Lipschitz continuity of $b(\cdot)$
+		\begin{equation}
+			\left \|e^{n,1}\right \| \leq \frac{\tau}{(L+C_{\Omega})}\left( \left \|f^n-f^{n-1}\right \|+L_B\right)=\tau C_2.
+		\end{equation} 
+		We can now rewrite \eqref{eq:recursion} with a constant, $C_2$, independent of $j$ and $\tau$
+\begin{equation}
+	\left \|e^{n,j}\right \| \leq \tau \left(\sqrt{\frac{L}{L+\frac{2\tau}{C_{\Omega}}}} \right)^j  C_2.
+\end{equation}
 		\item The first term $\left \| u(t^n)-u^n\right \|$ can be bounded by the techniques used in (Radu, Pop and Knabner, \cite{FlorinTimeConvergence}). We reach the estimate
 		\begin{equation}
 			\left \| u^n-u(t^n)\right \|_0 \leq C_1 \tau.
@@ -174,9 +206,9 @@ We start by discretizing \eqref{eq:richards simple} with the MPFA-L method, we d
 		\end{itemize}
 	Using all of the above, we get
 	\begin{equation}
-		\left \|\tilde{u}_h^{n}-u(t^n)\right \|_0 \leq C_3 h + C_1 \tau + \tau + h \leq (\max(C_1,C_3)+1)(h+\tau).
+		\left \|\tilde{u}_h^{n,j}-u(t^n)\right \|_0 \leq C_3 h + C_2\tau \left(\sqrt{\frac{L}{L+\frac{2\tau}{C_{\Omega}}}} \right)^j + C_1 \tau \leq C \left(h+\tau+ \tau \left(\sqrt{\frac{L}{L+\frac{2\tau}{C_{\Omega}}}} \right)^j\right ),
 	\end{equation}
-	We see from the above equation, that the desired result \eqref{eq:richards_estimate} is reached with $C=(\max(C_1,C_3)+1)$
+	where $C=C_1+C_2+C_3$.
 	\end{proof}
 	We have showed convergence for Richards' equation after Kirchhoff transform \eqref{eq:richards simple},  discretized in space by MPFA-L method, in time by backward Euler and L-scheme for linearization. In section \ref{sec:numerics_richards} we do numerical tests to confirm this.
 	\begin{remark}
